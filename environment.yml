@@ -1,0 +1,29 @@
+name: ruspy_analysis
+
+channels:
+  - defaults
+  - conda-forge
+  - janosg
+
+dependencies:
+  - python
+  - numpy
+  - sphinx
+  - pandas
+  - statsmodels
+  - pytest
+  - pytest-xdist
+  - scipy
+  - matplotlib
+  - pytest-cov
+  - jupyter
+  - numba
+  - mpmath
+  - pip
+  - estimagic
+  - seaborn
+  - pip:
+      - flake8
+      - black
+      - pre-commit
+      - -e ruspy
