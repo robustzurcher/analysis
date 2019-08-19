@@ -22,8 +22,8 @@ dependencies:
   - pip
   - estimagic
   - seaborn
+  - jupyterlab 
   - pip:
       - flake8
       - black
       - pre-commit
-      - -e ruspy
