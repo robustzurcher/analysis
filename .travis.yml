@@ -15,4 +15,4 @@ install:
 script:
   - source .envrc
   - py.test 
-  - ./bin/execute-notebooks
+  - execute-notebooks
