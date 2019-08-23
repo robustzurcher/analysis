@@ -9,10 +9,9 @@ install:
   - sudo apt-get update
   - ./utils/travis_miniconda.sh
   - PATH="$HOME/miniconda/bin:$PATH"
-  - PATH="$HOME/bin:$PATH"
   - conda env create -f environment.yml
   - source activate ruspy_analysis
 
 script:
   - py.test 
-  - execute-notebooks
+  - ./bin/execute-notebooks
