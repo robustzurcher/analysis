@@ -13,5 +13,6 @@ install:
   - source activate ruspy_analysis
 
 script:
+  - source .envrc
   - py.test 
   - ./bin/execute-notebooks
