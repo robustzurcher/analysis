@@ -1,7 +1,3 @@
 .ipynb*
 .ipynb_checkpoints/
 .idea
-ruspy/
-robupy/
-history.sqlite
-migrated
