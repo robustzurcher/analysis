@@ -31,8 +31,11 @@ def calc_fixp_worst(
         ev = ev_new
         maint_value = beta * ev - costs[:, 0]
         repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
-        ev_min = maint_value[0]  # Use this value to rescale the value vector for the
+
+        # Select the minimal absolute value to rescale the value vector for the
         # exponential function.
+        ev_min = maint_value[0]
+
         log_sum = ev_min + np.log(
             np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
         )
