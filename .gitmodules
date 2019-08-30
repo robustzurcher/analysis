@@ -5,3 +5,6 @@
 	path = submodules/robupy
 	url = https://github.com/OpenSourceEconomics/robupy.git
 	branch = development_ruspy
+[submodule "submodules/zurcher-data"]
+	path = submodules/zurcher-data
+	url = https://github.com/OpenSourceEconomics/zurcher-data.git
