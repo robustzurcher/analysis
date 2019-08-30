@@ -10,8 +10,9 @@ os.chdir(os.environ['PROJECT_ROOT'] + '/notebooks')
 for notebook in sorted(glob.glob('*.ipynb')):
     
     # TODO: The others are not yet ready for this.
-    if notebook != '00_illustrations.ipynb':
+    if notebook not in ['00_illustrations.ipynb', 'ivestigation.ipynb']:
         continue
+
     
     cmd = ' jupyter nbconvert --execute {}  --ExecutePreprocessor.timeout=-1'.format(notebook)
     sp.check_call(cmd, shell=True)
