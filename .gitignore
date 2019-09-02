@@ -1,3 +1,6 @@
 .ipynb*
 .ipynb_checkpoints/
-
+.idea
+__pycache__/
+*/ipython/profile_default/history.sqlite
+*/jupyter/migrated*
