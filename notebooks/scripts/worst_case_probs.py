@@ -4,7 +4,7 @@ from robupy.auxiliary import get_worst_case_probs
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def create_worst_trans_mat(trans_mat, v, rho):
     num_states = trans_mat.shape[0]
     worst_trans_mat = np.zeros(shape=(num_states, num_states), dtype=np.float64)
