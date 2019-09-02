@@ -16,7 +16,7 @@ def wrapper_func(omega):
     p_ml = np.loadtxt("resources/rust_trans_probs.txt")
     params = np.loadtxt("resources/rust_cost_params.txt")
     costs = cost_func(num_states, lin_cost, params)
-    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (78 / 4292))
+    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (4292 / 78))
     return calc_fixp_worst(num_states, p_ml, costs, beta, rho)
 
 
