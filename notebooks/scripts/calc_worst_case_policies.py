@@ -6,8 +6,8 @@ import pickle
 from scipy.stats import chi2
 
 
-workers = 2  # As there are a 100 omegas in the range
-omega_range = np.arange(0, 1, 0.5)
+workers = 100  # As there are a 100 omegas in the range
+omega_range = np.arange(0, 1, 0.01)
 
 
 def wrapper_func(omega):
