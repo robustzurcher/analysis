@@ -1,10 +1,8 @@
-
 import numpy as np
 from worst_case_probs import calc_fixp_worst
 from ruspy.estimation.estimation_cost_parameters import (
     cost_func,
     lin_cost,
-create_transition_matrix
 )
 import multiprocessing as mp
 import pickle
@@ -18,8 +16,6 @@ num_states = 20
 p_ml = np.loadtxt("resources/rust_trans_probs")
 params = np.loadtxt("resources/rust_cost_params")
 costs = cost_func(num_states, lin_cost, params)
-
-trans_mat = create_transition_matrix()
 
 
 def wrapper_func(omega):
