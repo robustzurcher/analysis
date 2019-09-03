@@ -5,6 +5,7 @@ import multiprocessing as mp
 import pickle
 from scipy.stats import chi2
 import os
+import glob
 
 workers = 30
 omega_range = np.linspace(0, 1, 26)
@@ -20,8 +21,10 @@ def wrapper_func(omega):
     costs = cost_func(num_states, lin_cost, params)
     rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (4292 / 78))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold=1e-7)
-    with open("results/intermediate_" + str(omega)[:4] + ".pkl", "wb") as pkl_inter:
-        pickle.dump(result, pkl_inter)
+    pickle.dump(
+        result,
+        open("results/intermediate_{}.pkl".format(np.around(omega, decimals=2)), "wb"),
+    )
     return result
 
 
@@ -29,8 +32,6 @@ if __name__ == "__main__":
     os.makedirs("results", exist_ok=True)
     pool = mp.Pool(workers)
     final_result = pool.map(wrapper_func, omega_range)
-    with open("results/final_result.pkl", "wb") as pkl_out:
-        pickle.dump(final_result, pkl_out)
-    for file in os.listdir("results"):
-        if file.startswith("intermediate"):
-            os.remove("results/" + file)
+    pickle.dump(final_result, open("results/final_result.pkl", "wb"))
+    for file in glob.glob("results/intermediate*"):
+        os.remove(file)
