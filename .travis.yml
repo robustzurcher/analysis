@@ -15,4 +15,4 @@ install:
 script:
   - source .envrc
   - py.test 
-  - execute-notebooks
+  - travis_wait 30  execute-notebooks
