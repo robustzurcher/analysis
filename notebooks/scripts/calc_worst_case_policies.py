@@ -16,9 +16,9 @@ import numpy as np
 from worst_case_probs import calc_fixp_worst
 
 
-NUM_WORKERS = 30
-NUM_POINTS = 25
-NUM_STATES = 400
+NUM_WORKERS = 3
+NUM_POINTS = 3
+NUM_STATES = 20
 BETA = 0.9999
 
 # For debugging purposes, just set to a very large number. Then the there will only
@@ -46,12 +46,12 @@ if __name__ == "__main__":
         shutil.rmtree('results')
     os.mkdir('results')
 
-    P_ML = np.loadtxt("resources/rust_trans_probs.txt")
-    params = np.loadtxt("resources/rust_cost_params.txt")
+    p_rust = np.loadtxt("resources/rust_trans_probs.txt")
+    params_rust = np.loadtxt("resources/rust_cost_params.txt")
 
-    COSTS = cost_func(NUM_STATES, lin_cost, params)
+    costs_rust = cost_func(NUM_STATES, lin_cost, params_rust)
 
-    p_wrapper_func = partial(wrapper_func, P_ML, COSTS, BETA, NUM_STATES, THRESHOLD)
+    p_wrapper_func = partial(wrapper_func, p_rust, costs_rust, BETA, NUM_STATES, THRESHOLD)
     final_result = mp.Pool(NUM_WORKERS).map(p_wrapper_func, grid_omega)
 
     pkl.dump(final_result, open("results/final_result.pkl", "wb"))
