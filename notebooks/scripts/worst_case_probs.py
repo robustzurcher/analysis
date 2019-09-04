@@ -22,7 +22,7 @@ def create_worst_trans_mat(trans_mat, v, rho):
 
 @numba.jit(nopython=True)
 def calc_fixp_worst(
-    num_states, p_ml, costs, beta, rho, threshold=1e-8, max_it=100000000
+    num_states, p_ml, costs, beta, rho, threshold=1e-8, max_it=1000000
 ):
     ev = np.zeros(num_states)
     worst_trans_mat = trans_mat = create_transition_matrix(num_states, p_ml)
@@ -43,5 +43,6 @@ def calc_fixp_worst(
         ev_new = np.dot(worst_trans_mat, log_sum)
         max_it -= 1
     if max_it == 0:
-        print("The value function didn't converge.")
-    return ev_new, worst_trans_mat
+        print("The value function didn't converge and with absolute difference:")
+        print(np.max(np.abs(ev_new - ev)))
+    return ev_new, worst_trans_mat, max_it
