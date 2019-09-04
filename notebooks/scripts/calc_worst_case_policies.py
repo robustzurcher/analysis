@@ -16,9 +16,9 @@ import numpy as np
 from worst_case_probs import calc_fixp_worst
 
 
-NUM_WORKERS = 2
-NUM_POINTS = 3
-NUM_STATES = 20
+NUM_WORKERS = 30
+NUM_POINTS = 25
+NUM_STATES = 400
 BETA = 0.9999
 
 # For debugging purposes, just set to a very large number. Then the there will only

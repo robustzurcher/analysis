@@ -27,6 +27,7 @@ def calc_fixp_worst(
     ev = np.zeros(num_states)
     worst_trans_mat = trans_mat = create_transition_matrix(num_states, p_ml)
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
+    converge_crit = 0.
     while (np.max(np.abs(ev_new - ev)) > threshold) & (max_it != 0):
         ev = ev_new
         maint_value = beta * ev - costs[:, 0]
@@ -42,7 +43,8 @@ def calc_fixp_worst(
         worst_trans_mat = create_worst_trans_mat(trans_mat, log_sum, rho)
         ev_new = np.dot(worst_trans_mat, log_sum)
         max_it -= 1
+        converge_crit = np.max(np.abs(ev_new - ev))
     if max_it == 0:
         print("The value function didn't converge and with absolute difference:")
-        print(np.max(np.abs(ev_new - ev)))
-    return ev_new, worst_trans_mat, max_it
+        print(converge_crit)
+    return ev_new, worst_trans_mat, max_it, converge_crit
