@@ -50,4 +50,5 @@ def calc_fixp_worst(
 
         if num_eval > max_it:
             success = False
+            break
     return ev_new, worst_trans_mat, success, converge_crit
