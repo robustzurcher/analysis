@@ -44,8 +44,10 @@ def calc_fixp_worst(
         )
         worst_trans_mat = create_worst_trans_mat(trans_mat, log_sum, rho)
         ev_new = np.dot(worst_trans_mat, log_sum)
+
         converge_crit = np.max(np.abs(ev_new - ev))
         num_eval += 1
+
         if num_eval > max_it:
             success = False
     return ev_new, worst_trans_mat, success, converge_crit
