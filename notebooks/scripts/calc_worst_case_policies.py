@@ -57,6 +57,7 @@ if __name__ == "__main__":
     rslt = dict()
     for i, fname in enumerate(sorted(glob.glob('results/intermediate_*.pkl'))):
         rslt[grid_omega[i]] = pkl.load(open(fname, 'rb'))
-
+    
+    # TODO: Create a zip file to ease file transfer.
     pkl.dump(rslt, open("results.pkl", "wb"))
     shutil.rmtree('results')
