@@ -1,58 +1,71 @@
 #!/usr/bin/env python
 """ This module contains calculates the worst case policies for a range of the
 confidence parameter"""
-from functools import partial
-import multiprocessing as mp
-import pickle as pkl
-import shutil
-import glob
 import os
 
-from ruspy.estimation.estimation_cost_parameters import cost_func
-from ruspy.estimation.estimation_cost_parameters import lin_cost
-from scipy.stats import chi2
-import numpy as np
+# In this script we only have explicit use of MPI as our level of parallelism. This needs to be
+# done right at the beginning of the script.
+update = {'NUMBA_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1',
+          'NUMEXPR_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
+os.environ.update(update)
 
-from worst_case_probs import calc_fixp_worst
+import shutil
+import json
+import sys
+
+from mpi4py import MPI
+import numpy as np
 
 
 NUM_WORKERS = 2
-NUM_POINTS = 100
-NUM_STATES = 400
-BETA = 0.9999
-
-# For debugging purposes, just set to a very large number. Then the there will only
-# be a single fix point iteration.
-THRESHOLD = 1e-7
-
-
-def wrapper_func(p_ml, costs, beta, num_states, threshold, omega):
-
-    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (4292 / 78))
-
-    result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
-
-    fname = "results/intermediate_{}.pkl".format('{:3.5f}'.format(omega))
-    pkl.dump(result, open(fname, "wb"))
-
-    return result
-
 
 if __name__ == "__main__":
 
-    grid_omega = np.linspace(0, 0.99, NUM_POINTS)
+    spec = json.load(open('specification.json', 'rb'))
 
     if os.path.exists("results"):
         shutil.rmtree('results')
     os.mkdir('results')
 
-    p_rust = np.loadtxt("resources/rust_trans_probs.txt")
-    params_rust = np.loadtxt("resources/rust_cost_params.txt")
+    info = MPI.Info.Create()
+    info.update({"wdir": os.getcwd()})
 
-    costs_rust = cost_func(NUM_STATES, lin_cost, params_rust)
+    file_ = os.path.dirname(os.path.realpath(__file__)) + '/worker.py'
+    comm = MPI.COMM_SELF.Spawn(sys.executable, args=[file_], maxprocs=NUM_WORKERS, info=info)
 
-    p_wrapper_func = partial(wrapper_func, p_rust, costs_rust, BETA, NUM_STATES, THRESHOLD)
-    final_result = mp.Pool(NUM_WORKERS).map(p_wrapper_func, grid_omega)
+    # We wait for everybody to be ready and then clean up the criterion function.
+    check_in = np.zeros(1, dtype='float')
+    for rank in range(NUM_WORKERS):
+        comm.Recv([check_in, MPI.DOUBLE], source=rank, tag=MPI.ANY_TAG)
 
-    pkl.dump(final_result, open("results/final_result.pkl", "wb"))
-    [os.remove(file) for file in glob.glob("results/intermediate*")]
+    grid_omega = np.linspace(0.00, 0.99, num=spec['num_points'])
+
+    for rank, omega in enumerate(grid_omega):
+        print(omega)
+        comm.Send([np.array(omega), MPI.DOUBLE], dest=rank)
+
+    status = MPI.Status()
+
+    for rank in range(NUM_WORKERS):
+
+        comm.Recv([check_in, MPI.DOUBLE], source=rank, tag=MPI.ANY_TAG, status=status)
+        comm.Send([np.array(-1), MPI.INT], dest=status.Get_source())
+        print("received")
+
+    #
+    #comm.Disconnect()
+
+    print("all checked in")
+    # grid_omega = [0.01, 0.02]
+    #
+
+    #
+    #
+    #
+    # costs_rust = cost_func(NUM_STATES, lin_cost, params_rust)
+    #
+    # p_wrapper_func = partial(wrapper_func, p_rust, costs_rust, BETA, NUM_STATES, THRESHOLD)
+    # final_result = mp.Pool(NUM_WORKERS).map(p_wrapper_func, grid_omega)
+    #
+    # pkl.dump(final_result, open("results/final_result.pkl", "wb"))
+    # [os.remove(file) for file in glob.glob("results/intermediate*")]
