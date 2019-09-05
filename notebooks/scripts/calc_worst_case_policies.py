@@ -9,15 +9,15 @@ update = {'NUMBA_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREAD
           'NUMEXPR_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
 os.environ.update(update)
 
+import pickle as pkl
 import shutil
 import json
+import glob
 import sys
 
 from mpi4py import MPI
 import numpy as np
 
-
-NUM_WORKERS = 2
 
 if __name__ == "__main__":
 
@@ -27,44 +27,36 @@ if __name__ == "__main__":
         shutil.rmtree('results')
     os.mkdir('results')
 
-    info = MPI.Info.Create()
-    info.update({"wdir": os.getcwd()})
+    status = MPI.Status()
 
     file_ = os.path.dirname(os.path.realpath(__file__)) + '/worker.py'
-    comm = MPI.COMM_SELF.Spawn(sys.executable, args=[file_], maxprocs=NUM_WORKERS, info=info)
+    comm = MPI.COMM_SELF.Spawn(sys.executable, args=[file_], maxprocs=spec['num_workers'])
 
     # We wait for everybody to be ready and then clean up the criterion function.
-    check_in = np.zeros(1, dtype='float')
+    check_in = np.zeros(1, dtype='float64')
+
+    cmd = dict()
+    cmd['terminate'] = np.array(0, dtype='int64')
+    cmd['execute'] = np.array(1, dtype='int64')
 
     grid_omega = np.linspace(0.00, 0.99, num=spec['num_points'])
 
-    status = MPI.Status()
-
     for omega in grid_omega:
 
-
         comm.Recv([check_in, MPI.DOUBLE], status=status)
-        comm.Send([np.array(omega), MPI.INT], dest=status.Get_source())
 
-    for rank in range(NUM_WORKERS):
+        comm.Send([cmd['execute'], MPI.INT], dest=status.Get_source())
+        comm.Send([omega, MPI.INT], dest=status.Get_source())
 
-        comm.Send([np.array(-1), MPI.INT], dest=status.Get_source())
-        print("received")
+    for rank in range(spec['num_workers']):
+        comm.Send([cmd['terminate'], MPI.INT], dest=rank)
 
-    #
-    #comm.Disconnect()
+    comm.Disconnect()
 
-    print("all checked in")
-    # grid_omega = [0.01, 0.02]
-    #
+    # Now we aggregate all the intermediate results.
+    rslt = dict()
+    for i, fname in enumerate(sorted(glob.glob('results/intermediate_*.pkl'))):
+        rslt[grid_omega[i]] = pkl.load(open(fname, 'rb'))
 
-    #
-    #
-    #
-    # costs_rust = cost_func(NUM_STATES, lin_cost, params_rust)
-    #
-    # p_wrapper_func = partial(wrapper_func, p_rust, costs_rust, BETA, NUM_STATES, THRESHOLD)
-    # final_result = mp.Pool(NUM_WORKERS).map(p_wrapper_func, grid_omega)
-    #
-    # pkl.dump(final_result, open("results/final_result.pkl", "wb"))
-    # [os.remove(file) for file in glob.glob("results/intermediate*")]
+    pkl.dump(rslt, open("results.pkl", "wb"))
+    shutil.rmtree('results')
