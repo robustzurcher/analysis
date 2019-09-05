@@ -35,20 +35,19 @@ if __name__ == "__main__":
 
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype='float')
-    for rank in range(NUM_WORKERS):
-        comm.Recv([check_in, MPI.DOUBLE], source=rank, tag=MPI.ANY_TAG)
 
     grid_omega = np.linspace(0.00, 0.99, num=spec['num_points'])
 
-    for rank, omega in enumerate(grid_omega):
-        print(omega)
-        comm.Send([np.array(omega), MPI.DOUBLE], dest=rank)
-
     status = MPI.Status()
+
+    for omega in grid_omega:
+
+
+        comm.Recv([check_in, MPI.DOUBLE], status=status)
+        comm.Send([np.array(omega), MPI.INT], dest=status.Get_source())
 
     for rank in range(NUM_WORKERS):
 
-        comm.Recv([check_in, MPI.DOUBLE], source=rank, tag=MPI.ANY_TAG, status=status)
         comm.Send([np.array(-1), MPI.INT], dest=status.Get_source())
         print("received")
 

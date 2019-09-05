@@ -40,25 +40,43 @@ def wrapper_func(p_ml, costs, beta, num_states, threshold, omega):
 comm = MPI.Comm.Get_parent()
 num_slaves, rank = comm.Get_size(), comm.Get_rank()
 
-# We want to let the master know we are ready to go.
+# We want to let the master know we are ready to go
+
 comm.Send([np.array(1), MPI.DOUBLE], dest=0, tag=rank)
 
-omega = np.zeros(1, dtype='float')
-comm.Recv([omega, MPI.DOUBLE], source=0)
+while True:
 
-print(num_slaves, rank, omega)
+    cmd = np.array(0, dtype='int64')
+    comm.Recv([cmd, MPI.INT], source=0)
 
-costs_rust = cost_func(spec['num_states'], lin_cost, params_rust)
+    if cmd == -1:
+        comm.Disconnect()
+        break
 
-args = (p_rust, costs_rust, spec['beta'], spec['num_states'], spec['threshold'], omega[0])
-wrapper_func(*args)
-comm.Send([np.array(1), MPI.DOUBLE], dest=0, tag=rank)
+    if cmd == 1:
+        omega = np.zeros(1, dtype='float')
+        comm.Recv([omega, MPI.DOUBLE], source=0)
 
-cmd = np.array(0, dtype='int64')
-comm.Recv([cmd, MPI.INT], source=0)
-
-print(cmd)
-if cmd == -1:
-    comm.Disconnect()
-else:
-    raise AssertionError
+        print(omega)
+    #
+    # comm.Send([np.array(1), MPI.DOUBLE], dest=0, tag=rank)
+    #
+    # omega = np.zeros(1, dtype='float')
+    # comm.Recv([omega, MPI.DOUBLE], source=0)
+    #
+    # print(num_slaves, rank, omega)
+    #
+    # costs_rust = cost_func(spec['num_states'], lin_cost, params_rust)
+    #
+    # args = (p_rust, costs_rust, spec['beta'], spec['num_states'], spec['threshold'], omega[0])
+    # wrapper_func(*args)
+    # comm.Send([np.array(1), MPI.DOUBLE], dest=0, tag=rank)
+    #
+    # cmd = np.array(0, dtype='int64')
+    # comm.Recv([cmd, MPI.INT], source=0)
+    #
+    # print(cmd)
+    # if cmd == -1:
+    #     comm.Disconnect()
+    # else:
+    #     raise AssertionError
