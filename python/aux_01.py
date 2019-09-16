@@ -1,4 +1,6 @@
 import numpy as np
+from zipfile import ZipFile
+from pathlib import Path
 
 
 def create_sections(mean_disc, om_range):
@@ -21,3 +23,17 @@ def create_sections(mean_disc, om_range):
             omega_sections += [np.array([low] + om_range[where].tolist() + [high])]
             state_sections += [np.array([i] + mean_disc[where].tolist() + [i])]
     return omega_sections, state_sections
+
+
+def get_file(fname):
+    if not isinstance(fname, Path):
+        fname = Path(fname)
+
+    fname_zip = Path(fname).with_suffix('.zip')
+    fname_pkl = Path(fname).with_suffix('.pkl')
+
+    if not os.path.exists(fname_pkl):
+        with ZipFile(fname_zip, 'r') as zipObj:
+            zipObj.extractall(Path(fname).parent)
+
+    return pkl.load(open(fname_pkl, 'rb'))
