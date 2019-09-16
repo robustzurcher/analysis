@@ -7,4 +7,6 @@ __pycache__/
 *.pbs
 *.png
 results_1000_10_10.pkl
+results_1000.pkl
+
 

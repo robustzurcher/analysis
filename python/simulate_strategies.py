@@ -4,7 +4,7 @@ import pickle as pkl
 from ruspy.simulation.simulation import simulate
 from functools import partial
 import numpy as np
-from aux_01 import get_file
+from aux_03 import get_file
 
 
 NUM_WORKERS = 2
