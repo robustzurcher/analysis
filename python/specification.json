@@ -1,6 +1,6 @@
 {
   "num_points": 100,
-  "num_states": 400,
+  "num_states": 350,
   "beta": 0.9999,
   "threshold": 1e-5,
   "num_workers": 20
