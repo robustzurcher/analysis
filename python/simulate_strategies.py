@@ -18,14 +18,14 @@ def wrapper_func_variying_ev(init, trans_mat, ev_fname):
 if __name__ == "__main__":
     worst_evs_fname = []
     worst_trans_mats = []
-    for file in sorted(glob.glob("../cg_results/*.pkl"))[::5]:
+    for file in sorted(glob.glob("../cg_results/*.pkl")):
         worst_evs_fname += [[pkl.load(open(file, "rb"))[0], file[14:]]]
         worst_trans_mats += [pkl.load(open(file, "rb"))[1]]
 
     # Beta is set almost to one, as the agents objective is to maximize average cost.
     beta = 0.9999
     # 200 buses should be enough to gurantee convergence.
-    num_buses = 150
+    num_buses = 200
     # Set the number of simulated periods to 80000. The first plot shows the
     # convergence at this point.
     num_periods = 70000

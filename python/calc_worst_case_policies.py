@@ -58,5 +58,5 @@ if __name__ == "__main__":
     for i, fname in enumerate(sorted(glob.glob('results/intermediate_*.pkl'))):
         rslt[grid_omega[i]] = pkl.load(open(fname, 'rb'))
 
-    pkl.dump(rslt, open("results.pkl", "wb"))
+    pkl.dump(rslt, open("results_1000.pkl", "wb"))
     shutil.rmtree('results')
