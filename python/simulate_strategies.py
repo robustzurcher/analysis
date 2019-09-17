@@ -38,12 +38,16 @@ if __name__ == "__main__":
         task = 0.0, omega
         grid_task.append(task)
 
-        # Robust strategy with 0.54 on varying omega
-        task = 0.54, omega
+        # Robust strategy with 0.5 on varying omega
+        task = 0.5, omega
         grid_task.append(task)
 
-        # Robust strategy with 0.99 with varying omega
-        task = 0.99, omega
+        # Robust strategy with 0.95 with varying omega
+        task = 0.95, omega
+        grid_task.append(task)
+
+        # Optimal strategy with varying omega
+        task = omega, omega
         grid_task.append(task)
 
     # We wait for everybody to be ready and then clean up the criterion function.
