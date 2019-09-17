@@ -18,7 +18,7 @@ if __name__ == "__main__":
     grid_omega = get_file("../pre_processed_data/results_1000_10_10.pkl").keys()
     spec = json.load(open("simulate_strategies_specification.json", "rb"))
 
-    os.makedirs("dfs", exist_ok=True)
+    os.makedirs("sim_results", exist_ok=True)
 
     status = MPI.Status()
 

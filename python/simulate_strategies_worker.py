@@ -14,6 +14,7 @@ from mpi4py import MPI
 import numpy as np
 
 from ruspy.simulation.simulation import simulate
+from ruspy.simulation.value_zero import discount_utility
 from aux_03 import get_file
 
 comm = MPI.Comm.Get_parent()
@@ -35,9 +36,11 @@ while True:
     if cmd == 1:
         fixp_key, trans_key = comm.recv(source=0)
 
-        fname = f"dfs/df_ev_{fixp_key}_mat_{trans_key}.pkl"
+        fname = f"sim_results/result_ev_{fixp_key}_mat_{trans_key}.pkl"
         fixp = dict_polcies[fixp_key][0]
         trans = dict_polcies[trans_key][1]
 
         df = simulate(spec, fixp, trans)
-        pkl.dump(df, open(fname, "wb"))
+        repl_state = df[df["decision"] == 1]["state"]
+        performance = discount_utility(df, 1000, spec["beta"])
+        pkl.dump((repl_state, performance), open(fname, "wb"))
