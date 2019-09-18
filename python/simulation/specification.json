@@ -1,7 +1,7 @@
 {
-  "num_workers": 2,
+  "num_workers": 100,
   "beta": 0.9999,
-  "buses": 10,
-  "periods": 10,
+  "buses": 2000,
+  "periods": 70000,
   "params": [10, 10]
 }
