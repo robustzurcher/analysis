@@ -11,4 +11,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+from figures_application import *
+
 DIR_FIGURES = os.environ['DIR_FIGURES']

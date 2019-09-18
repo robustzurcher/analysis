@@ -5,7 +5,7 @@ from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
 
 @numba.jit(nopython=True)
-def create_worst_trans_mat(trans_mat, v, rho):
+def create_worst_trans_mat(trans_mat, v, rho_state):
     num_states = trans_mat.shape[0]
     worst_trans_mat = np.zeros(shape=(num_states, num_states), dtype=np.float64)
     for s in range(num_states):
@@ -15,14 +15,14 @@ def create_worst_trans_mat(trans_mat, v, rho):
         p = trans_mat[s, p_min : p_max + 1]
         v_intern = v[p_min : p_max + 1]
         worst_trans_mat[s, p_min : p_max + 1] = get_worst_case_probs(
-            v_intern, p, rho, is_cost=False
+            v_intern, p, rho_state[s], is_cost=False
         )
     return worst_trans_mat
 
 
 @numba.jit(nopython=True)
 def calc_fixp_worst(
-    num_states, p_ml, costs, beta, rho, threshold=1e-8, max_it=1000000
+    num_states, p_ml, costs, beta, rho_state, threshold=1e-8, max_it=1000000
 ):
     ev = np.zeros(num_states)
     worst_trans_mat = trans_mat = create_transition_matrix(num_states, p_ml)
@@ -42,7 +42,7 @@ def calc_fixp_worst(
         log_sum = ev_min + np.log(
             np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
         )
-        worst_trans_mat = create_worst_trans_mat(trans_mat, log_sum, rho)
+        worst_trans_mat = create_worst_trans_mat(trans_mat, log_sum, rho_state)
         ev_new = np.dot(worst_trans_mat, log_sum)
 
         converge_crit = np.max(np.abs(ev_new - ev))

@@ -1,0 +1,7 @@
+{
+  "num_workers": 2,
+  "beta": 0.9999,
+  "buses": 10,
+  "periods": 10,
+  "params": [10, 10]
+}
