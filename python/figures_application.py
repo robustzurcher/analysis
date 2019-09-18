@@ -111,12 +111,24 @@ def _create_repl_prob_plot(file, keys):
 #                       Threshold plot
 ################################################################################
 
+threshold_folder = "../pre_processed_data/df_threshold/"
+num_keys = 12
+
+
+def df_thresholds():
+    means_discrete = _threshold_data(threshold_folder)
+    omega_range = np.linspace(0, 0.99, num_keys)
+    return pd.DataFrame({'omega': omega_range, 'threshold': means_discrete})
+
 
 def get_replacement_thresholds():
 
-    num_keys = 12
+    means_discrete = _threshold_data(threshold_folder)
 
-    omega_range, means_ml, omega_sections, state_sections = _threshold_plot(num_keys)
+    omega_range = np.linspace(0, 0.99, num_keys)
+    means_ml = np.full(len(omega_range), np.round(means_discrete[0])).astype(int)
+
+    omega_sections, state_sections = _create_sections(means_discrete, omega_range)
 
     y_0 = state_sections[0][0] - 2
     y_1 = state_sections[-1][-1] + 2
@@ -140,6 +152,22 @@ def get_replacement_thresholds():
     fig.savefig(f"{DIR_FIGURES}/fig-application-replacement-thresholds")
 
 
+def _threshold_data(threshold_folder):
+    file_list = sorted(glob.glob(threshold_folder + "df*"))
+    if len(file_list) != 0:
+        means_robust_strat = np.array([])
+        for file in file_list:
+            df = pkl.load(open(file, "rb"))
+            means_robust_strat = np.append(
+                means_robust_strat, np.mean(df[df["decision"] == 1]["state"])
+            )
+    else:
+        means_robust_strat = pkl.load(open(threshold_folder + "means_robust.pkl", "rb"))
+
+    means_discrete = np.around(means_robust_strat).astype(int)
+    return means_discrete
+
+
 def _create_sections(mean_disc, om_range):
     omega_sections = []
     state_sections = []
@@ -160,26 +188,6 @@ def _create_sections(mean_disc, om_range):
             omega_sections += [np.array([low] + om_range[where].tolist() + [high])]
             state_sections += [np.array([i] + mean_disc[where].tolist() + [i])]
     return omega_sections, state_sections
-
-
-def _threshold_plot(num_keys):
-    threshold_folder = "../pre_processed_data/df_threshold/"
-    file_list = sorted(glob.glob(threshold_folder + "df*"))
-    if len(file_list) != 0:
-        means_robust_strat = np.array([])
-        for file in file_list:
-            df = pkl.load(open(file, "rb"))
-            means_robust_strat = np.append(
-                means_robust_strat, np.mean(df[df["decision"] == 1]["state"])
-            )
-    else:
-        means_robust_strat = pkl.load(open(threshold_folder + "means_robust.pkl", "rb"))
-
-    means_discrete = np.around(means_robust_strat).astype(int)
-    omega_range = np.linspace(0, 0.99, num_keys)
-    means_ml = np.full(len(omega_range), np.round(means_robust_strat[0])).astype(int)
-    omega_sections, state_sections = _create_sections(means_discrete, omega_range)
-    return omega_range, means_ml, omega_sections, state_sections
 
 
 ################################################################################
@@ -244,7 +252,7 @@ def get_performance():
 
     num_keys = 12
 
-    omega_range, means_ml, omega_sections, state_sections = _threshold_plot(num_keys)
+    omega_range = np.linspace(0, 0.99, num_keys)
 
     nominal_subfolder = "nominal_strategy/"
     rob_subfolder = "54_strategy/"
