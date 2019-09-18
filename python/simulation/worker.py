@@ -15,12 +15,12 @@ import numpy as np
 
 from ruspy.simulation.simulation import simulate
 from ruspy.simulation.value_zero import discount_utility
-from aux_03 import get_file
+from auxiliary import get_file
 
 comm = MPI.Comm.Get_parent()
 
-dict_polcies = get_file("../pre_processed_data/results_1000_10_10.pkl")
-spec = json.load(open("simulate_strategies_specification.json", "rb"))
+dict_polcies = get_file("../../pre_processed_data/results_1000_10_10.pkl")
+spec = json.load(open("specification.json", "rb"))
 
 while True:
 

@@ -11,18 +11,18 @@ os.environ.update(update)
 from mpi4py import MPI
 import numpy as np
 
-from aux_03 import get_file
+from auxiliary import get_file
 
 if __name__ == "__main__":
 
-    grid_omega = get_file("../pre_processed_data/results_1000_10_10.pkl").keys()
-    spec = json.load(open("simulate_strategies_specification.json", "rb"))
+    grid_omega = get_file("../../pre_processed_data/results_1000_10_10.pkl").keys()
+    spec = json.load(open("specification.json", "rb"))
 
     os.makedirs("sim_results", exist_ok=True)
 
     status = MPI.Status()
 
-    file_ = os.path.dirname(os.path.realpath(__file__)) + '/simulate_strategies_worker.py'
+    file_ = os.path.dirname(os.path.realpath(__file__)) + '/worker.py'
     comm = MPI.COMM_SELF.Spawn(sys.executable, args=[file_], maxprocs=spec['num_workers'])
 
     # We now create a list of tasks.

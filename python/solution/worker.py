@@ -18,7 +18,7 @@ from mpi4py import MPI
 from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 
-from worst_case_probs import calc_fixp_worst
+from worst_case_policies import calc_fixp_worst
 
 
 def wrapper_func(p_ml, obs_per_state, costs, beta, num_states, threshold, omega):
@@ -33,9 +33,9 @@ def wrapper_func(p_ml, obs_per_state, costs, beta, num_states, threshold, omega)
     return result
 
 
-p_rust = np.loadtxt("../pre_processed_data/parameters/p_1000_4.txt")
+p_rust = np.loadtxt("../../pre_processed_data/parameters/p_1000_4.txt")
 params_rust = np.array([10, 10])
-obs_state = np.loadtxt("../pre_processed_data/parameters/obs_state_1000.txt")
+obs_state = np.loadtxt("../../pre_processed_data/parameters/obs_state_1000.txt")
 spec = json.load(open('specification.json', 'rb'))
 
 comm = MPI.Comm.Get_parent()

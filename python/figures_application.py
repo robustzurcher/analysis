@@ -1,12 +1,10 @@
-from zipfile import ZipFile
-from pathlib import Path
 import pickle as pkl
 import glob
-import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+from auxiliary import get_file
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func, choice_prob
 from ruspy.simulation.value_zero import discount_utility, calc_ev_0
 from config import DIR_FIGURES
@@ -20,22 +18,8 @@ GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 
 
-def _get_file(fname):
-    if not isinstance(fname, Path):
-        fname = Path(fname)
-
-    fname_zip = Path(fname).with_suffix('.zip')
-    fname_pkl = Path(fname).with_suffix('.pkl')
-
-    if not os.path.exists(fname_pkl):
-        with ZipFile(fname_zip, 'r') as zipObj:
-            zipObj.extractall(Path(fname).parent)
-
-    return pkl.load(open(fname_pkl, 'rb'))
-
-
 def _create_repl_prob_plot(file, keys):
-    dict_policies = _get_file(file)
+    dict_policies = get_file(file)
     ev_ml = dict_policies[0.0][0]
     num_states = ev_ml.shape[0]
     costs = cost_func(num_states, lin_cost, PARAMS)
@@ -88,7 +72,7 @@ def _threshold_plot(num_keys):
 
 
 def _convergence_plot(df_file, df_alt_file, fixp_point_dict):
-    dict_policies = _get_file(fixp_point_dict)
+    dict_policies = get_file(fixp_point_dict)
     ev_ml = dict_policies[0.0][0]
     ev_worst = dict_policies[0.99][0]
     try:
@@ -146,7 +130,7 @@ def get_probability_shift():
 
     x = np.arange(13)
 
-    dict_policies = _get_file("../pre_processed_data/results_1000_10_10.pkl")
+    dict_policies = get_file("../pre_processed_data/results_1000_10_10.pkl")
     width = 0.25
 
     fig, ax = plt.subplots(1, 1)
