@@ -17,7 +17,7 @@ NUM_BUSES = 200
 NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
-FIXP_DICT = "../pre_processed_data/results_1000_10_10.pkl"
+FIXP_DICT = "../pre_processed_data/fixp_results_1000_10_10.pkl"
 
 ################################################################################
 #                           Probabilities shift
