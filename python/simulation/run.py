@@ -1,8 +1,6 @@
 import json
 import sys
 import os
-import glob
-import pickle as pkl
 import shutil
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
