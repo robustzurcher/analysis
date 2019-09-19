@@ -29,19 +29,21 @@ def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
     os.makedirs("../pre_processed_data/sim_results")
-    ZipFile('../pre_processed_data/simulation_results.zip').extractall(SIM_RESULTS)
+    ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
 
     if os.path.exists(VAL_RESULTS_4292):
         shutil.rmtree(VAL_RESULTS_4292)
     os.makedirs("../pre_processed_data/validation_results_4292")
-    ZipFile('../pre_processed_data/validation_results_4292.zip').extractall(
-        VAL_RESULTS_4292)
+    ZipFile("../pre_processed_data/validation_results_4292.zip").extractall(
+        VAL_RESULTS_4292
+    )
 
     if os.path.exists(VAL_RESULTS_2223):
         shutil.rmtree(VAL_RESULTS_2223)
     os.makedirs("../pre_processed_data/validation_results_2223")
-    ZipFile('../pre_processed_data/validation_results_2223.zip').extractall(
-        VAL_RESULTS_2223)
+    ZipFile("../pre_processed_data/validation_results_2223.zip").extractall(
+        VAL_RESULTS_2223
+    )
 
 
 ################################################################################
@@ -142,7 +144,7 @@ num_keys = 100
 def df_thresholds():
     means_discrete = _threshold_data()
     omega_range = np.linspace(0, 0.99, num_keys)
-    return pd.DataFrame({'omega': omega_range, 'threshold': means_discrete})
+    return pd.DataFrame({"omega": omega_range, "threshold": means_discrete})
 
 
 def get_replacement_thresholds():
@@ -182,8 +184,7 @@ def _threshold_data():
         means_robust_strat = np.array([])
         for file in file_list:
             mean = pkl.load(open(file, "rb"))[0]
-            means_robust_strat = np.append(
-                means_robust_strat, mean)
+            means_robust_strat = np.append(means_robust_strat, mean)
     else:
         raise AssertionError("Need to unpack simulation files")
 
@@ -248,7 +249,6 @@ def get_performance_decision_rules():
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance-decision-rules")
 
 
-
 ################################################################################
 #                             Performance plot
 ################################################################################
@@ -290,7 +290,7 @@ def _performance_plot(omega_range):
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.00_mat_*.pkl"))
     nominal_costs = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
-        nominal_costs[j] =  pkl.load(open(file, "rb"))[1][-1]
+        nominal_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.95_mat_*.pkl"))
     robust_costs = np.zeros(len(file_list))
@@ -299,9 +299,62 @@ def _performance_plot(omega_range):
 
     opt_costs = np.zeros(len(omega_range))
     for j, omega in enumerate(omega_range):
-        file = SIM_RESULTS + "result_ev_{}_mat_{}.pkl".format("{:.2f}".format(
-            omega), "{:.2f}".format(omega))
+        file = SIM_RESULTS + "result_ev_{}_mat_{}.pkl".format(
+            "{:.2f}".format(omega), "{:.2f}".format(omega)
+        )
         opt_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
-
     return nominal_costs, opt_costs, robust_costs
+
+
+################################################################################
+#                             Out of sample plot
+################################################################################
+
+
+def get_out_of_sample():
+
+    num_keys = 100
+
+    omega_range = np.linspace(0, 0.99, num_keys)
+
+    robust_4292, robust_2223 = _out_of_sample()
+
+    fig, ax = plt.subplots(1, 1)
+
+    ax.plot(
+        omega_range,
+        robust_4292,
+        label="Value at time 0 of full training sample$",
+    )
+
+    ax.plot(
+        omega_range,
+        robust_2223,
+        label="Value at time 0 of half training sample$",
+    )
+
+    formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+    ax.get_yaxis().set_major_formatter(formatter)
+
+    # ax.set_ylim([robust_2223[-1], robust_2223[0]])
+    ax.set_ylabel(r"Performance")
+    ax.set_xlabel(r"$\omega$")
+
+    plt.legend()
+    fig.savefig(f"{DIR_FIGURES}/fig-application-out-of-sample")
+
+
+def _out_of_sample():
+
+    file_list = sorted(glob.glob(VAL_RESULTS_4292 + "*.pkl"))
+    robust_4292 = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        robust_4292[j] = pkl.load(open(file, "rb"))[1][-1]
+
+    file_list = sorted(glob.glob(VAL_RESULTS_2223 + "*.pkl"))
+    robust_2223 = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        robust_2223[j] = pkl.load(open(file, "rb"))[1][-1]
+
+    return robust_4292, robust_2223
