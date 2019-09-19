@@ -17,7 +17,7 @@ NUM_BUSES = 200
 NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
-FIXP_DICT = "../pre_processed_data/fixp_results_1000_10_10.pkl"
+FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 
 ################################################################################
@@ -26,7 +26,7 @@ SIM_RESULTS = "../pre_processed_data/sim_results/"
 
 
 def df_probability_shift():
-    dict_policies = get_file(FIXP_DICT)
+    dict_policies = get_file(FIXP_DICT_4292)
     return pd.DataFrame(
         {
             0: dict_policies[0.0][1][0, :13],
@@ -40,7 +40,7 @@ def get_probability_shift():
 
     x = np.arange(13)
 
-    dict_policies = get_file(FIXP_DICT)
+    dict_policies = get_file(FIXP_DICT_4292)
     width = 0.25
 
     fig, ax = plt.subplots(1, 1)
@@ -67,11 +67,11 @@ def get_probability_shift():
 ################################################################################
 #                       Replacement Probabilities
 ################################################################################
-keys = [0.0, 0.54, 0.99]
+keys = [0.0, 0.5, 0.95]
 
 
 def df_replacement_probabilties():
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT, keys)
+    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
     return pd.DataFrame(
         {0.0: choice_ml[:, 1], keys[1]: choices[0][:, 1], keys[2]: choices[1][:, 1]}
     )
@@ -79,7 +79,7 @@ def df_replacement_probabilties():
 
 def get_replacement_probabilities():
 
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT, keys)
+    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
     states = range(choice_ml.shape[0])
 
     fig, ax = plt.subplots(1, 1)
@@ -154,7 +154,6 @@ def get_replacement_thresholds():
 
 def _threshold_data():
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_*_mat_0.00.pkl"))
-    print(file_list)
     if len(file_list) != 0:
         means_robust_strat = np.array([])
         for file in file_list:
@@ -196,13 +195,14 @@ def _create_sections(mean_disc, om_range):
 
 
 def get_performance_decision_rules():
-    df_file = "../pre_processed_data/df_trans_99_ev_0.0.pkl"
-    df_alt_file = "../pre_processed_data/evs_convergence.pkl"
-    fixp_point_dict = FIXP_DICT
+    dict_policies = get_file(FIXP_DICT_4292)
 
-    v_disc_ml, v_exp_ml, v_exp_worst, periods = _convergence_plot(
-        df_file, df_alt_file, fixp_point_dict
-    )
+    v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
+    v_exp_worst = np.full(NUM_POINTS, dict_policies[0.95][0][0])
+
+    v_disc_ml = pkl.load(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl")
+
+    periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
 
     fig, ax = plt.subplots(1, 1)
     ax.set_ylim([1.1 * v_disc_ml[-1], 0])
@@ -225,7 +225,7 @@ def get_performance_decision_rules():
 
 
 def _convergence_plot(df_file, df_alt_file, fixp_point_dict):
-    dict_policies = get_file(fixp_point_dict)
+    )
     ev_ml = dict_policies[0.0][0]
     ev_worst = dict_policies[0.99][0]
     try:
@@ -238,7 +238,7 @@ def _convergence_plot(df_file, df_alt_file, fixp_point_dict):
     except:
         v_exp_ml, v_exp_worst, v_disc_ml = pkl.load(open(df_alt_file, "rb"))
     # Create a numpy array of the periods for plotting
-    periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
+
 
     return v_disc_ml, v_exp_ml, v_exp_worst, periods
 
