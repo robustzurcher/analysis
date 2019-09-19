@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import shutil
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -15,7 +16,7 @@ from auxiliary import get_file
 
 if __name__ == "__main__":
 
-    grid_omega = get_file("../../pre_processed_data/results_1000_10_10.pkl").keys()
+    grid_omega = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl").keys()
     spec = json.load(open("specification.json", "rb"))
 
     os.makedirs("sim_results", exist_ok=True)
@@ -68,3 +69,7 @@ if __name__ == "__main__":
         comm.Send([cmd['terminate'], MPI.INT], dest=rank)
 
     comm.Disconnect()
+    # Now we aggregate all the results.
+
+    shutil.make_archive("simulation_results", 'zip', "sim_results")
+    shutil.rmtree('sim_results')
