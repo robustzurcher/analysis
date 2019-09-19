@@ -14,6 +14,7 @@ import shutil
 import json
 import glob
 import sys
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from mpi4py import MPI
 import numpy as np
@@ -54,9 +55,13 @@ if __name__ == "__main__":
     comm.Disconnect()
 
     # Now we aggregate all the intermediate results.
+    file = "fixp_results_1000_10_10."
     rslt = dict()
     for i, fname in enumerate(sorted(glob.glob('results/intermediate_*.pkl'))):
         rslt[grid_omega[i]] = pkl.load(open(fname, 'rb'))
 
-    pkl.dump(rslt, open("fixp_results_1000_10_10.pkl", "wb"))
+    pkl.dump(rslt, open(file + "pkl", "wb"))
     shutil.rmtree('results')
+    ZipFile(file + "zip", "w", ZIP_DEFLATED).write(file + "pkl")
+    os.remove(file + "pkl")
+
