@@ -1,13 +1,15 @@
 import pickle as pkl
 import glob
 import pandas as pd
+from zipfile import ZipFile
+import os
+import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from auxiliary import get_file
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func, choice_prob
-from ruspy.simulation.value_zero import discount_utility, calc_ev_0
 from config import DIR_FIGURES
 
 # Global variables
@@ -19,6 +21,28 @@ GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
+VAL_RESULTS_4292 = "../pre_processed_data/validation_results_4292/"
+VAL_RESULTS_2223 = "../pre_processed_data/validation_results_2223/"
+
+
+def extract_zips():
+    if os.path.exists(SIM_RESULTS):
+        shutil.rmtree(SIM_RESULTS)
+    os.makedirs("../pre_processed_data/sim_results")
+    ZipFile('../pre_processed_data/simulation_results.zip').extractall(SIM_RESULTS)
+
+    if os.path.exists(VAL_RESULTS_4292):
+        shutil.rmtree(VAL_RESULTS_4292)
+    os.makedirs("../pre_processed_data/validation_results_4292")
+    ZipFile('../pre_processed_data/validation_results_4292.zip').extractall(
+        VAL_RESULTS_4292)
+
+    if os.path.exists(VAL_RESULTS_2223):
+        shutil.rmtree(VAL_RESULTS_2223)
+    os.makedirs("../pre_processed_data/validation_results_2223")
+    ZipFile('../pre_processed_data/validation_results_2223.zip').extractall(
+        VAL_RESULTS_2223)
+
 
 ################################################################################
 #                           Probabilities shift
