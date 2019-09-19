@@ -38,11 +38,11 @@ while True:
     if cmd == 1:
         fixp_key, trans_key = comm.recv(source=0)
 
-        fname = f"sim_results/result_ev_{fixp_key}_mat_{trans_key}.pkl"
+        fname = "val_results/result_ev_{}_size_{}.pkl".format("{:.2f}".format(fixp_key),
+                                                              spec["sample_size"])
         fixp = dict_polcies[fixp_key][0]
         trans = create_asym_trans_mat(fixp.shape[0], spec["sample_size"], p_1000,
                                       seed=spec["seed"])
-        print(fixp_key, trans_key)
 
         df = simulate(spec, fixp, trans)
         repl_state = df[df["decision"] == 1]["state"].mean()

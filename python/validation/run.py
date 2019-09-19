@@ -19,7 +19,7 @@ if __name__ == "__main__":
     grid_omega = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl").keys()
     spec = json.load(open("specification.json", "rb"))
 
-    os.makedirs("sim_results", exist_ok=True)
+    os.makedirs("val_results", exist_ok=True)
 
     status = MPI.Status()
 
@@ -71,5 +71,5 @@ if __name__ == "__main__":
     comm.Disconnect()
     # Now we aggregate all the results.
 
-    shutil.make_archive("simulation_results", 'zip', "sim_results")
-    shutil.rmtree('sim_results')
+    shutil.make_archive("validation_results", 'zip', "val_results")
+    shutil.rmtree('val_results')
