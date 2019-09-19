@@ -4,7 +4,7 @@ import numpy as np
 def create_asym_trans_mat(num_states, n, p_ml, seed=False):
     trans_mat = np.zeros((num_states, num_states), dtype=np.float64)
     for i in range(num_states):  # Loop over all states.
-        trans_prob = draw_trans_probs_mulitvar(n, p_ml, 1, seed=seed)
+        trans_prob = draw_trans_probs_mulitvar(n, p_ml, 1, seed=seed)[0]
         for j, p in enumerate(trans_prob):  # Loop over the possible increases.
             if i + j < num_states - 1:
                 trans_mat[i, i + j] = p

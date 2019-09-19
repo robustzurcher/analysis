@@ -22,7 +22,7 @@ comm = MPI.Comm.Get_parent()
 
 dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl")
 spec = json.load(open("specification.json", "rb"))
-p_1000 = np.loadtxt("../../pre_processed_data/parameters/p_1000_4")
+p_1000 = np.loadtxt("../../pre_processed_data/parameters/p_1000_4.txt")
 
 while True:
 
