@@ -18,6 +18,7 @@ NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT = "../pre_processed_data/fixp_results_1000_10_10.pkl"
+SIM_RESULTS = "../pre_processed_data/sim_results/"
 
 ################################################################################
 #                           Probabilities shift
@@ -111,19 +112,18 @@ def _create_repl_prob_plot(file, keys):
 #                       Threshold plot
 ################################################################################
 
-threshold_folder = "../pre_processed_data/df_threshold/"
-num_keys = 12
+num_keys = 100
 
 
 def df_thresholds():
-    means_discrete = _threshold_data(threshold_folder)
+    means_discrete = _threshold_data()
     omega_range = np.linspace(0, 0.99, num_keys)
     return pd.DataFrame({'omega': omega_range, 'threshold': means_discrete})
 
 
 def get_replacement_thresholds():
 
-    means_discrete = _threshold_data(threshold_folder)
+    means_discrete = _threshold_data()
 
     omega_range = np.linspace(0, 0.99, num_keys)
     means_ml = np.full(len(omega_range), np.round(means_discrete[0])).astype(int)
@@ -152,17 +152,17 @@ def get_replacement_thresholds():
     fig.savefig(f"{DIR_FIGURES}/fig-application-replacement-thresholds")
 
 
-def _threshold_data(threshold_folder):
-    file_list = sorted(glob.glob(threshold_folder + "df*"))
+def _threshold_data():
+    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_*_mat_0.00.pkl"))
+    print(file_list)
     if len(file_list) != 0:
         means_robust_strat = np.array([])
         for file in file_list:
-            df = pkl.load(open(file, "rb"))
+            mean = pkl.load(open(file, "rb"))[0]
             means_robust_strat = np.append(
-                means_robust_strat, np.mean(df[df["decision"] == 1]["state"])
-            )
+                means_robust_strat, mean)
     else:
-        means_robust_strat = pkl.load(open(threshold_folder + "means_robust.pkl", "rb"))
+        raise AssertionError("Need to unpack simulation files")
 
     means_discrete = np.around(means_robust_strat).astype(int)
     return means_discrete

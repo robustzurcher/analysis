@@ -1,5 +1,5 @@
 {
-  "num_workers": 1000,
+  "num_workers": 100,
   "beta": 0.9999,
   "seed": 123,
   "buses": 200,
