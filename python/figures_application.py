@@ -23,6 +23,7 @@ FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS_4292 = "../pre_processed_data/validation_results_4292/"
 VAL_RESULTS_2223 = "../pre_processed_data/validation_results_2223/"
+BW_COLORS = ["#7e7e7e", "#a8a8a8", "#545454", "#e0e0e0"]
 
 
 def extract_zips():
@@ -56,8 +57,8 @@ def df_probability_shift():
     return pd.DataFrame(
         {
             0: dict_policies[0.0][1][0, :13],
-            0.54: dict_policies[0.54][1][0, :13],
-            0.99: dict_policies[0.99][1][0, :13],
+            0.50: dict_policies[0.5][1][0, :13],
+            0.95: dict_policies[0.95][1][0, :13],
         }
     )
 
@@ -73,13 +74,13 @@ def get_probability_shift():
 
     ax.bar(x - width, dict_policies[0.0][1][0, :13], width, label="ML estimate")
     ax.bar(
-        x, dict_policies[0.54][1][0, :13], width, label="worst case of $\omega=0.54$"
+        x, dict_policies[0.50][1][0, :13], width, label="worst case of $\omega=0.50$"
     )
     ax.bar(
         x + width,
-        dict_policies[0.99][1][0, :13],
+        dict_policies[0.95][1][0, :13],
         width,
-        label="worst case of $\omega=0.99$",
+        label="worst case of $\omega=0.95$",
     )
 
     ax.set_ylabel(r"Probability")
@@ -88,6 +89,39 @@ def get_probability_shift():
     plt.legend()
 
     fig.savefig(f"{DIR_FIGURES}/fig-application-probability-shift")
+
+    # Black and white
+
+    fig, ax = plt.subplots(1, 1)
+
+    ax.bar(
+        x - width,
+        dict_policies[0.0][1][0, :13],
+        width,
+        color=BW_COLORS[0],
+        label="ML estimate",
+    )
+    ax.bar(
+        x,
+        dict_policies[0.5][1][0, :13],
+        width,
+        color=BW_COLORS[1],
+        label="worst case " "of " "$\omega=0.50$",
+    )
+    ax.bar(
+        x + width,
+        dict_policies[0.99][1][0, :13],
+        width,
+        color=BW_COLORS[2],
+        label="worst case of $\omega=0.95$",
+    )
+
+    ax.set_ylabel(r"Probability")
+    ax.set_xlabel(r"Mileage increase (in thousands)")
+
+    plt.legend()
+
+    fig.savefig(f"{DIR_FIGURES}/fig-application-probability-shift-sw")
 
 
 ################################################################################
@@ -120,6 +154,26 @@ def get_replacement_probabilities():
 
     plt.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-replacement-probabilities")
+
+    # Black and white
+
+    fig, ax = plt.subplots(1, 1)
+
+    ax.plot(states, choice_ml[:, 1], color=BW_COLORS[0], label="Optimal")
+    for i, choice in enumerate(choices):
+        ax.plot(
+            states,
+            choice[:, 1],
+            color=BW_COLORS[i + 1],
+            label=f"Robust $(\omega =" f" {keys[i+1]})$",
+        )
+
+    ax.set_ylabel(r"Replacement probability")
+    ax.set_xlabel(r"Mileage (in thousands)")
+    ax.set_ylim([0, 1])
+
+    plt.legend()
+    fig.savefig(f"{DIR_FIGURES}/fig-application-replacement-probabilities-sw")
 
 
 def _create_repl_prob_plot(file, keys):
@@ -176,6 +230,26 @@ def get_replacement_thresholds():
 
     plt.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-replacement-thresholds")
+
+    # Black and white
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_ylim([y_0, y_1])
+    plt.yticks(range(y_0, y_1, 2))
+    ax.set_ylabel(r"Milage at replacement (in thousands)")
+    ax.set_xlabel(r"$\omega$")
+    ax.plot(omega_range, means_ml, color=BW_COLORS[0], label="Optimal")
+    for j, i in enumerate(omega_sections[:-1]):
+        ax.plot(i, state_sections[j], color=BW_COLORS[1])
+    ax.plot(
+        omega_sections[-1],
+        state_sections[-1],
+        color=BW_COLORS[1],
+        label="Robust anticipating $\omega$",
+    )
+
+    plt.legend()
+    fig.savefig(f"{DIR_FIGURES}/fig-application-replacement-thresholds-sw")
 
 
 def _threshold_data():
@@ -242,11 +316,32 @@ def get_performance_decision_rules():
     ax.plot(periods, v_disc_ml, label="Optimal")
     # 'Expected value of nominal strategy'
     ax.plot(periods, v_exp_ml, label="Optimal (expected value)")
-    # 'Expected value of robust strategy with $\omega = 0.99$'
+    # 'Expected value of robust strategy with $\omega = 0.95$'
     ax.plot(periods, v_exp_worst, label="Robust (expected value)")
 
     plt.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance-decision-rules")
+
+    # Black and white
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_ylim([1.1 * v_disc_ml[-1], 0])
+    ax.set_ylabel(r"Performance")
+    ax.set_xlabel(r"Periods")
+
+    formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+    ax.get_xaxis().set_major_formatter(formatter)
+    ax.get_yaxis().set_major_formatter(formatter)
+
+    # 'Discounted utility of otpimal strategy'
+    ax.plot(periods, v_disc_ml, BW_COLORS[0], label="Optimal")
+    # 'Expected value of nominal strategy'
+    ax.plot(periods, v_exp_ml, BW_COLORS[1], label="Optimal (expected value)")
+    # 'Expected value of robust strategy with $\omega = 0.95$'
+    ax.plot(periods, v_exp_worst, BW_COLORS[2], label="Robust (expected value)")
+
+    plt.legend()
+    fig.savefig(f"{DIR_FIGURES}/fig-application-performance-decision-rules-sw")
 
 
 ################################################################################
@@ -283,6 +378,34 @@ def get_performance():
 
     plt.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance")
+
+    # Black and white
+
+    fig, ax = plt.subplots(1, 1)
+
+    # ax.plot(omega_range, opt_costs, label="Discounted utilities of optimal strategy")
+    ax.plot(
+        omega_range,
+        nominal_costs,
+        color=BW_COLORS[0],
+        label="Discounted utilities " "of nominal strategy",
+    )
+    ax.plot(
+        omega_range,
+        robust_5_costs,
+        color=BW_COLORS[1],
+        label="Discounted utilities of robust strategy with $\omega = 0.95$",
+    )
+
+    formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+    ax.get_yaxis().set_major_formatter(formatter)
+
+    ax.set_ylim([nominal_costs[-1], nominal_costs[0]])
+    ax.set_ylabel(r"Performance")
+    ax.set_xlabel(r"$\omega$")
+
+    plt.legend()
+    fig.savefig(f"{DIR_FIGURES}/fig-application-performance-sw")
 
 
 def _performance_plot(omega_range):
@@ -322,17 +445,9 @@ def get_out_of_sample():
 
     fig, ax = plt.subplots(1, 1)
 
-    ax.plot(
-        omega_range,
-        robust_4292,
-        label="Value at time 0 of full training sample$",
-    )
+    ax.plot(omega_range, robust_4292, label="Value at time 0 of full training sample$")
 
-    ax.plot(
-        omega_range,
-        robust_2223,
-        label="Value at time 0 of half training sample$",
-    )
+    ax.plot(omega_range, robust_2223, label="Value at time 0 of half training sample$")
 
     formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
     ax.get_yaxis().set_major_formatter(formatter)
@@ -343,6 +458,32 @@ def get_out_of_sample():
 
     plt.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-out-of-sample")
+
+    fig, ax = plt.subplots(1, 1)
+
+    ax.plot(
+        omega_range,
+        robust_4292,
+        color=BW_COLORS[0],
+        label="Value at time 0 of " "full " "training sample$",
+    )
+
+    ax.plot(
+        omega_range,
+        robust_2223,
+        color=BW_COLORS[1],
+        label="Value at time 0 of " "half training sample$",
+    )
+
+    formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+    ax.get_yaxis().set_major_formatter(formatter)
+
+    # ax.set_ylim([robust_2223[-1], robust_2223[0]])
+    ax.set_ylabel(r"Performance")
+    ax.set_xlabel(r"$\omega$")
+
+    plt.legend()
+    fig.savefig(f"{DIR_FIGURES}/fig-application-out-of-sample-sw")
 
 
 def _out_of_sample():
