@@ -4,8 +4,13 @@ import os
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
-update = {'NUMBA_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1',
-          'NUMEXPR_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
+update = {
+    "NUMBA_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+}
 os.environ.update(update)
 
 import pickle as pkl
@@ -24,28 +29,36 @@ from worst_case_policies import calc_fixp_worst
 def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
     rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / 388))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
-    fname = "results/intermediate_{}.pkl".format('{:.2f}'.format(omega))
+    fname = "results/intermediate_{}.pkl".format("{:.2f}".format(omega))
     pkl.dump(result, open(fname, "wb"))
 
     return result
 
 
-p_rust = np.loadtxt("../../pre_processed_data/parameters/p_1000_4.txt")
+spec = json.load(open("specification.json", "rb"))
+p_rust = np.loadtxt(
+    "../../pre_processed_data/parameters/p_1000_{}.txt".format(spec["sample_size"])
+)
 params_rust = np.array([10, 10])
-spec = json.load(open('specification.json', 'rb'))
 
 comm = MPI.Comm.Get_parent()
 
 # We want to let the master know we are ready to go
-costs_rust = cost_func(spec['num_states'], lin_cost, params_rust)
-base_args = (p_rust, spec["sample_size"], costs_rust, spec['beta'], spec['num_states'],
-spec['threshold'])
+costs_rust = cost_func(spec["num_states"], lin_cost, params_rust)
+base_args = (
+    p_rust,
+    spec["sample_size"],
+    costs_rust,
+    spec["beta"],
+    spec["num_states"],
+    spec["threshold"],
+)
 
 while True:
 
-    comm.Send([np.zeros(1, dtype='float'), MPI.DOUBLE], dest=0)
+    comm.Send([np.zeros(1, dtype="float"), MPI.DOUBLE], dest=0)
 
-    cmd = np.array(0, dtype='int64')
+    cmd = np.array(0, dtype="int64")
     comm.Recv([cmd, MPI.INT], source=0)
 
     if cmd == 0:
@@ -53,6 +66,6 @@ while True:
         break
 
     if cmd == 1:
-        omega = np.zeros(1, dtype='float')
+        omega = np.zeros(1, dtype="float")
         comm.Recv([omega, MPI.DOUBLE], source=0)
         wrapper_func(*base_args, omega[0])
