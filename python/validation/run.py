@@ -16,8 +16,10 @@ from auxiliary import get_file
 
 if __name__ == "__main__":
 
-    grid_omega = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl").keys()
     spec = json.load(open("specification.json", "rb"))
+
+    grid_omega = get_file("../../pre_processed_data/fixp_results_1000_10_10_{}.pkl".format(spec["sample_size"])).keys()
+
 
     os.makedirs("val_results", exist_ok=True)
 

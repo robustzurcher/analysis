@@ -20,8 +20,8 @@ from auxiliary import get_file
 
 comm = MPI.Comm.Get_parent()
 
-dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl")
 spec = json.load(open("specification.json", "rb"))
+dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10_{}.pkl".format(spec["sample_size"]))
 p_1000 = np.loadtxt("../../pre_processed_data/parameters/p_1000_4.txt")
 
 while True:

@@ -19,7 +19,7 @@ from auxiliary import get_file
 
 comm = MPI.Comm.Get_parent()
 
-dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl")
+dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10_4292.pkl")
 spec = json.load(open("specification.json", "rb"))
 
 while True:
