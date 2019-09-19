@@ -200,7 +200,7 @@ def get_performance_decision_rules():
     v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
     v_exp_worst = np.full(NUM_POINTS, dict_policies[0.95][0][0])
 
-    v_disc_ml = pkl.load(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl")
+    v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl", "rb"))[1]
 
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
 
@@ -224,24 +224,6 @@ def get_performance_decision_rules():
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance-decision-rules")
 
 
-def _convergence_plot(df_file, df_alt_file, fixp_point_dict):
-    )
-    ev_ml = dict_policies[0.0][0]
-    ev_worst = dict_policies[0.99][0]
-    try:
-        df_trans_99_ev_ml = pkl.load(open(df_file, "rb"))
-        # Calculate the expected value at time zero
-        v_exp_ml = np.full(NUM_POINTS, calc_ev_0(df_trans_99_ev_ml, ev_ml))
-        v_exp_worst = np.full(NUM_POINTS, calc_ev_0(df_trans_99_ev_ml, ev_worst))
-        # Calculate the value at time 0 by discounting the utility
-        v_disc_ml = discount_utility(df_trans_99_ev_ml, GRIDSIZE, BETA)
-    except:
-        v_exp_ml, v_exp_worst, v_disc_ml = pkl.load(open(df_alt_file, "rb"))
-    # Create a numpy array of the periods for plotting
-
-
-    return v_disc_ml, v_exp_ml, v_exp_worst, periods
-
 
 ################################################################################
 #                             Performance plot
@@ -250,28 +232,22 @@ def _convergence_plot(df_file, df_alt_file, fixp_point_dict):
 
 def get_performance():
 
-    num_keys = 12
+    num_keys = 100
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_subfolder = "nominal_strategy/"
-    rob_subfolder = "54_strategy/"
-    opt_subfolder = "opt_strategy/"
-
-    nominal_costs, opt_costs, robust_54_costs = _performance_plot(
-        nominal_subfolder, opt_subfolder, rob_subfolder
-    )
+    nominal_costs, opt_costs, robust_5_costs = _performance_plot(omega_range)
 
     fig, ax = plt.subplots(1, 1)
 
-    ax.plot(omega_range, opt_costs, label="Discounted utilities of optimal strategy")
+    # ax.plot(omega_range, opt_costs, label="Discounted utilities of optimal strategy")
     ax.plot(
         omega_range, nominal_costs, label="Discounted utilities of nominal strategy"
     )
     ax.plot(
         omega_range,
-        robust_54_costs,
-        label="Discounted utilities of robust strategy with $\omega = 0.54$",
+        robust_5_costs,
+        label="Discounted utilities of robust strategy with $\omega = 0.95$",
     )
 
     formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
@@ -285,37 +261,23 @@ def get_performance():
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance")
 
 
-def _performance_plot(nominal_sub, opt_sub, rob_sub):
-    strategy_folder = "../pre_processed_data/strategies/"
+def _performance_plot(omega_range):
 
-    file_list = sorted(glob.glob(strategy_folder + nominal_sub + "df*"))
-    if len(file_list) != 0:
-        nominal_costs = np.zeros(len(file_list))
-        for j, file in enumerate(file_list):
-            df = pkl.load(open(file, "rb"))
-            nominal_costs[j] = discount_utility(df, GRIDSIZE, BETA)[-1]
-    else:
-        nominal_costs = pkl.load(
-            open(strategy_folder + nominal_sub + "nominal_costs.pkl", "rb")
-        )
+    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.00_mat_*.pkl"))
+    nominal_costs = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        nominal_costs[j] =  pkl.load(open(file, "rb"))[1][-1]
 
-    file_list = sorted(glob.glob(strategy_folder + opt_sub + "df*"))
-    if len(file_list) != 0:
-        opt_costs = np.zeros(len(file_list))
-        for j, file in enumerate(file_list):
-            df = pkl.load(open(file, "rb"))
-            opt_costs[j] = discount_utility(df, GRIDSIZE, BETA)[-1]
-    else:
-        opt_costs = pkl.load(open(strategy_folder + opt_sub + "opt_costs.pkl", "rb"))
+    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.95_mat_*.pkl"))
+    robust_costs = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        robust_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
-    file_list = sorted(glob.glob(strategy_folder + rob_sub + "df*"))
-    if len(file_list) != 0:
-        robust_costs = np.zeros(len(file_list))
-        for j, file in enumerate(file_list):
-            df = pkl.load(open(file, "rb"))
-            robust_costs[j] = discount_utility(df, GRIDSIZE, BETA)[-1]
-    else:
-        robust_costs = pkl.load(
-            open(glob.glob(strategy_folder + rob_sub + "*.pkl")[0], "rb")
-        )
+    opt_costs = np.zeros(len(omega_range))
+    for j, omega in enumerate(omega_range):
+        file = SIM_RESULTS + "result_ev_{}_mat_{}.pkl".format("{:.2f}".format(
+            omega), "{:.2f}".format(omega))
+        opt_costs[j] = pkl.load(open(file, "rb"))[1][-1]
+
+
     return nominal_costs, opt_costs, robust_costs
