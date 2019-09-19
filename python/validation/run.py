@@ -33,24 +33,8 @@ if __name__ == "__main__":
 
     for omega in grid_omega:
 
-        # ML transition matrix with varying beliefs
-        task = omega, 0.0
-        grid_task.append(task)
-
-        # Nominal strategy on varying omega
-        task = 0.0, omega
-        grid_task.append(task)
-
-        # Robust strategy with 0.5 on varying omega
-        task = 0.5, omega
-        grid_task.append(task)
-
-        # Robust strategy with 0.95 with varying omega
-        task = 0.95, omega
-        grid_task.append(task)
-
-        # Optimal strategy with varying omega
-        task = omega, omega
+        # Varying beliefs
+        task = omega
         grid_task.append(task)
 
     # We wait for everybody to be ready and then clean up the criterion function.

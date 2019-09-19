@@ -36,7 +36,7 @@ while True:
         break
 
     if cmd == 1:
-        fixp_key, trans_key = comm.recv(source=0)
+        fixp_key = comm.recv(source=0)
 
         fname = "val_results/result_ev_{}_size_{}.pkl".format("{:.2f}".format(fixp_key),
                                                               spec["sample_size"])
