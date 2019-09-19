@@ -1,6 +1,9 @@
 import json
 import sys
 import os
+import glob
+import pickle as pkl
+import shutil
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -68,3 +71,7 @@ if __name__ == "__main__":
         comm.Send([cmd['terminate'], MPI.INT], dest=rank)
 
     comm.Disconnect()
+    # Now we aggregate all the results.
+
+    shutil.make_archive("simulation_results", 'zip', "sim_results")
+    shutil.rmtree('sim_results')
