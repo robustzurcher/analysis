@@ -42,6 +42,6 @@ while True:
         print(fixp_key, trans_key)
 
         df = simulate(spec, fixp, trans)
-        repl_state = df[df["decision"] == 1]["state"]
+        repl_state = df[df["decision"] == 1]["state"].mean()
         performance = discount_utility(df, 1000, spec["beta"])
         pkl.dump((repl_state, performance), open(fname, "wb"))
