@@ -21,8 +21,8 @@ from ruspy.estimation.estimation_cost_parameters import lin_cost
 from worst_case_policies import calc_fixp_worst
 
 
-def wrapper_func(p_ml, costs, beta, num_states, threshold, omega):
-    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (4292 / 388))
+def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
+    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / 388))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
     fname = "results/intermediate_{}.pkl".format('{:3.5f}'.format(omega))
     pkl.dump(result, open(fname, "wb"))
@@ -38,7 +38,8 @@ comm = MPI.Comm.Get_parent()
 
 # We want to let the master know we are ready to go
 costs_rust = cost_func(spec['num_states'], lin_cost, params_rust)
-base_args = (p_rust, costs_rust, spec['beta'], spec['num_states'], spec['threshold'])
+base_args = (p_rust, spec["sample_size"], costs_rust, spec['beta'], spec['num_states'],
+spec['threshold'])
 
 while True:
 
