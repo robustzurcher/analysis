@@ -19,7 +19,7 @@ from auxiliary import get_file
 
 comm = MPI.Comm.Get_parent()
 
-dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl")
+dict_polcies = get_file("../../pre_processed_data/fixp_results_1000_10_10_4292.pkl")
 spec = json.load(open("specification.json", "rb"))
 
 while True:
@@ -35,8 +35,9 @@ while True:
 
     if cmd == 1:
         fixp_key, trans_key = comm.recv(source=0)
-
-        fname = f"sim_results/result_ev_{fixp_key}_mat_{trans_key}.pkl"
+        print(fixp_key, trans_key)
+        fname = "sim_results/result_ev_{}_mat_{}.pkl".format("{:.2f}".format(fixp_key),
+                                                             "{:.2f}".format(trans_key))
         fixp = dict_polcies[fixp_key][0]
         trans = dict_polcies[trans_key][1]
         print(fixp_key, trans_key)

@@ -16,7 +16,7 @@ from auxiliary import get_file
 
 if __name__ == "__main__":
 
-    grid_omega = get_file("../../pre_processed_data/fixp_results_1000_10_10.pkl").keys()
+    grid_omega = get_file("../../pre_processed_data/fixp_results_1000_10_10_4292.pkl").keys()
     spec = json.load(open("specification.json", "rb"))
 
     os.makedirs("sim_results", exist_ok=True)
