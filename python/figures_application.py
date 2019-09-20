@@ -72,15 +72,15 @@ def get_probability_shift():
 
     fig, ax = plt.subplots(1, 1)
 
-    ax.bar(x - width, dict_policies[0.0][1][0, :13], width, label="ML estimate")
+    ax.bar(x - width, dict_policies[0.0][1][0, :13], width, label="reference")
     ax.bar(
-        x, dict_policies[0.50][1][0, :13], width, label="worst case of $\omega=0.50$"
+        x, dict_policies[0.50][1][0, :13], width, label="$\omega=0.50$"
     )
     ax.bar(
         x + width,
         dict_policies[0.95][1][0, :13],
         width,
-        label="worst case of $\omega=0.95$",
+        label="$\omega=0.95$",
     )
 
     ax.set_ylabel(r"Probability")
@@ -99,21 +99,21 @@ def get_probability_shift():
         dict_policies[0.0][1][0, :13],
         width,
         color=BW_COLORS[0],
-        label="ML estimate",
+        label="reference",
     )
     ax.bar(
         x,
         dict_policies[0.5][1][0, :13],
         width,
         color=BW_COLORS[1],
-        label="worst case " "of " "$\omega=0.50$",
+        label="$\omega=0.50$",
     )
     ax.bar(
         x + width,
         dict_policies[0.99][1][0, :13],
         width,
         color=BW_COLORS[2],
-        label="worst case of $\omega=0.95$",
+        label="$\omega=0.95$",
     )
 
     ax.set_ylabel(r"Probability")
@@ -144,9 +144,9 @@ def get_replacement_probabilities():
 
     fig, ax = plt.subplots(1, 1)
 
-    ax.plot(states, choice_ml[:, 1], label="Optimal")
+    ax.plot(states, choice_ml[:, 1], label="optimal")
     for i, choice in enumerate(choices):
-        ax.plot(states, choice[:, 1], label=f"Robust $(\omega = {keys[i+1]})$")
+        ax.plot(states, choice[:, 1], label=f"robust $(\omega = {keys[i+1]:.2f})$")
 
     ax.set_ylabel(r"Replacement probability")
     ax.set_xlabel(r"Mileage (in thousands)")
@@ -159,13 +159,13 @@ def get_replacement_probabilities():
 
     fig, ax = plt.subplots(1, 1)
 
-    ax.plot(states, choice_ml[:, 1], color=BW_COLORS[0], label="Optimal")
+    ax.plot(states, choice_ml[:, 1], color=BW_COLORS[0], label="optimal")
     for i, choice in enumerate(choices):
         ax.plot(
             states,
             choice[:, 1],
             color=BW_COLORS[i + 1],
-            label=f"Robust $(\omega =" f" {keys[i+1]})$",
+            label=f"robust $(\omega =" f" {keys[i+1]:.2f})$",
         )
 
     ax.set_ylabel(r"Replacement probability")
@@ -218,14 +218,14 @@ def get_replacement_thresholds():
     plt.yticks(range(y_0, y_1, 2))
     ax.set_ylabel(r"Milage at replacement (in thousands)")
     ax.set_xlabel(r"$\omega$")
-    ax.plot(omega_range, means_ml, label="Optimal")
+    ax.plot(omega_range, means_ml, label="optimal")
     for j, i in enumerate(omega_sections[:-1]):
         ax.plot(i, state_sections[j], color="#ff7f0e")
     ax.plot(
         omega_sections[-1],
         state_sections[-1],
         color="#ff7f0e",
-        label="Robust anticipating $\omega$",
+        label="robust",
     )
 
     plt.legend()
@@ -238,14 +238,14 @@ def get_replacement_thresholds():
     plt.yticks(range(y_0, y_1, 2))
     ax.set_ylabel(r"Milage at replacement (in thousands)")
     ax.set_xlabel(r"$\omega$")
-    ax.plot(omega_range, means_ml, color=BW_COLORS[0], label="Optimal")
+    ax.plot(omega_range, means_ml, color=BW_COLORS[0], label="optimal")
     for j, i in enumerate(omega_sections[:-1]):
         ax.plot(i, state_sections[j], color=BW_COLORS[1])
     ax.plot(
         omega_sections[-1],
         state_sections[-1],
         color=BW_COLORS[1],
-        label="Robust anticipating $\omega$",
+        label="robust",
     )
 
     plt.legend()
@@ -313,13 +313,15 @@ def get_performance_decision_rules():
     ax.get_yaxis().set_major_formatter(formatter)
 
     # 'Discounted utility of otpimal strategy'
-    ax.plot(periods, v_disc_ml, label="Optimal")
+    ax.plot(periods, v_disc_ml, label="optimal")
     # 'Expected value of nominal strategy'
-    ax.plot(periods, v_exp_ml, label="Optimal (expected value)")
-    # 'Expected value of robust strategy with $\omega = 0.95$'
-    ax.plot(periods, v_exp_worst, label="Robust (expected value)")
 
-    plt.legend()
+#    ax.plot(periods, v_exp_ml, label="optimal, expected value")
+    ax.plot((0, max(periods)), (v_exp_ml, v_exp_ml))
+    
+    # 'Expected value of robust strategy with $\omega = 0.95$'
+    # ax.plot(periods, v_exp_worst, label="robust, expected value")
+    ax.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance-decision-rules")
 
     # Black and white
@@ -334,11 +336,10 @@ def get_performance_decision_rules():
     ax.get_yaxis().set_major_formatter(formatter)
 
     # 'Discounted utility of otpimal strategy'
-    ax.plot(periods, v_disc_ml, BW_COLORS[0], label="Optimal")
+    ax.plot(periods, v_disc_ml, BW_COLORS[0], label="optimal")
+    ax.plot((0, max(periods)), (v_exp_ml, v_exp_ml), BW_COLORS[1], linestyle="--")
+
     # 'Expected value of nominal strategy'
-    ax.plot(periods, v_exp_ml, BW_COLORS[1], label="Optimal (expected value)")
-    # 'Expected value of robust strategy with $\omega = 0.95$'
-    ax.plot(periods, v_exp_worst, BW_COLORS[2], label="Robust (expected value)")
 
     plt.legend()
     fig.savefig(f"{DIR_FIGURES}/fig-application-performance-decision-rules-sw")
