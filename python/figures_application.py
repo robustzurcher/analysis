@@ -463,8 +463,8 @@ def get_difference_plot():
     for j, file in enumerate(file_list):
         robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
 
-    diff_costs_95 = nominal_costs - robust_costs_95
-    diff_costs_50 = nominal_costs - robust_costs_50
+    diff_costs_95 = robust_costs_95 - nominal_costs
+    diff_costs_50 = robust_costs_50 - nominal_costs
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -483,7 +483,7 @@ def get_difference_plot():
             label="Diff: optimal and robust strategy ($\omega=0.50$)",
         )
 
-        ax.set_ylim([diff_costs_95[-1], diff_costs_95[0]])
+        ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"Performance")
         ax.set_xlabel(r"$\omega$")
 
