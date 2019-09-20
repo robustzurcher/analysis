@@ -26,7 +26,7 @@ VAL_RESULTS_2223 = "../pre_processed_data/validation_results_2223/"
 color_opts = ["colored", "black_white"]
 spec_dict = {
     "colored": {
-        "colors": ["#d62728", "#1f77b4", "#ff7f0e", "#2ca02c"],
+        "colors": [None] * 4,
         "line": ["-"] * 3,
         "hatch": [""] * 3,
         "file": "",
