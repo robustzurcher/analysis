@@ -47,10 +47,16 @@ while True:
         )
         dict_polcies = get_file(
             f"../../pre_processed_data/fixp_results_1000_10_10_{sample_size}.pkl")
-        fixp = dict_polcies[fixp_key][0]
+        fixp_rob = dict_polcies[fixp_key][0]
+        fixp_ml = dict_polcies[0.0][0]
 
-        trans = create_asym_trans_mat(fixp.shape[0], spec["sample_size"], p_1000)
+        trans = create_asym_trans_mat(fixp_rob.shape[0], sample_size, p_1000)
 
-        df = simulate(spec, fixp, trans)
-        performance = discount_utility(df, 1000, spec["beta"])
-        pkl.dump(performance, open(fname, "wb"))
+        df_rob = simulate(spec, fixp_rob, trans)
+        performance_rob = discount_utility(df_rob, 1000, spec["beta"])
+
+        df_ml = simulate(spec, fixp_ml, trans)
+        performance_ml = discount_utility(df_ml, 1000, spec["beta"])
+
+
+        pkl.dump((performance_ml, performance_rob), open(fname, "wb"))

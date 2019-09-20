@@ -4,7 +4,7 @@ import numpy as np
 def create_asym_trans_mat(num_states, n, p_ml, seed=False):
     trans_mat = np.zeros((num_states, num_states), dtype=np.float64)
     for i in range(num_states):  # Loop over all states.
-        trans_prob = draw_trans_probs_mulitvar(n, p_ml, 1, seed=seed)[0]
+        trans_prob = draw_trans_probs_mulitvar(n, p_ml, seed=seed)
         for j, p in enumerate(trans_prob):  # Loop over the possible increases.
             if i + j < num_states - 1:
                 trans_mat[i, i + j] = p
@@ -15,16 +15,14 @@ def create_asym_trans_mat(num_states, n, p_ml, seed=False):
     return trans_mat
 
 
-def draw_trans_probs_mulitvar(n, p, size, seed=False):
+def draw_trans_probs_mulitvar(n, p, seed=False):
     if seed:
         np.random.seed(seed)
     mean = p * n
     cov = calc_cov_multinomial(n, p) * (n ** 2)
-    draw_array = np.random.multivariate_normal(mean, cov, size=size)
-    probs = []
-    for draw in draw_array:
-        probs += [draw / sum(draw)]
-    return probs
+    draw_array = np.random.multivariate_normal(mean, cov)
+    draw_array[draw_array < 0] = 0
+    return draw_array / np.sum(draw_array)
 
 
 def calc_cov_multinomial(n, p):
