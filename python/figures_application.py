@@ -366,6 +366,34 @@ def get_performance_decision_rules():
 #                             Performance plot
 ################################################################################
 
+def get_difference_plot():
+    num_keys = 100
+
+    omega_range = np.linspace(0, 0.99, num_keys)
+
+    nominal_costs, opt_costs, robust_costs = _performance_plot(omega_range)
+
+    diff_costs = nominal_costs - robust_costs
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        # ax.plot(omega_range, opt_costs, label="Discounted utilities of optimal strategy")
+        ax.plot(
+            omega_range,
+            diff_costs,
+            color=spec_dict[color]["colors"][1],
+            label="Differences between optimal and robust strategy",
+        )
+
+        ax.set_ylim([diff_costs[-1], diff_costs[0]])
+        ax.set_ylabel(r"Performance")
+        ax.set_xlabel(r"$\omega$")
+
+        plt.legend()
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-difference{spec_dict[color]['file']}"
+        )
 
 def get_performance():
 
@@ -373,7 +401,7 @@ def get_performance():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, opt_costs, robust_5_costs = _performance_plot(omega_range)
+    nominal_costs, opt_costs, robust_costs = _performance_plot(omega_range)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -388,7 +416,7 @@ def get_performance():
         )
         ax.plot(
             omega_range,
-            robust_5_costs,
+            robust_costs,
             color=spec_dict[color]["colors"][2],
             ls=spec_dict[color]["line"][2],
             label="Discounted utilities of robust strategy with $\omega = 0.95$",
