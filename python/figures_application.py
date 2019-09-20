@@ -33,7 +33,7 @@ spec_dict = {
     },
     "black_white": {
         "colors": ["#7e7e7e", "#a8a8a8", "#545454", "#e0e0e0"],
-        "line": ["-", "--", "."],
+        "line": ["-", "--", ":"],
         "hatch": [".", "-", "/"],
         "file": "-sw",
     },
@@ -95,6 +95,7 @@ def get_probabilities():
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
 
+
 def df_probability_shift():
     dict_policies = get_file(FIXP_DICT_4292)
     return pd.DataFrame(
@@ -152,9 +153,50 @@ def get_probability_shift():
 
 
 ################################################################################
-#                       Replacement Probabilities
+#                       Replacement/Maintenance Probabilities
 ################################################################################
 keys = [0.0, 0.5, 0.95]
+
+
+def df_maintenance_probabilties():
+    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
+    return pd.DataFrame(
+        {0.0: choice_ml[:, 0], keys[1]: choices[0][:, 0], keys[2]: choices[1][:, 0]}
+    )
+
+
+def get_maintenance_probabilities():
+
+    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
+    states = range(choice_ml.shape[0])
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.plot(
+            states,
+            choice_ml[:, 0],
+            color=spec_dict[color]["colors"][0],
+            ls=spec_dict[color]["line"][0],
+            label="Optimal",
+        )
+        for i, choice in enumerate(choices):
+            ax.plot(
+                states,
+                choice[:, 0],
+                color=spec_dict[color]["colors"][i + 1],
+                ls=spec_dict[color]["line"][i + 1],
+                label=f"Robust $(\omega = {keys[i+1]})$",
+            )
+
+        ax.set_ylabel(r"Maintenance probability")
+        ax.set_xlabel(r"Mileage (in thousands)")
+        ax.set_ylim([0, 1])
+
+        plt.legend()
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-maintenance-probabilities"
+            f"s{spec_dict[color]['file']}"
+        )
 
 
 def df_replacement_probabilties():
@@ -362,6 +404,7 @@ def get_performance_decision_rules():
 #                             Performance plot
 ################################################################################
 
+
 def get_difference_plot():
     num_keys = 100
 
@@ -390,6 +433,7 @@ def get_difference_plot():
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-difference{spec_dict[color]['file']}"
         )
+
 
 def get_performance():
 
