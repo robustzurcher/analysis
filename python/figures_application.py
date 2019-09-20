@@ -83,7 +83,7 @@ def get_probabilities():
             width,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label="ML estimate",
+            label="reference",
         )
 
         ax.set_ylabel(r"Probability")
@@ -123,7 +123,7 @@ def get_probability_shift():
             width,
             color=spec_dict[color]["colors"][0],
             hatch=spec_dict[color]["hatch"][0],
-            label="ML estimate",
+            label="reference",
         )
         ax.bar(
             x,
@@ -131,7 +131,7 @@ def get_probability_shift():
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="worst case of $\omega=0.50$",
+            label="$\omega=0.50$",
         )
         ax.bar(
             x + width,
@@ -139,7 +139,7 @@ def get_probability_shift():
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="worst case of $\omega=0.95$",
+            label="$\omega=0.95$",
         )
 
         ax.set_ylabel(r"Probability")
@@ -177,7 +177,7 @@ def get_maintenance_probabilities():
             choice_ml[:, 0],
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label="Optimal",
+            label="optimal",
         )
         for i, choice in enumerate(choices):
             ax.plot(
@@ -185,7 +185,7 @@ def get_maintenance_probabilities():
                 choice[:, 0],
                 color=spec_dict[color]["colors"][i + 1],
                 ls=spec_dict[color]["line"][i + 1],
-                label=f"Robust $(\omega = {keys[i+1]})$",
+                label=f"robust $(\omega = {keys[i+1]})$",
             )
 
         ax.set_ylabel(r"Maintenance probability")
@@ -218,7 +218,7 @@ def get_replacement_probabilities():
             choice_ml[:, 1],
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label="Optimal",
+            label="optimal",
         )
         for i, choice in enumerate(choices):
             ax.plot(
@@ -226,7 +226,7 @@ def get_replacement_probabilities():
                 choice[:, 1],
                 color=spec_dict[color]["colors"][i + 1],
                 ls=spec_dict[color]["line"][i + 1],
-                label=f"Robust $(\omega = {keys[i+1]})$",
+                label=f"robust $(\omega = {keys[i+1]})$",
             )
 
         ax.set_ylabel(r"Replacement probability")
@@ -285,22 +285,22 @@ def get_replacement_thresholds():
             omega_range,
             means_ml,
             color=spec_dict[color]["colors"][2],
-            ls=spec_dict[color]["line"][2],
-            label="Optimal",
+            ls=spec_dict[color]["line"][0],
+            label="optimal",
         )
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
                 i,
                 state_sections[j],
                 color=spec_dict[color]["colors"][1],
-                ls=spec_dict[color]["line"][1],
+                ls=spec_dict[color]["line"][2],
             )
         ax.plot(
             omega_sections[-1],
             state_sections[-1],
             color=spec_dict[color]["colors"][1],
             ls=spec_dict[color]["line"][1],
-            label="Robust anticipating $\omega$",
+            label="robust",
         )
 
         plt.legend()
@@ -375,7 +375,7 @@ def get_performance_decision_rules():
             v_disc_ml,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label="Optimal",
+            label="optimal",
         )
         # 'Expected value of nominal strategy'
         ax.plot(
@@ -383,7 +383,7 @@ def get_performance_decision_rules():
             v_exp_ml,
             color=spec_dict[color]["colors"][1],
             ls=spec_dict[color]["line"][1],
-            label="Optimal (expected value)",
+            label="optimal (expected value)",
         )
         # 'Expected value of robust strategy with $\omega = 0.95$'
         ax.plot(
@@ -391,7 +391,7 @@ def get_performance_decision_rules():
             v_exp_worst,
             color=spec_dict[color]["colors"][2],
             ls=spec_dict[color]["line"][2],
-            label="Robust (expected value)",
+            label="robust (expected value)",
         )
 
         plt.legend()
