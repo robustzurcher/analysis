@@ -28,14 +28,14 @@ spec_dict = {
     "colored": {
         "colors": ["#d62728", "#1f77b4", "#ff7f0e", "#2ca02c"],
         "line": ["-"] * 3,
+        "hatch": [""] * 3,
         "file": "",
-        "fill": True,
     },
     "black_white": {
         "colors": ["#7e7e7e", "#a8a8a8", "#545454", "#e0e0e0"],
-        "line": ["-", "--", ":"],
+        "line": ["-", "--", "."],
+        "hatch": [".", "-", "/"],
         "file": "-sw",
-        "fill": False,
     },
 }
 
@@ -83,7 +83,6 @@ def get_probabilities():
             width,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            fill=spec_dict[color]["fill"],
             label="ML estimate",
         )
 
@@ -122,8 +121,7 @@ def get_probability_shift():
             dict_policies[0.0][1][state, state : state + 13],
             width,
             color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][0],
-            fill=spec_dict[color]["fill"],
+            hatch=spec_dict[color]["hatch"][0],
             label="ML estimate",
         )
         ax.bar(
@@ -131,8 +129,7 @@ def get_probability_shift():
             dict_policies[0.50][1][state, state : state + 13],
             width,
             color=spec_dict[color]["colors"][1],
-            ls=spec_dict[color]["line"][1],
-            fill=spec_dict[color]["fill"],
+            hatch=spec_dict[color]["hatch"][1],
             label="worst case of $\omega=0.50$",
         )
         ax.bar(
@@ -140,8 +137,7 @@ def get_probability_shift():
             dict_policies[0.95][1][state, state : state + 13],
             width,
             color=spec_dict[color]["colors"][2],
-            ls=spec_dict[color]["line"][2],
-            fill=spec_dict[color]["fill"],
+            hatch=spec_dict[color]["hatch"][2],
             label="worst case of $\omega=0.95$",
         )
 
