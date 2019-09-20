@@ -62,11 +62,39 @@ def extract_zips():
 
 
 ################################################################################
-#                           Probabilities shift
+#                           Probabilities
 ################################################################################
 
 state = 150
 
+
+def get_probabilities():
+    x = np.arange(13)
+
+    dict_policies = get_file(FIXP_DICT_4292)
+    width = 0.5
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.bar(
+            x - width,
+            dict_policies[0.0][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][0],
+            ls=spec_dict[color]["line"][0],
+            fill=spec_dict[color]["fill"],
+            label="ML estimate",
+        )
+
+        ax.set_ylabel(r"Probability")
+        ax.set_xlabel(r"Mileage increase (in thousands)")
+
+        plt.legend()
+
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
+        )
 
 def df_probability_shift():
     dict_policies = get_file(FIXP_DICT_4292)
