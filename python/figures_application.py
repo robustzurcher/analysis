@@ -386,13 +386,13 @@ def get_performance_decision_rules():
             label="optimal (expected value)",
         )
         # 'Expected value of robust strategy with $\omega = 0.95$'
-        ax.plot(
-            periods,
-            v_exp_worst,
-            color=spec_dict[color]["colors"][2],
-            ls=spec_dict[color]["line"][2],
-            label="robust (expected value)",
-        )
+        # ax.plot(
+        #     periods,
+        #     v_exp_worst,
+        #     color=spec_dict[color]["colors"][2],
+        #     ls=spec_dict[color]["line"][2],
+        #     label="robust (expected value)",
+        # )
 
         plt.legend()
         fig.savefig(
