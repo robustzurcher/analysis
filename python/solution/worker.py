@@ -36,9 +36,7 @@ def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
 
 
 spec = json.load(open("specification.json", "rb"))
-p_rust = np.loadtxt(
-    "../../pre_processed_data/parameters/p_1000_{}.txt".format(spec["sample_size"])
-)
+p_rust = np.loadtxt("../../pre_processed_data/parameters/p_1000_4292.txt")
 params_rust = np.array([10, 10])
 
 comm = MPI.Comm.Get_parent()

@@ -1,9 +1,9 @@
 {
   "num_points": 100,
   "num_states": 400,
-  "sample_size": 4292,
+  "sample_size": 2223,
   "beta": 0.9999,
   "threshold": 1e-5,
-  "num_workers": 20
+  "num_workers": 100
 
 }
