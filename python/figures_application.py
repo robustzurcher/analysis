@@ -153,6 +153,52 @@ def get_probability_shift():
         )
 
 
+def get_probability_shift_data():
+
+    x = np.arange(13)
+
+    dict_policies_4292 = get_file(FIXP_DICT_4292)
+    dict_policies_2223 = get_file(FIXP_DICT_2223)
+    width = 0.25
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.bar(
+            x - width,
+            dict_policies_4292[0.0][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][0],
+            hatch=spec_dict[color]["hatch"][0],
+            label="reference",
+        )
+        ax.bar(
+            x,
+            dict_policies_4292[0.95][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][1],
+            hatch=spec_dict[color]["hatch"][1],
+            label="$\omega=0.95$ with $N_s = 4292$",
+        )
+        ax.bar(
+            x + width,
+            dict_policies_2223[0.95][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][2],
+            hatch=spec_dict[color]["hatch"][2],
+            label="$\omega=0.95$ with $N_s = 2223$",
+        )
+
+        ax.set_ylabel(r"Probability")
+        ax.set_xlabel(r"Mileage increase (in thousands)")
+
+        plt.legend()
+
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-probability-shift{spec_dict[color]['file']}"
+        )
+
+
 ################################################################################
 #                       Replacement/Maintenance Probabilities
 ################################################################################
@@ -166,50 +212,9 @@ def df_maintenance_probabilties():
     )
 
 
-def df_maintenance_probabilties_data():
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_2223, keys)
-    return pd.DataFrame(
-        {0.0: choice_ml[:, 0], keys[1]: choices[0][:, 0], keys[2]: choices[1][:, 0]}
-    )
-
-
 def get_maintenance_probabilities():
 
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    states = range(choice_ml.shape[0])
-    for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
-
-        ax.plot(
-            states,
-            choice_ml[:, 0],
-            color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][0],
-            label="optimal",
-        )
-        for i, choice in enumerate(choices):
-            ax.plot(
-                states,
-                choice[:, 0],
-                color=spec_dict[color]["colors"][i + 1],
-                ls=spec_dict[color]["line"][i + 1],
-                label=f"robust $(\omega = {keys[i+1]})$",
-            )
-
-        ax.set_ylabel(r"Maintenance probability")
-        ax.set_xlabel(r"Mileage (in thousands)")
-        ax.set_ylim([0, 1])
-
-        plt.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-maintenance-probabilities"
-            f"s{spec_dict[color]['file']}"
-        )
-
-
-def get_maintenance_probabilities_data():
-
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_2223, keys)
     states = range(choice_ml.shape[0])
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
