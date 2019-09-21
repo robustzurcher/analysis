@@ -17,8 +17,6 @@ os.environ.update(update)
 from mpi4py import MPI
 import numpy as np
 
-from auxiliary import get_file
-
 if __name__ == "__main__":
 
     spec = json.load(open("specification.json", "rb"))

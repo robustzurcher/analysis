@@ -58,5 +58,4 @@ while True:
         df_ml = simulate(spec, fixp_ml, trans)
         performance_ml = discount_utility(df_ml, 1000, spec["beta"])
 
-
         pkl.dump((performance_ml, performance_rob), open(fname, "wb"))
