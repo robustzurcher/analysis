@@ -51,7 +51,8 @@ while True:
         fixp_ml = dict_polcies[0.0][0]
         
         np.random.seed()
-        trans = create_asym_trans_mat(fixp_rob.shape[0], sample_size, p_1000)
+        obs_per_state = sample_size / 388
+        trans = create_asym_trans_mat(fixp_rob.shape[0], obs_per_state, p_1000)
 
         df_rob = simulate(spec, fixp_rob, trans)
         performance_rob = discount_utility(df_rob, 1000, spec["beta"])[-1]

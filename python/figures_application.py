@@ -118,7 +118,7 @@ def df_probability_shift():
     return pd.DataFrame(
         {
             "0": dict_policies_4292[0.0][1][state, state : state + 13],
-            "0.50": dict_policies_4292[0.5][1][state, state : state + 13],
+            "4292_0.50": dict_policies_4292[0.5][1][state, state : state + 13],
             "4292_0.95": dict_policies_4292[0.95][1][state, state : state + 13],
             "2223_0.95": dict_policies_2223[0.95][1][state, state : state + 13],
         }
@@ -660,6 +660,10 @@ def get_out_of_sample_2223_05():
 
         ax.hist(
             diff_05_2223,
+            bins=100,
+            density=True,
+            color=spec_dict[color]["colors"][1],
+            histtype="step"
         )
         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
         ax.get_yaxis().set_major_formatter(formatter)
@@ -683,6 +687,10 @@ def get_out_of_sample_4292_05():
 
         ax.hist(
             diff_05_4292,
+            bins=100,
+            density=True,
+            color=spec_dict[color]["colors"][1],
+            histtype="step"
         )
         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
         ax.get_yaxis().set_major_formatter(formatter)
