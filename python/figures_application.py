@@ -152,7 +152,7 @@ def get_probability_shift():
         plt.legend()
 
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-probability-shift{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-probability-shift-omega{spec_dict[color]['file']}"
         )
 
 
@@ -181,7 +181,7 @@ def get_probability_shift_data():
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="$\omega=0.95$ with $N_s = 4292$",
+            label="$N_s = 4,292$",
         )
         ax.bar(
             x + width,
@@ -189,7 +189,7 @@ def get_probability_shift_data():
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="$\omega=0.95$ with $N_s = 2223$",
+            label="$N_s = 2,223$",
         )
 
         ax.set_ylabel(r"Probability")
@@ -198,7 +198,7 @@ def get_probability_shift_data():
         plt.legend()
 
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-probability-shift{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-probability-shift-data{spec_dict[color]['file']}"
         )
 
 
@@ -252,7 +252,7 @@ def get_maintenance_probabilities():
         plt.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-maintenance-probabilities"
-            f"s{spec_dict[color]['file']}"
+            f"{spec_dict[color]['file']}"
         )
 
 
@@ -496,22 +496,26 @@ def get_difference_plot():
             omega_range,
             diff_costs_95,
             color=spec_dict[color]["colors"][0],
-            label="robust $(\omega = 0.95)$"
+            label="robust $(\omega = 0.95)$",
+            ls=spec_dict[color]["line"][0]
+
         )
 
         ax.plot(
             omega_range,
             diff_costs_50,
             color=spec_dict[color]["colors"][1],
-            label="Diff: optimal and robust strategy ($\omega=0.50$)",
+            label="robust $(\omega = 0.50)$",
+            ls=spec_dict[color]["line"][1],
+
         )
-ax.plot(
+        ax.plot(
             omega_range,
             [0] * len(omega_range),
             color=spec_dict[color]["colors"][1],
-            ls=spec_dict[color]["line"][1])
+            ls=spec_dict[color]["line"][2])
         ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
-        ax.set_ylabel(r"Performance")
+        ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
         ax.legend()
         fig.savefig(
