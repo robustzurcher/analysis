@@ -6,14 +6,19 @@ from config import DIR_FIGURES
 from figures_application import color_opts, spec_dict
 
 
-def get_number_observations(num_bins, init_dict, trans_results):
+def get_number_observations(bin_size, init_dict, trans_results):
 
+    max_state = trans_results["state_count"].shape[0]
     numobs_per_state = trans_results["state_count"].sum(axis=1)
-    hist_data = np.array([])
-    for i, val in enumerate(numobs_per_state):
-        hist_data = np.append(hist_data, np.full(val, i))
-    hist_data = hist_data * init_dict["binsize"] / 1000
+    num_steps = int(bin_size / init_dict["binsize"])
+    num_bins = int(max_state / num_steps)
+    hist_data = np.zeros(num_bins)
+    for i in range(num_bins):
+        hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
 
+    scale = 10
+    mileage = np.arange(num_bins) * scale
+    width = 0.75 * scale
     for color in color_opts:
 
         fig, ax = plt.subplots(1, 1)
@@ -21,7 +26,7 @@ def get_number_observations(num_bins, init_dict, trans_results):
         ax.set_xlabel(r"Milage (in thousands)")
 
         cl = spec_dict[color]["colors"][0]
-        ax.hist(hist_data, bins=num_bins, color=cl, rwidth=0.8)
+        ax.bar(mileage, hist_data, width, align='edge', color=cl,)
 
         plt.savefig(
             f"{DIR_FIGURES}/fig-introduction-observations-mileage{spec_dict[color]['file']}"
