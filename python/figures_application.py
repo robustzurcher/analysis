@@ -22,16 +22,10 @@ NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292.pkl"
 FIXP_DICT_2223 = "../pre_processed_data/fixp_results_1000_10_10_2223.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
-VAL_RESULTS_4292 = "../pre_processed_data/validation_results_4292/"
-VAL_RESULTS_2223 = "../pre_processed_data/validation_results_2223/"
+VAL_RESULTS = "../pre_processed_data/val_results/"
 color_opts = ["colored", "black_white"]
 spec_dict = {
-    "colored": {
-        "colors": [None] * 4,
-        "line": ["-"] * 3,
-        "hatch": [""] * 3,
-        "file": "",
-    },
+    "colored": {"colors": [None] * 4, "line": ["-"] * 3, "hatch": [""] * 3, "file": ""},
     "black_white": {
         "colors": ["#808080", "#d3d3d3", "#d3d3d3", "#d3d3d3"],
         "line": ["-", "--", ":"],
@@ -47,19 +41,9 @@ def extract_zips():
     os.makedirs("../pre_processed_data/sim_results")
     ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
 
-    if os.path.exists(VAL_RESULTS_4292):
-        shutil.rmtree(VAL_RESULTS_4292)
-    os.makedirs("../pre_processed_data/validation_results_4292")
-    ZipFile("../pre_processed_data/validation_results_4292.zip").extractall(
-        VAL_RESULTS_4292
-    )
-
-    if os.path.exists(VAL_RESULTS_2223):
-        shutil.rmtree(VAL_RESULTS_2223)
-    os.makedirs("../pre_processed_data/validation_results_2223")
-    ZipFile("../pre_processed_data/validation_results_2223.zip").extractall(
-        VAL_RESULTS_2223
-    )
+    # if os.path.exists(VAL_RESULTS):
+    #     shutil.rmtree(VAL_RESULTS)
+    # ZipFile("../pre_processed_data/val_results.zip").extractall(VAL_RESULTS)
 
 
 ################################################################################
@@ -102,8 +86,7 @@ def df_probability_shift():
             "0": dict_policies_4292[0.0][1][state, state : state + 13],
             "0.50": dict_policies_4292[0.5][1][state, state : state + 13],
             "4292_0.95": dict_policies_4292[0.95][1][state, state : state + 13],
-            "2223_0.95": dict_policies_2223[0.95][1][state, state: state + 13],
-
+            "2223_0.95": dict_policies_2223[0.95][1][state, state : state + 13],
         }
     )
 
@@ -115,12 +98,13 @@ def get_probability_shift():
     dict_policies = get_file(FIXP_DICT_4292)
     width = 0.25
 
-    spec_dict['black_white'] = {
+    spec_dict["black_white"] = {
         "colors": ["#808080", "#d3d3d3", "#d3d3d3", "#d3d3d3"],
         "line": ["-", "--", ":"],
         "hatch": ["", "OOO", "///"],
-        "file": "-sw"}
-    
+        "file": "-sw",
+    }
+
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -220,13 +204,13 @@ def df_maintenance_probabilties():
 
 def get_maintenance_probabilities():
 
-    
-    spec_dict['black_white'] = {
+    spec_dict["black_white"] = {
         "colors": ["#808080", "#808080", "#808080", "#808080"],
         "line": ["-", "--", ":"],
         "hatch": ["", "OOO", "///"],
-        "file": "-sw"}
-        
+        "file": "-sw",
+    }
+
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
     states = range(choice_ml.shape[0])
     for color in color_opts:
@@ -354,10 +338,7 @@ def get_replacement_thresholds():
             second_color = spec_dict[color]["colors"][1]
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
-                i,
-                state_sections[j],
-                color=second_color,
-                ls=spec_dict[color]["line"][2],
+                i, state_sections[j], color=second_color, ls=spec_dict[color]["line"][2]
             )
         ax.plot(
             omega_sections[-1],
@@ -439,15 +420,14 @@ def get_performance_decision_rules():
             v_exp_ml,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label='long-run expectation'
+            label="long-run expectation",
         )
         ax.plot(
             periods,
             v_disc_ml,
             color=spec_dict[color]["colors"][1],
             ls=spec_dict[color]["line"][1],
-            label='actual'
-
+            label="actual",
         )
 
         # 'Expected value of robust strategy with $\omega = 0.95$'
@@ -470,14 +450,14 @@ def get_performance_decision_rules():
 
 
 def get_difference_plot():
-    
-    spec_dict['black_white'] = {
+
+    spec_dict["black_white"] = {
         "colors": ["#808080", "#808080", "#808080", "#808080"],
         "line": ["-", "--", ":"],
         "hatch": ["", "OOO", "///"],
-        "file": "-sw"}
-        
-        
+        "file": "-sw",
+    }
+
     num_keys = 100
 
     omega_range = np.linspace(0, 0.99, num_keys)
@@ -500,8 +480,7 @@ def get_difference_plot():
             diff_costs_95,
             color=spec_dict[color]["colors"][0],
             label="robust $(\omega = 0.95)$",
-            ls=spec_dict[color]["line"][0]
-
+            ls=spec_dict[color]["line"][0],
         )
 
         ax.plot(
@@ -510,13 +489,13 @@ def get_difference_plot():
             color=spec_dict[color]["colors"][1],
             label="robust $(\omega = 0.50)$",
             ls=spec_dict[color]["line"][1],
-
         )
         ax.plot(
             omega_range,
             [0] * len(omega_range),
             color=spec_dict[color]["colors"][1],
-            ls=spec_dict[color]["line"][2])
+            ls=spec_dict[color]["line"][2],
+        )
         ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
@@ -593,56 +572,39 @@ def _performance_plot(omega_range):
 ################################################################################
 
 
-def get_out_of_sample():
-
-    num_keys = 100
-
-    omega_range = np.linspace(0, 0.99, num_keys)
-
-    robust_4292, robust_2223 = _out_of_sample()
-
-    for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
-
-        ax.plot(
-            omega_range,
-            robust_4292,
-            color=spec_dict[color]["colors"][1],
-            ls=spec_dict[color]["line"][1],
-            label="Value at time 0 of full training sample$",
-        )
-
-        ax.plot(
-            omega_range,
-            robust_2223,
-            color=spec_dict[color]["colors"][2],
-            ls=spec_dict[color]["line"][2],
-            label="Value at time 0 of half training sample$",
-        )
-
-        formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        ax.get_yaxis().set_major_formatter(formatter)
-
-        # ax.set_ylim([robust_2223[-1], robust_2223[0]])
-        ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"$\omega$")
-
-        plt.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-out-of-sample{spec_dict[color]['file']}"
-        )
-
-
-def _out_of_sample():
-
-    file_list = sorted(glob.glob(VAL_RESULTS_4292 + "*.pkl"))
-    robust_4292 = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        robust_4292[j] = pkl.load(open(file, "rb"))[1][-1]
-
-    file_list = sorted(glob.glob(VAL_RESULTS_2223 + "*.pkl"))
-    robust_2223 = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        robust_2223[j] = pkl.load(open(file, "rb"))[1][-1]
-
-    return robust_4292, robust_2223
+# def get_out_of_sample():
+#
+#
+#     diff_05_2223 = _out_of_sample()
+#     for color in color_opts:
+#         fig, ax = plt.subplots(1, 1)
+#
+#         ax.hist(
+#             diff_05_2223,
+#         )
+#
+#         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+#         ax.get_yaxis().set_major_formatter(formatter)
+#
+#         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
+#         ax.set_ylabel(r"Performance")
+#         ax.set_xlabel(r"$\omega$")
+#
+#         plt.legend()
+#         fig.savefig(
+#             f"{DIR_FIGURES}/fig-application-out-of-sample{spec_dict[color]['file']}"
+#         )
+#
+#
+# def _out_of_sample():
+#     file_list = sorted(
+#         glob.glob(VAL_RESULTS + "val_results/result_ev_0.95_size_4292_*.pkl")
+#     )
+#     robust_05_2223 = np.zeros(len(file_list))
+#     nominal_05_2223 = np.zeros(len(file_list))
+#     for j, file in enumerate(file_list):
+#         res = pkl.load(open(file, "rb"))
+#         nominal_05_2223[j] = res[0][-1]
+#         robust_05_2223[j] = res[1][-1]
+#     diff_05_2223 = robust_05_2223 - nominal_05_2223
+#     return diff_05_2223
