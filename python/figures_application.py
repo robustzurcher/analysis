@@ -46,9 +46,9 @@ def extract_zips():
     #     shutil.rmtree(VAL_RESULTS)
     # ZipFile("../pre_processed_data/val_results.zip").extractall(VAL_RESULTS)
 
-    
+
 def get_number_observations(num_bins, init_dict, trans_results):
-    
+
     numobs_per_state = trans_results["state_count"].sum(axis=1)
     hist_data = np.array([])
     for i, val in enumerate(numobs_per_state):
@@ -57,7 +57,6 @@ def get_number_observations(num_bins, init_dict, trans_results):
 
     for color in color_opts:
 
-
         fig, ax = plt.subplots(1, 1)
         ax.set_ylabel(r"Number of observations")
         ax.set_xlabel(r"Milage (in thousands)")
@@ -65,7 +64,9 @@ def get_number_observations(num_bins, init_dict, trans_results):
         cl = spec_dict[color]["colors"][0]
         ax.hist(hist_data, bins=num_bins, color=cl, rwidth=0.8)
 
-        plt.savefig(f"{DIR_FIGURES}/fig-introduction-observations-mileage{spec_dict[color]['file']}")
+        plt.savefig(
+            f"{DIR_FIGURES}/fig-introduction-observations-mileage{spec_dict[color]['file']}"
+        )
 
 
 def get_intorduction_decision_making():
@@ -77,25 +78,25 @@ def get_intorduction_decision_making():
         x_values = [0.00, 0.33, 0.66, 1.00]
         y_values = [0.95, 0.70, 0.40, 0.00]
 
-        f = interp1d(x_values, y_values, kind='quadratic')
+        f = interp1d(x_values, y_values, kind="quadratic")
         x_grid = np.linspace(0, 1, num=41, endpoint=True)
 
         cl = spec_dict[color]["colors"][0]
         ls = spec_dict[color]["line"][0]
 
-        ax.plot(x_grid, f(x_grid), label='optimal', color=cl, ls=ls)
+        ax.plot(x_grid, f(x_grid), label="optimal", color=cl, ls=ls)
 
         x_values = [0.00, 0.33, 0.66, 1.00]
         y_values = [0.80, 0.70, 0.50, 0.20]
 
-        f = interp1d(x_values, y_values, kind='quadratic')
-        
+        f = interp1d(x_values, y_values, kind="quadratic")
+
         cl = spec_dict[color]["colors"][1]
         ls = spec_dict[color]["line"][1]
 
         x_grid = np.linspace(0, 1, num=41)
 
-        ax.plot(x_grid, f(x_grid), label='robust' , color=cl, ls=ls)
+        ax.plot(x_grid, f(x_grid), label="robust", color=cl, ls=ls)
 
         ax.set_xticks((0.0, 0.2, 0.5, 0.8, 1.0))
         ax.set_xticklabels([])
@@ -105,12 +106,15 @@ def get_intorduction_decision_making():
         ax.set_ylim(-0.1, 1.0)
         ax.set_yticklabels([])
 
-        ax.set_xlabel('Level of model misspecification')
-        ax.set_ylabel('Performance')
+        ax.set_xlabel("Level of model misspecification")
+        ax.set_ylabel("Performance")
         ax.legend()
 
-        plt.savefig(f"{DIR_FIGURES}/fig-introduction-robust-performance{spec_dict[color]['file']}")
-    
+        plt.savefig(
+            f"{DIR_FIGURES}/fig-introduction-robust-performance{spec_dict[color]['file']}"
+        )
+
+
 ################################################################################
 #                           Probabilities
 ################################################################################
@@ -514,6 +518,28 @@ def get_performance_decision_rules():
 ################################################################################
 
 
+def get_difference_df():
+    num_keys = 100
+
+    omega_range = np.linspace(0, 0.99, num_keys)
+
+    nominal_costs, opt_costs, robust_costs_95 = _performance_plot(omega_range)
+
+    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
+    robust_costs_50 = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
+
+    diff_costs_95 = robust_costs_95 - nominal_costs
+    diff_costs_50 = robust_costs_50 - nominal_costs
+
+    print("The dataframe contains the difference for robust - nominal strategy.")
+
+    return pd.DataFrame(
+        {"omega": omega_range, "robust_95": diff_costs_95, "robust_050": diff_costs_50}
+    )
+
+
 def get_difference_plot():
 
     spec_dict["black_white"] = {
@@ -556,13 +582,10 @@ def get_difference_plot():
             ls=spec_dict[color]["line"][1],
         )
         if color == "colored":
-            third_color = '#2ca02c'
+            third_color = "#2ca02c"
         else:
             third_color = spec_dict[color]["colors"][2]
-        ax.axhline(
-            color=third_color,
-            ls=spec_dict[color]["line"][2],
-        )
+        ax.axhline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
