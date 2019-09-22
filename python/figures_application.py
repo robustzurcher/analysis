@@ -57,14 +57,21 @@ def get_probabilities():
     x = np.arange(13)
 
     dict_policies = get_file(FIXP_DICT_4292)
-    width = 0.5
+    width = 0.8
+    p_ml = dict_policies[0.0][1][state, state : state + 13]
+    std_err = np.sqrt(np.diag(calc_cov_multinomial(4292, p_ml)))
+    capsize = 8
+
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.bar(
             x,
-            dict_policies[0.0][1][state, state : state + 13],
+            p_ml,
+            width,
+            yerr=std_err,
+            capsize=capsize,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
             label="reference",
@@ -187,6 +194,18 @@ def get_probability_shift_data():
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probability-shift-data{spec_dict[color]['file']}"
         )
+
+
+def calc_cov_multinomial(n, p):
+    dim = len(p)
+    cov = np.zeros(shape=(dim, dim), dtype=float)
+    for i in range(dim):
+        for j in range(dim):
+            if i == j:
+                cov[i, i] = p[i] * (1 - p[i])
+            else:
+                cov[i, j] = -p[i] * p[j]
+    return cov / n
 
 
 ################################################################################
