@@ -464,11 +464,23 @@ def _create_sections(mean_disc, om_range):
 ################################################################################
 
 
+def get_decision_rule_df():
+    dict_policies = get_file(FIXP_DICT_4292)
+
+    v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
+
+    v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl", "rb"))[1]
+
+    periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
+
+    return pd.DataFrame({"period": periods, "disc_strategy": v_disc_ml, "exp_value":
+        v_exp_ml})
+
 def get_performance_decision_rules():
     dict_policies = get_file(FIXP_DICT_4292)
 
     v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
-    v_exp_worst = np.full(NUM_POINTS, dict_policies[0.95][0][0])
+    # v_exp_worst = np.full(NUM_POINTS, dict_policies[0.95][0][0])
 
     v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl", "rb"))[1]
 
