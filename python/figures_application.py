@@ -555,12 +555,15 @@ def get_difference_plot():
             label="robust $(\omega = 0.50)$",
             ls=spec_dict[color]["line"][1],
         )
-        ax.plot(
-            omega_range,
-            [0] * len(omega_range),
-            color=spec_dict[color]["colors"][1],
+        if color == "colored":
+            third_color = '#2ca02c'
+        else:
+            third_color = spec_dict[color]["colors"][2]
+        ax.axhline(
+            color=third_color,
             ls=spec_dict[color]["line"][2],
         )
+
         ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
