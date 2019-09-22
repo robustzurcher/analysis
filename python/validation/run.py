@@ -17,18 +17,9 @@ os.environ.update(update)
 from mpi4py import MPI
 import numpy as np
 
-from auxiliary import get_file
-
 if __name__ == "__main__":
 
     spec = json.load(open("specification.json", "rb"))
-
-    grid_omega = get_file(
-        "../../pre_processed_data/fixp_results_1000_10_10_{}.pkl".format(
-            spec["sample_size"]
-        )
-    ).keys()
-
     os.makedirs("val_results", exist_ok=True)
 
     status = MPI.Status()
@@ -41,11 +32,11 @@ if __name__ == "__main__":
     # We now create a list of tasks.
     grid_task = list()
 
-    for omega in grid_omega:
-
-        # Varying beliefs
-        task = omega
-        grid_task.append(task)
+    for fixp_key in [0.5, 0.95]:
+        for sample_size in [4292, 2223]:
+            for run in range(spec["runs"]):
+                task = fixp_key, sample_size, run
+                grid_task.append(task)
 
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype="float64")
@@ -68,6 +59,6 @@ if __name__ == "__main__":
     # Now we aggregate all the results.
 
     shutil.make_archive(
-        "validation_results_{}".format(spec["sample_size"]), "zip", "val_results"
+        "validation_results", "zip", "val_results"
     )
     shutil.rmtree("val_results")

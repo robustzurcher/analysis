@@ -7,6 +7,7 @@ __pycache__/
 *.pbs
 *.png
 fixp_results_1000_10_10_4292.pkl
+fixp_results_1000_10_10_2223.pkl
 sim_results/
 validation_results_2223/
 validation_results_4292/

@@ -20,6 +20,7 @@ NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292.pkl"
+FIXP_DICT_2223 = "../pre_processed_data/fixp_results_1000_10_10_2223.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS_4292 = "../pre_processed_data/validation_results_4292/"
 VAL_RESULTS_2223 = "../pre_processed_data/validation_results_2223/"
@@ -140,6 +141,52 @@ def get_probability_shift():
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
             label="$\omega=0.95$",
+        )
+
+        ax.set_ylabel(r"Probability")
+        ax.set_xlabel(r"Mileage increase (in thousands)")
+
+        plt.legend()
+
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-probability-shift{spec_dict[color]['file']}"
+        )
+
+
+def get_probability_shift_data():
+
+    x = np.arange(13)
+
+    dict_policies_4292 = get_file(FIXP_DICT_4292)
+    dict_policies_2223 = get_file(FIXP_DICT_2223)
+    width = 0.25
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.bar(
+            x - width,
+            dict_policies_4292[0.0][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][0],
+            hatch=spec_dict[color]["hatch"][0],
+            label="reference",
+        )
+        ax.bar(
+            x,
+            dict_policies_4292[0.95][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][1],
+            hatch=spec_dict[color]["hatch"][1],
+            label="$\omega=0.95$ with $N_s = 4292$",
+        )
+        ax.bar(
+            x + width,
+            dict_policies_2223[0.95][1][state, state : state + 13],
+            width,
+            color=spec_dict[color]["colors"][2],
+            hatch=spec_dict[color]["hatch"][2],
+            label="$\omega=0.95$ with $N_s = 2223$",
         )
 
         ax.set_ylabel(r"Probability")
@@ -288,17 +335,21 @@ def get_replacement_thresholds():
             ls=spec_dict[color]["line"][0],
             label="optimal",
         )
+        if color == "colored":
+            second_color = "#ff7f0e"
+        else:
+            second_color = spec_dict[color]["colors"][1]
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
                 i,
                 state_sections[j],
-                color=spec_dict[color]["colors"][1],
+                color=second_color,
                 ls=spec_dict[color]["line"][2],
             )
         ax.plot(
             omega_sections[-1],
             state_sections[-1],
-            color=spec_dict[color]["colors"][1],
+            color=second_color,
             ls=spec_dict[color]["line"][1],
             label="robust",
         )
@@ -410,22 +461,34 @@ def get_difference_plot():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, opt_costs, robust_costs = _performance_plot(omega_range)
+    nominal_costs, opt_costs, robust_costs_95 = _performance_plot(omega_range)
 
-    diff_costs = nominal_costs - robust_costs
+    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
+    robust_costs_50 = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
+
+    diff_costs_95 = robust_costs_95 - nominal_costs
+    diff_costs_50 = robust_costs_50 - nominal_costs
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
-        # ax.plot(omega_range, opt_costs, label="Discounted utilities of optimal strategy")
         ax.plot(
             omega_range,
-            diff_costs,
-            color=spec_dict[color]["colors"][1],
-            label="Differences between optimal and robust strategy",
+            diff_costs_95,
+            color=spec_dict[color]["colors"][0],
+            label="Diff: optimal and robust strategy ($\omega=0.95$)",
         )
 
-        ax.set_ylim([diff_costs[-1], diff_costs[0]])
+        ax.plot(
+            omega_range,
+            diff_costs_50,
+            color=spec_dict[color]["colors"][1],
+            label="Diff: optimal and robust strategy ($\omega=0.50$)",
+        )
+
+        ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"Performance")
         ax.set_xlabel(r"$\omega$")
 

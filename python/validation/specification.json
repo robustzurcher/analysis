@@ -3,7 +3,7 @@
   "beta": 0.9999,
   "buses": 200,
   "periods": 70000,
-  "sample_size": 4292,
   "params": [10, 10],
-  "seed": 123
+  "seed": 123,
+  "runs": 1000
 }
