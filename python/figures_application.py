@@ -98,12 +98,15 @@ def get_probabilities():
 
 
 def df_probability_shift():
-    dict_policies = get_file(FIXP_DICT_4292)
+    dict_policies_4292 = get_file(FIXP_DICT_4292)
+    dict_policies_2223 = get_file(FIXP_DICT_2223)
     return pd.DataFrame(
         {
-            0: dict_policies[0.0][1][state, state : state + 13],
-            0.50: dict_policies[0.5][1][state, state : state + 13],
-            0.95: dict_policies[0.95][1][state, state : state + 13],
+            "0": dict_policies_4292[0.0][1][state, state : state + 13],
+            "0.50": dict_policies_4292[0.5][1][state, state : state + 13],
+            "4292_0.95": dict_policies_4292[0.95][1][state, state : state + 13],
+            "2223_0.95": dict_policies_2223[0.95][1][state, state: state + 13],
+
         }
     )
 
