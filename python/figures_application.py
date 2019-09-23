@@ -39,7 +39,7 @@ def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
     os.makedirs("../pre_processed_data/sim_results")
-    ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
+    ZipFile("../pre_processed_data/simulation_results_full.zip").extractall(SIM_RESULTS)
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
@@ -409,7 +409,7 @@ def _threshold_data():
     else:
         raise AssertionError("Need to unpack simulation files")
 
-    means_discrete = np.around(means_robust_strat).astype(int)
+    means_discrete = means_robust_strat.astype(int)
     return means_discrete
 
 
@@ -577,7 +577,7 @@ def get_difference_plot():
             third_color = spec_dict[color]["colors"][2]
         ax.axhline(color=third_color, ls=spec_dict[color]["line"][2])
 
-        ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
+        # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
         ax.legend()
