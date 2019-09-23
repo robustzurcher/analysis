@@ -75,7 +75,7 @@ def get_probabilities():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-
+        plt.xticks(range(p_size))
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
@@ -106,7 +106,7 @@ def get_probabilities_bar():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-
+        plt.xticks(range(p_size))
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
@@ -169,7 +169,7 @@ def get_probability_shift():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-
+        plt.xticks(range(p_size))
         plt.legend()
 
         fig.savefig(
@@ -215,7 +215,7 @@ def get_probability_shift_data():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-
+        plt.xticks(range(p_size))
         plt.legend()
 
         fig.savefig(
@@ -239,7 +239,7 @@ def calc_cov_multinomial(n, p):
 #                       Replacement/Maintenance Probabilities
 ################################################################################
 keys = [0.0, 0.5, 0.95]
-
+max_state = 30
 
 def df_maintenance_probabilties():
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
@@ -258,13 +258,13 @@ def get_maintenance_probabilities():
     }
 
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    states = range(choice_ml.shape[0])
+    states = range(max_state)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.plot(
             states,
-            choice_ml[:, 0],
+            choice_ml[:max_state, 0],
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
             label="optimal",
@@ -272,7 +272,7 @@ def get_maintenance_probabilities():
         for i, choice in enumerate(choices):
             ax.plot(
                 states,
-                choice[:, 0],
+                choice[:max_state, 0],
                 color=spec_dict[color]["colors"][i + 1],
                 ls=spec_dict[color]["line"][i + 1],
                 label=f"robust $(\omega = {keys[i+1]:.2f})$",
@@ -299,13 +299,13 @@ def df_replacement_probabilties():
 def get_replacement_probabilities():
 
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    states = range(choice_ml.shape[0])
+    states = range(max_state)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.plot(
             states,
-            choice_ml[:, 1],
+            choice_ml[:max_state, 1],
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
             label="optimal",
@@ -313,7 +313,7 @@ def get_replacement_probabilities():
         for i, choice in enumerate(choices):
             ax.plot(
                 states,
-                choice[:, 1],
+                choice[:max_state, 1],
                 color=spec_dict[color]["colors"][i + 1],
                 ls=spec_dict[color]["line"][i + 1],
                 label=f"robust $(\omega = {keys[i+1]:.2f})$",
