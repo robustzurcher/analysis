@@ -39,11 +39,11 @@ def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
     os.makedirs("../pre_processed_data/sim_results")
-    ZipFile("../pre_processed_data/simulation_results_full.zip").extractall(SIM_RESULTS)
+    ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
-    ZipFile("../pre_processed_data/subset.zip").extractall(VAL_RESULTS)
+    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
 
 
 ################################################################################
@@ -654,14 +654,41 @@ def _performance_plot(omega_range):
 ################################################################################
 
 
-def get_out_of_sample_2223_05():
+# def get_out_of_sample_2223_05():
+#
+#     diff_05_2223, diff_05_4292 = _out_of_sample()
+#     for color in color_opts:
+#         fig, ax = plt.subplots(1, 1)
+#
+#         ax.hist(
+#             diff_05_2223,
+#             bins=100,
+#             density=True,
+#             color=spec_dict[color]["colors"][1],
+#             histtype="step",
+#         )
+#         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+#         ax.get_yaxis().set_major_formatter(formatter)
+#
+#         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
+#         ax.set_ylabel(r"Performance")
+#         ax.set_xlabel(r"$\omega$")
+#
+#         # plt.legend()
+#         fig.savefig(
+#             f"{DIR_FIGURES}/fig-application-out-of-sample-05-"
+#             f"2223{spec_dict[color]['file']}"
+#         )
 
-    diff_05_2223, diff_05_4292 = _out_of_sample()
+
+def get_out_of_sample_4292_95():
+
+    diff_95_4292 = _out_of_sample()
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.hist(
-            diff_05_2223,
+            diff_95_4292,
             bins=100,
             density=True,
             color=spec_dict[color]["colors"][1],
@@ -671,35 +698,8 @@ def get_out_of_sample_2223_05():
         ax.get_yaxis().set_major_formatter(formatter)
 
         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
-        ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"$\omega$")
-
-        # plt.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-out-of-sample-05-"
-            f"2223{spec_dict[color]['file']}"
-        )
-
-
-def get_out_of_sample_4292_05():
-
-    diff_05_2223, diff_05_4292 = _out_of_sample()
-    for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
-
-        ax.hist(
-            diff_05_4292,
-            bins=100,
-            density=True,
-            color=spec_dict[color]["colors"][1],
-            histtype="step",
-        )
-        formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        ax.get_yaxis().set_major_formatter(formatter)
-
-        # ax.set_ylim([robust_2223[-1], robust_2223[0]])
-        ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"$\omega$")
+        ax.set_ylabel(r"Num_Obs")
+        ax.set_xlabel(r"Performance difference$")
 
         # plt.legend()
         fig.savefig(
@@ -710,22 +710,22 @@ def get_out_of_sample_4292_05():
 
 def _out_of_sample():
 
-    file_list = sorted(glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_2223_*.pkl"))
-    robust_05_2223 = np.zeros(len(file_list))
-    nominal_05_2223 = np.zeros(len(file_list))
+    # file_list = sorted(glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_2223_*.pkl"))
+    # robust_05_2223 = np.zeros(len(file_list))
+    # nominal_05_2223 = np.zeros(len(file_list))
+    # for j, file in enumerate(file_list):
+    #     res = pkl.load(open(file, "rb"))
+    #     nominal_05_2223[j] = res[0]
+    #     robust_05_2223[j] = res[1]
+    # diff_05_2223 = robust_05_2223 - nominal_05_2223
+
+    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.95_size_4292_*.pkl"))
+    robust_95_4292 = np.zeros(len(file_list))
+    nominal_95_4292 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
         res = pkl.load(open(file, "rb"))
-        nominal_05_2223[j] = res[0]
-        robust_05_2223[j] = res[1]
-    diff_05_2223 = robust_05_2223 - nominal_05_2223
+        nominal_95_4292[j] = res[0]
+        robust_95_4292[j] = res[1]
+    diff_95_4292 = robust_95_4292 - nominal_95_4292
 
-    file_list = sorted(glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_4292_*.pkl"))
-    robust_05_4292 = np.zeros(len(file_list))
-    nominal_05_4292 = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        res = pkl.load(open(file, "rb"))
-        nominal_05_4292[j] = res[0]
-        robust_05_4292[j] = res[1]
-    diff_05_4292 = robust_05_4292 - nominal_05_4292
-
-    return diff_05_2223, diff_05_4292
+    return diff_95_4292
