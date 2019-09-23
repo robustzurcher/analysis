@@ -1,9 +1,20 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.interpolate import interp1d
-
+import pandas as pd
 from config import DIR_FIGURES
 from figures_application import color_opts, spec_dict
+
+
+def df_num_obs(bin_size, init_dict, trans_results):
+    max_state = trans_results["state_count"].shape[0]
+    numobs_per_state = trans_results["state_count"].sum(axis=1)
+    num_steps = int(bin_size / init_dict["binsize"])
+    num_bins = int(max_state / num_steps)
+    hist_data = np.zeros(num_bins)
+    for i in range(num_bins):
+        hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
+    return pd.DataFrame({"Num_Obs": hist_data})
 
 
 def get_number_observations(bin_size, init_dict, trans_results):
