@@ -26,7 +26,8 @@ from auxiliary import get_file
 comm = MPI.Comm.Get_parent()
 
 spec = json.load(open("specification.json", "rb"))
-p_1000 = np.loadtxt("../../pre_processed_data/parameters/p_1000_4292.txt")
+raw_params = np.loadtxt("../../pre_processed_data/parameters/p_1000_raw.txt")
+raw_hesse_inv = np.loadtxt("../../pre_processed_data/parameters/cov_1000_full_raw.txt")
 
 while True:
 
@@ -51,8 +52,7 @@ while True:
         fixp_ml = dict_polcies[0.0][0]
         
         np.random.seed()
-        obs_per_state = sample_size / 388
-        trans = create_asym_trans_mat(fixp_rob.shape[0], obs_per_state, p_1000)
+        trans = create_asym_trans_mat(fixp_rob.shape[0], raw_params, raw_hesse_inv)
 
         df_rob = simulate(spec, fixp_rob, trans)
         performance_rob = discount_utility(df_rob, 1000, spec["beta"])[-1]
