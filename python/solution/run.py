@@ -55,7 +55,7 @@ if __name__ == "__main__":
     comm.Disconnect()
 
     # Now we aggregate all the intermediate results.
-    file = "fixp_results_1000_10_10_{}_full.".format(spec["sample_size"])
+    file = "fixp_results_5000_50_400_{}.".format(spec["sample_size"])
     rslt = dict()
     for i, fname in enumerate(sorted(glob.glob('results/intermediate_*.pkl'))):
         rslt[grid_omega[i]] = pkl.load(open(fname, 'rb'))

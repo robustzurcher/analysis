@@ -50,6 +50,7 @@ def extract_zips():
 #                           Probabilities
 ################################################################################
 
+p_size = 13
 state = 150
 
 
@@ -58,7 +59,7 @@ def get_probabilities():
 
     dict_policies = get_file(FIXP_DICT_4292)
     width = 0.8
-    p_ml = dict_policies[0.0][1][state, state : state + 13]
+    p_ml = dict_policies[0.0][1][state, state : state + p_size]
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -81,11 +82,11 @@ def get_probabilities():
 
 
 def get_probabilities_bar():
-    x = np.arange(13)
+    x = np.arange(p_size)
 
     dict_policies = get_file(FIXP_DICT_4292)
     width = 0.8
-    p_ml = dict_policies[0.0][1][state, state : state + 13]
+    p_ml = dict_policies[0.0][1][state, state : state + p_size]
     std_err = np.sqrt(np.diag(calc_cov_multinomial(4292, p_ml)))
     capsize = 8
 

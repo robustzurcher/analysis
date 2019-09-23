@@ -25,7 +25,7 @@ from auxiliary import get_file
 comm = MPI.Comm.Get_parent()
 
 dict_polcies = get_file(
-    "../../pre_processed_data/fixp_results_1000_10_10_4292_full.pkl"
+    "../solution/fixp_results_5000_50_400_4292.pkl"
 )
 spec = json.load(open("specification.json", "rb"))
 
@@ -49,6 +49,6 @@ while True:
         trans = dict_polcies[trans_key][1]
 
         df = simulate(spec, fixp, trans)
-        repl_state = np.median(df[df["decision"] == 1]["state"])
+        repl_state = df[df["decision"] == 1]["state"].mean()
         performance = discount_utility(df, 1000, spec["beta"])
         pkl.dump((repl_state, performance), open(fname, "wb"))

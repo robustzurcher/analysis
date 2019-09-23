@@ -4,5 +4,4 @@
   "seed": 123,
   "buses": 200,
   "periods": 70000,
-  "params": [10, 10]
 }

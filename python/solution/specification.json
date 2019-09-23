@@ -1,6 +1,6 @@
 {
   "num_points": 100,
-  "num_states": 400,
+  "num_states": 50,
   "sample_size": 4292,
   "beta": 0.9999,
   "threshold": 1e-5,

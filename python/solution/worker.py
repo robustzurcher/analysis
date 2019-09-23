@@ -27,7 +27,7 @@ from worst_case_policies import calc_fixp_worst
 
 
 def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
-    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * sample_size)
+    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / 78))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
     fname = "results/intermediate_{}.pkl".format("{:.2f}".format(omega))
     pkl.dump(result, open(fname, "wb"))
@@ -36,8 +36,8 @@ def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
 
 
 spec = json.load(open("specification.json", "rb"))
-p_rust = np.loadtxt("../../pre_processed_data/parameters/p_1000_4292.txt")
-params_rust = np.array([10, 10])
+p_rust = np.loadtxt("../../pre_processed_data/parameters/rust_trans_probs.txt")
+params_rust = np.array([50, 400])
 
 comm = MPI.Comm.Get_parent()
 

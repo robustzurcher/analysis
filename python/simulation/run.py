@@ -22,7 +22,7 @@ from auxiliary import get_file
 if __name__ == "__main__":
 
     grid_omega = get_file(
-        "../../pre_processed_data/fixp_results_1000_10_10_4292_full.pkl"
+        "../solution/fixp_results_5000_50_400_4292.pkl"
     ).keys()
     spec = json.load(open("specification.json", "rb"))
 
@@ -56,9 +56,9 @@ if __name__ == "__main__":
         task = 0.95, omega
         grid_task.append(task)
 
-        # Optimal strategy with varying omega
-        task = omega, omega
-        grid_task.append(task)
+        # # Optimal strategy with varying omega
+        # task = omega, omega
+        # grid_task.append(task)
 
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype="float64")
