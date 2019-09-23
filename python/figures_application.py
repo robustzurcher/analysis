@@ -19,8 +19,8 @@ NUM_BUSES = 200
 NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
-FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292_full.pkl"
-FIXP_DICT_2223 = "../pre_processed_data/fixp_results_1000_10_10_2223.pkl"
+FIXP_DICT_4292 = "../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
+# FIXP_DICT_2223 = "../pre_processed_data/fixp_results_1000_10_10_2223.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS = "../pre_processed_data/val_results/"
 color_opts = ["colored", "black_white"]
@@ -50,12 +50,12 @@ def extract_zips():
 #                           Probabilities
 ################################################################################
 
-p_size = 13
-state = 150
+p_size = 3
+state = 30
 
 
 def get_probabilities():
-    x = np.arange(13)
+    x = np.arange(p_size)
 
     dict_policies = get_file(FIXP_DICT_4292)
     width = 0.8
@@ -114,7 +114,7 @@ def get_probabilities_bar():
 
 def df_probability_shift():
     dict_policies_4292 = get_file(FIXP_DICT_4292)
-    dict_policies_2223 = get_file(FIXP_DICT_2223)
+    # dict_policies_2223 = get_file(FIXP_DICT_2223)
     return pd.DataFrame(
         {
             "0": dict_policies_4292[0.0][1][state, state : state + 13],
@@ -127,7 +127,7 @@ def df_probability_shift():
 
 def get_probability_shift():
 
-    x = np.arange(13)
+    x = np.arange(p_size)
 
     dict_policies = get_file(FIXP_DICT_4292)
     width = 0.25
@@ -144,7 +144,7 @@ def get_probability_shift():
 
         ax.bar(
             x - width,
-            dict_policies[0.0][1][state, state : state + 13],
+            dict_policies[0.0][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][0],
             hatch=spec_dict[color]["hatch"][0],
@@ -152,7 +152,7 @@ def get_probability_shift():
         )
         ax.bar(
             x,
-            dict_policies[0.50][1][state, state : state + 13],
+            dict_policies[0.50][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
@@ -160,7 +160,7 @@ def get_probability_shift():
         )
         ax.bar(
             x + width,
-            dict_policies[0.95][1][state, state : state + 13],
+            dict_policies[0.95][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
@@ -182,7 +182,7 @@ def get_probability_shift_data():
     x = np.arange(13)
 
     dict_policies_4292 = get_file(FIXP_DICT_4292)
-    dict_policies_2223 = get_file(FIXP_DICT_2223)
+    # dict_policies_2223 = get_file(FIXP_DICT_2223)
     width = 0.25
 
     for color in color_opts:
@@ -204,14 +204,14 @@ def get_probability_shift_data():
             hatch=spec_dict[color]["hatch"][1],
             label="$N_s = 4,292$",
         )
-        ax.bar(
-            x + width,
-            dict_policies_2223[0.95][1][state, state : state + 13],
-            width,
-            color=spec_dict[color]["colors"][2],
-            hatch=spec_dict[color]["hatch"][2],
-            label="$N_s = 2,223$",
-        )
+        # ax.bar(
+        #     x + width,
+        #     dict_policies_2223[0.95][1][state, state : state + 13],
+        #     width,
+        #     color=spec_dict[color]["colors"][2],
+        #     hatch=spec_dict[color]["hatch"][2],
+        #     label="$N_s = 2,223$",
+        # )
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
