@@ -33,10 +33,10 @@ if __name__ == "__main__":
     grid_task = list()
 
     for fixp_key in [0.5, 0.95]:
-        for sample_size in [4292, 2223]:
-            for run in range(spec["runs"]):
-                task = fixp_key, sample_size, run
-                grid_task.append(task)
+        # for sample_size in [4292, 2223]:
+        for run in range(spec["runs"]):
+            task = fixp_key, 4292, run
+            grid_task.append(task)
 
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype="float64")

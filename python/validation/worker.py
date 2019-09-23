@@ -47,7 +47,7 @@ while True:
             "{:.2f}".format(fixp_key), sample_size, run
         )
         dict_polcies = get_file(
-            f"../../pre_processed_data/fixp_results_1000_10_10_{sample_size}.pkl")
+            f"../../pre_processed_data/fixp_results_1000_10_10_{sample_size}_full.pkl")
         fixp_rob = dict_polcies[fixp_key][0]
         fixp_ml = dict_polcies[0.0][0]
         
