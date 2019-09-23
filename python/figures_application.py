@@ -89,7 +89,6 @@ def get_probabilities_bar():
     std_err = np.sqrt(np.diag(calc_cov_multinomial(4292, p_ml)))
     capsize = 8
 
-
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -450,8 +449,10 @@ def get_decision_rule_df():
 
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
 
-    return pd.DataFrame({"period": periods, "disc_strategy": v_disc_ml, "exp_value":
-        v_exp_ml})
+    return pd.DataFrame(
+        {"period": periods, "disc_strategy": v_disc_ml, "exp_value": v_exp_ml}
+    )
+
 
 def get_performance_decision_rules():
     dict_policies = get_file(FIXP_DICT_4292)
@@ -663,7 +664,7 @@ def get_out_of_sample_2223_05():
             bins=100,
             density=True,
             color=spec_dict[color]["colors"][1],
-            histtype="step"
+            histtype="step",
         )
         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
         ax.get_yaxis().set_major_formatter(formatter)
@@ -690,7 +691,7 @@ def get_out_of_sample_4292_05():
             bins=100,
             density=True,
             color=spec_dict[color]["colors"][1],
-            histtype="step"
+            histtype="step",
         )
         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
         ax.get_yaxis().set_major_formatter(formatter)
@@ -708,9 +709,7 @@ def get_out_of_sample_4292_05():
 
 def _out_of_sample():
 
-    file_list = sorted(
-        glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_2223_*.pkl")
-    )
+    file_list = sorted(glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_2223_*.pkl"))
     robust_05_2223 = np.zeros(len(file_list))
     nominal_05_2223 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
@@ -719,10 +718,7 @@ def _out_of_sample():
         robust_05_2223[j] = res[1]
     diff_05_2223 = robust_05_2223 - nominal_05_2223
 
-
-    file_list = sorted(
-        glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_4292_*.pkl")
-    )
+    file_list = sorted(glob.glob(VAL_RESULTS + "/tmp/result_ev_0.50_size_4292_*.pkl"))
     robust_05_4292 = np.zeros(len(file_list))
     nominal_05_4292 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
