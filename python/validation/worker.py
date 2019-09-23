@@ -26,8 +26,8 @@ from auxiliary import get_file
 comm = MPI.Comm.Get_parent()
 
 spec = json.load(open("specification.json", "rb"))
-raw_params = np.loadtxt("../../pre_processed_data/parameters/p_1000_raw.txt")
-raw_hesse_inv = np.loadtxt("../../pre_processed_data/parameters/cov_1000_full_raw.txt")
+raw_params = np.loadtxt("../../pre_processed_data/parameters/rust_trans_raw.txt")
+raw_hesse_inv = np.loadtxt("../../pre_processed_data/parameters/rust_cov_raw.txt")
 
 while True:
 
@@ -47,7 +47,7 @@ while True:
             "{:.2f}".format(fixp_key), sample_size, run
         )
         dict_polcies = get_file(
-            f"../../pre_processed_data/fixp_results_1000_10_10_{sample_size}_full.pkl")
+            "../solution/fixp_results_5000_50_400_4292.pkl")
         fixp_rob = dict_polcies[fixp_key][0]
         fixp_ml = dict_polcies[0.0][0]
         
