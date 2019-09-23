@@ -14,7 +14,7 @@ from config import DIR_FIGURES
 
 # Global variables
 BETA = 0.9999
-PARAMS = np.array([10, 10])
+PARAMS = np.array([50, 400])
 NUM_BUSES = 200
 NUM_PERIODS = 70000
 GRIDSIZE = 1000
