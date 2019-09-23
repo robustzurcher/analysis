@@ -368,7 +368,7 @@ def get_replacement_thresholds():
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
         ax.set_ylim([y_0, y_1])
-        plt.yticks(range(y_0, y_1, 2))
+        plt.yticks(range(y_0, y_1))
         ax.set_ylabel(r"Milage at replacement (in thousands)")
         ax.set_xlabel(r"$\omega$")
         ax.plot(
