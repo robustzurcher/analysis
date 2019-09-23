@@ -19,7 +19,7 @@ NUM_BUSES = 200
 NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
-FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292.pkl"
+FIXP_DICT_4292 = "../pre_processed_data/fixp_results_1000_10_10_4292_full.pkl"
 FIXP_DICT_2223 = "../pre_processed_data/fixp_results_1000_10_10_2223.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS = "../pre_processed_data/val_results/"
@@ -120,7 +120,7 @@ def df_probability_shift():
             "0": dict_policies_4292[0.0][1][state, state : state + 13],
             "4292_0.50": dict_policies_4292[0.5][1][state, state : state + 13],
             "4292_0.95": dict_policies_4292[0.95][1][state, state : state + 13],
-            "2223_0.95": dict_policies_2223[0.95][1][state, state : state + 13],
+            # "2223_0.95": dict_policies_2223[0.95][1][state, state : state + 13],
         }
     )
 
