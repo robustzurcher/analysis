@@ -16,6 +16,7 @@ from config import DIR_FIGURES
 BETA = 0.9999
 PARAMS = np.array([50, 400])
 NUM_BUSES = 200
+BIN_SIZE = 5  # in thousand
 NUM_PERIODS = 70000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
@@ -43,8 +44,7 @@ def extract_zips():
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
-    ZipFile("../pre_processed_data/validation_results_explore.zip").extractall(
-        VAL_RESULTS)
+    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
 
 
 ################################################################################
@@ -52,14 +52,14 @@ def extract_zips():
 ################################################################################
 
 p_size = 3
-state = 30
+x = np.arange(1, p_size + 1) * BIN_SIZE
+dict_policies = get_file(FIXP_DICT_4292)
+width = 0.8 * BIN_SIZE
+p_raw = np.loadtxt("../pre_processed_data/parameters/rust_trans_raw.txt")
+hesse_inv_raw = np.loadtxt("../pre_processed_data/parameters/rust_cov_raw.txt")
 
 
-def get_probabilities():
-    x = np.arange(p_size)
-
-    dict_policies = get_file(FIXP_DICT_4292)
-    width = 0.8
+def get_probabilities(state):
     p_ml = dict_policies[0.0][1][state, state : state + p_size]
 
     for color in color_opts:
@@ -76,19 +76,17 @@ def get_probabilities():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-        plt.xticks(range(p_size))
+        plt.xticks(x)
+        ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
 
 
-def get_probabilities_bar():
-    x = np.arange(p_size)
+def get_probabilities_bar(state):
 
-    dict_policies = get_file(FIXP_DICT_4292)
-    width = 0.8
     p_ml = dict_policies[0.0][1][state, state : state + p_size]
-    std_err = np.sqrt(np.diag(calc_cov_multinomial(4292 / 78, p_ml)))
+    std_err = _get_standard_errors(p_ml, p_raw, hesse_inv_raw)
     capsize = 15
 
     for color in color_opts:
@@ -107,13 +105,14 @@ def get_probabilities_bar():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-        plt.xticks(range(p_size))
+        plt.xticks(x)
+        ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
 
 
-def df_probability_shift():
+def df_probability_shift(state):
     dict_policies_4292 = get_file(FIXP_DICT_4292)
     # dict_policies_2223 = get_file(FIXP_DICT_2223)
     return pd.DataFrame(
@@ -126,13 +125,9 @@ def df_probability_shift():
     )
 
 
-def get_probability_shift():
+def get_probability_shift(state):
 
-    x = np.arange(p_size)
-
-    dict_policies = get_file(FIXP_DICT_4292)
-    width = 0.25
-
+    width = 0.25 * BIN_SIZE
     spec_dict["black_white"] = {
         "colors": ["#808080", "#d3d3d3", "#d3d3d3", "#d3d3d3"],
         "line": ["-", "--", ":"],
@@ -170,21 +165,19 @@ def get_probability_shift():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-        plt.xticks(range(p_size))
-        plt.legend()
+        plt.xticks(x)
+        ax.legend()
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probability-shift-omega{spec_dict[color]['file']}"
         )
 
 
-def get_probability_shift_data():
+def get_probability_shift_data(state):
 
-    x = np.arange(13)
-
+    width = 0.25 * BIN_SIZE
     dict_policies_4292 = get_file(FIXP_DICT_4292)
     # dict_policies_2223 = get_file(FIXP_DICT_2223)
-    width = 0.25
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -216,24 +209,29 @@ def get_probability_shift_data():
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
-        plt.xticks(range(p_size))
-        plt.legend()
+        plt.xticks(x)
+        ax.legend()
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probability-shift-data{spec_dict[color]['file']}"
         )
 
 
-def calc_cov_multinomial(n, p):
-    dim = len(p)
-    cov = np.zeros(shape=(dim, dim), dtype=float)
-    for i in range(dim):
-        for j in range(dim):
-            if i == j:
-                cov[i, i] = p[i] * (1 - p[i])
-            else:
-                cov[i, j] = -p[i] * p[j]
-    return cov / n
+def _get_standard_errors(p, p_raw, hesse_inv_raw):
+    runs = 1000
+    draws = np.zeros((runs, len(p_raw)), dtype=np.float)
+    for i in range(runs):
+        draws[i, :] = draw_from_raw(p_raw, hesse_inv_raw)
+    std_err = np.zeros((2, len(p_raw)), dtype=float)
+    for i in range(len(p_raw)):
+        std_err[0, i] = p[i] - np.percentile(draws[:, i], 2.5)
+        std_err[1, i] = np.percentile(draws[:, i], 97.5) - p[i]
+    return std_err
+
+
+def draw_from_raw(p_raw, hesse_inv_raw):
+    draw = np.random.multivariate_normal(p_raw, hesse_inv_raw)
+    return np.exp(draw) / np.sum(np.exp(draw))
 
 
 ################################################################################
@@ -242,10 +240,17 @@ def calc_cov_multinomial(n, p):
 keys = [0.0, 0.5, 0.95]
 max_state = 30
 
+
 def df_maintenance_probabilties():
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
+    states = np.arange(choice_ml.shape[0]) * BIN_SIZE
     return pd.DataFrame(
-        {0.0: choice_ml[:, 0], keys[1]: choices[0][:, 0], keys[2]: choices[1][:, 0]}
+        {
+            "milage_thousands": states,
+            0.0: choice_ml[:, 0],
+            keys[1]: choices[0][:, 0],
+            keys[2]: choices[1][:, 0],
+        }
     )
 
 
@@ -259,7 +264,7 @@ def get_maintenance_probabilities():
     }
 
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    states = range(max_state)
+    states = np.arange(max_state) * BIN_SIZE
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -283,50 +288,12 @@ def get_maintenance_probabilities():
         ax.set_xlabel(r"Mileage (in thousands)")
         ax.set_ylim([0, 1])
 
-        plt.legend()
+        plt.xticks(states[::5])
+        ax.legend()
+
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-maintenance-probabilities"
             f"{spec_dict[color]['file']}"
-        )
-
-
-def df_replacement_probabilties():
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    return pd.DataFrame(
-        {0.0: choice_ml[:, 1], keys[1]: choices[0][:, 1], keys[2]: choices[1][:, 1]}
-    )
-
-
-def get_replacement_probabilities():
-
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    states = range(max_state)
-    for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
-
-        ax.plot(
-            states,
-            choice_ml[:max_state, 1],
-            color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][0],
-            label="optimal",
-        )
-        for i, choice in enumerate(choices):
-            ax.plot(
-                states,
-                choice[:max_state, 1],
-                color=spec_dict[color]["colors"][i + 1],
-                ls=spec_dict[color]["line"][i + 1],
-                label=f"robust $(\omega = {keys[i+1]:.2f})$",
-            )
-
-        ax.set_ylabel(r"Replacement probability")
-        ax.set_xlabel(r"Mileage (in thousands)")
-        ax.set_ylim([0, 1])
-
-        plt.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-replacement-probabilities{spec_dict[color]['file']}"
         )
 
 
@@ -357,45 +324,45 @@ def df_thresholds():
 
 def get_replacement_thresholds():
 
-    means_discrete = _threshold_data()
+    means_discrete = _threshold_data() * BIN_SIZE
+
 
     omega_range = np.linspace(0, 0.99, num_keys)
     means_ml = np.full(len(omega_range), np.round(means_discrete[0])).astype(int)
 
     omega_sections, state_sections = _create_sections(means_discrete, omega_range)
 
-    y_0 = state_sections[0][0] - 2
-    y_1 = state_sections[-1][-1] + 2
+    y_0 = state_sections[0][0] - 2 * BIN_SIZE
+    y_1 = state_sections[-1][-1] + 2 * BIN_SIZE
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
-        ax.set_ylim([y_0, y_1])
-        plt.yticks(range(y_0, y_1))
-        ax.set_ylabel(r"Milage at replacement (in thousands)")
+        ax.set_ylabel(r"Mean milage at replacement (in thousands)")
         ax.set_xlabel(r"$\omega$")
+        ax.set_ylim([y_0, y_1])
         ax.plot(
             omega_range,
             means_ml,
-            color=spec_dict[color]["colors"][2],
+            color=spec_dict[color]["colors"][1],
             ls=spec_dict[color]["line"][0],
             label="optimal",
         )
         if color == "colored":
             second_color = "#ff7f0e"
         else:
-            second_color = spec_dict[color]["colors"][1]
+            second_color = spec_dict[color]["colors"][0]
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
-                i, state_sections[j], color=second_color, ls=spec_dict[color]["line"][2]
+                i, state_sections[j], color=second_color, ls=spec_dict[color]["line"][1]
             )
         ax.plot(
             omega_sections[-1],
             state_sections[-1],
             color=second_color,
-            ls=spec_dict[color]["line"][1],
+            ls= spec_dict[color]["line"][1],
             label="robust",
         )
+        ax.legend()
 
-        plt.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-replacement-thresholds{spec_dict[color]['file']}"
         )
@@ -457,6 +424,7 @@ def get_decision_rule_df():
 
 
 def get_performance_decision_rules():
+    print("The underlying transition matrix is the worst case given omega=0.95")
     dict_policies = get_file(FIXP_DICT_4292)
 
     v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
@@ -607,23 +575,18 @@ def _performance_plot(omega_range):
 
 
 def get_out_of_sample_4292_05():
-    print("0.0 strategy")
     diff_95_4292, diff_05_4292 = _out_of_sample()
-    print(diff_05_4292)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.hist(
             diff_05_4292,
-            bins=100,
-            # density=True,
-            color=spec_dict[color]["colors"][1],
+            bins=20,
+            density=True,
+            color=spec_dict[color]["colors"][0],
             histtype="step",
         )
-        # formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        # ax.get_yaxis().set_major_formatter(formatter)
 
-        # ax.set_ylim([robust_2223[-1], robust_2223[0]])
         ax.set_ylabel(r"Num_Obs")
         ax.set_xlabel(r"Performance difference")
 
@@ -635,22 +598,18 @@ def get_out_of_sample_4292_05():
 
 
 def get_out_of_sample_4292_95():
-    print("0.1 strategy")
     diff_95_4292, diff_05_4292 = _out_of_sample()
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.hist(
             diff_95_4292,
-            bins=100,
-            # density=True,
-            color=spec_dict[color]["colors"][1],
+            bins=20,
+            density=True,
+            color=spec_dict[color]["colors"][0],
             histtype="step",
         )
-        # formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        # ax.get_yaxis().set_major_formatter(formatter)
 
-        # ax.set_ylim([robust_2223[-1], robust_2223[0]])
         ax.set_ylabel(r"Num_Obs")
         ax.set_xlabel(r"Performance difference")
 
@@ -663,7 +622,7 @@ def get_out_of_sample_4292_95():
 
 def _out_of_sample():
 
-    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.00_size_4292_*.pkl"))
+    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.50_size_4292_*.pkl"))
     robust_05_4292 = np.zeros(len(file_list))
     nominal_05_4292 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
@@ -672,7 +631,7 @@ def _out_of_sample():
         robust_05_4292[j] = res[1]
     diff_05_4292 = robust_05_4292 - nominal_05_4292
 
-    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.10_size_4292_*.pkl"))
+    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.95_size_4292_*.pkl"))
     robust_95_4292 = np.zeros(len(file_list))
     nominal_95_4292 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
