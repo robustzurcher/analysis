@@ -614,12 +614,12 @@ def get_out_of_sample_4292_05():
         ax.hist(
             diff_05_4292,
             bins=100,
-            density=True,
+            # density=True,
             color=spec_dict[color]["colors"][1],
             histtype="step",
         )
-        formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        ax.get_yaxis().set_major_formatter(formatter)
+        # formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+        # ax.get_yaxis().set_major_formatter(formatter)
 
         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
         ax.set_ylabel(r"Num_Obs")
@@ -641,12 +641,12 @@ def get_out_of_sample_4292_95():
         ax.hist(
             diff_95_4292,
             bins=100,
-            density=True,
+            # density=True,
             color=spec_dict[color]["colors"][1],
             histtype="step",
         )
-        formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        ax.get_yaxis().set_major_formatter(formatter)
+        # formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
+        # ax.get_yaxis().set_major_formatter(formatter)
 
         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
         ax.set_ylabel(r"Num_Obs")
