@@ -43,7 +43,8 @@ def extract_zips():
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
-    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
+    ZipFile("../pre_processed_data/validation_results_explore.zip").extractall(
+        VAL_RESULTS)
 
 
 ################################################################################
@@ -606,8 +607,9 @@ def _performance_plot(omega_range):
 
 
 def get_out_of_sample_4292_05():
-
+    print("0.0 strategy")
     diff_95_4292, diff_05_4292 = _out_of_sample()
+    print(diff_05_4292)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -633,7 +635,7 @@ def get_out_of_sample_4292_05():
 
 
 def get_out_of_sample_4292_95():
-
+    print("0.1 strategy")
     diff_95_4292, diff_05_4292 = _out_of_sample()
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -661,7 +663,7 @@ def get_out_of_sample_4292_95():
 
 def _out_of_sample():
 
-    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.50_size_4292_*.pkl"))
+    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.00_size_4292_*.pkl"))
     robust_05_4292 = np.zeros(len(file_list))
     nominal_05_4292 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
@@ -670,7 +672,7 @@ def _out_of_sample():
         robust_05_4292[j] = res[1]
     diff_05_4292 = robust_05_4292 - nominal_05_4292
 
-    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.95_size_4292_*.pkl"))
+    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.10_size_4292_*.pkl"))
     robust_95_4292 = np.zeros(len(file_list))
     nominal_95_4292 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
