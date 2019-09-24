@@ -459,7 +459,6 @@ def get_performance_decision_rules():
     dict_policies = get_file(FIXP_DICT_4292)
 
     v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
-    # v_exp_worst = np.full(NUM_POINTS, dict_policies[0.95][0][0])
 
     v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl", "rb"))[1]
 
@@ -490,14 +489,6 @@ def get_performance_decision_rules():
             label="actual",
         )
 
-        # 'Expected value of robust strategy with $\omega = 0.95$'
-        # ax.plot(
-        #     periods,
-        #     v_exp_worst,
-        #     color=spec_dict[color]["colors"][2],
-        #     ls=spec_dict[color]["line"][2],
-        #     label="robust (expected value)",
-        # )
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-performance-decision-rules{spec_dict[color]['file']}"
@@ -584,46 +575,6 @@ def get_difference_plot():
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-difference{spec_dict[color]['file']}"
-        )
-
-
-def get_performance():
-
-    num_keys = 100
-
-    omega_range = np.linspace(0, 0.99, num_keys)
-
-    nominal_costs, robust_costs = _performance_plot(omega_range)
-
-    for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
-
-        # ax.plot(omega_range, opt_costs, label="Discounted utilities of optimal strategy")
-        ax.plot(
-            omega_range,
-            nominal_costs,
-            color=spec_dict[color]["colors"][1],
-            ls=spec_dict[color]["line"][1],
-            label="Discounted utilities of nominal strategy",
-        )
-        ax.plot(
-            omega_range,
-            robust_costs,
-            color=spec_dict[color]["colors"][2],
-            ls=spec_dict[color]["line"][2],
-            label="Discounted utilities of robust strategy with $\omega = 0.95$",
-        )
-
-        formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        ax.get_yaxis().set_major_formatter(formatter)
-
-        ax.set_ylim([nominal_costs[-1], nominal_costs[0]])
-        ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"$\omega$")
-
-        plt.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-performance{spec_dict[color]['file']}"
         )
 
 
