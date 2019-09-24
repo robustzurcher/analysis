@@ -203,7 +203,7 @@ def get_probability_shift_data():
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="$N_s = 4,292$",
+            label="$N_k = 4,292$",
         )
         # ax.bar(
         #     x + width,
@@ -211,7 +211,7 @@ def get_probability_shift_data():
         #     width,
         #     color=spec_dict[color]["colors"][2],
         #     hatch=spec_dict[color]["hatch"][2],
-        #     label="$N_s = 2,223$",
+        #     label="$N_k = 2,223$",
         # )
 
         ax.set_ylabel(r"Probability")
