@@ -3,12 +3,12 @@
   "beta": 0.9999,
   "buses": 200,
   "periods": 70000,
-  "params": [10, 10],
+  "params": [50, 400],
   "seed": 123,
   "runs": 1000,
-  "sample_sizes": [4292, 2223],
+  "sample_sizes": [4292],
   "strategies": [0.95, 0.5],
-  "raw_params": "../../pre_processed_data/parameters/rust_trans_raw.txt",
+  "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
   "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
-  "policy_dict":  "../solution/fixp_results_5000_50_400_4292.pkl"
+  "policy_dict":  "../../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
 }

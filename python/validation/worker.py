@@ -26,7 +26,7 @@ from auxiliary import get_file
 comm = MPI.Comm.Get_parent()
 
 spec = json.load(open("specification.json", "rb"))
-raw_params = np.loadtxt(spec["raw_params"])
+raw_params = np.loadtxt(spec["raw_trans"])
 raw_hesse_inv = np.loadtxt(spec["raw_cov"])
 
 while True:
