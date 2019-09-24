@@ -36,14 +36,14 @@ spec_dict = {
 
 
 def extract_zips():
-    # if os.path.exists(SIM_RESULTS):
-    #     shutil.rmtree(SIM_RESULTS)
-    # os.makedirs("../pre_processed_data/sim_results")
-    # ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
+    if os.path.exists(SIM_RESULTS):
+        shutil.rmtree(SIM_RESULTS)
+    os.makedirs("../pre_processed_data/sim_results")
+    ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
 
-    if os.path.exists(VAL_RESULTS):
-        shutil.rmtree(VAL_RESULTS)
-    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
+    # if os.path.exists(VAL_RESULTS):
+    #     shutil.rmtree(VAL_RESULTS)
+    # ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
 
 
 ################################################################################
@@ -87,8 +87,8 @@ def get_probabilities_bar():
     dict_policies = get_file(FIXP_DICT_4292)
     width = 0.8
     p_ml = dict_policies[0.0][1][state, state : state + p_size]
-    std_err = np.sqrt(np.diag(calc_cov_multinomial(4292, p_ml)))
-    capsize = 8
+    std_err = np.sqrt(np.diag(calc_cov_multinomial(4292 / 78, p_ml)))
+    capsize = 15
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -410,7 +410,7 @@ def _threshold_data():
     else:
         raise AssertionError("Need to unpack simulation files")
 
-    means_discrete = means_robust_strat.astype(int)
+    means_discrete = np.around(means_robust_strat).astype(int)
     return means_discrete
 
 
@@ -514,7 +514,7 @@ def get_difference_df():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, opt_costs, robust_costs_95 = _performance_plot(omega_range)
+    nominal_costs, robust_costs_95 = _performance_plot(omega_range)
 
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
@@ -544,7 +544,7 @@ def get_difference_plot():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, opt_costs, robust_costs_95 = _performance_plot(omega_range)
+    nominal_costs, robust_costs_95 = _performance_plot(omega_range)
 
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
@@ -593,7 +593,7 @@ def get_performance():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, opt_costs, robust_costs = _performance_plot(omega_range)
+    nominal_costs, robust_costs = _performance_plot(omega_range)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -639,14 +639,14 @@ def _performance_plot(omega_range):
     for j, file in enumerate(file_list):
         robust_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
-    opt_costs = np.zeros(len(omega_range))
-    for j, omega in enumerate(omega_range):
-        file = SIM_RESULTS + "result_ev_{}_mat_{}.pkl".format(
-            "{:.2f}".format(omega), "{:.2f}".format(omega)
-        )
-        opt_costs[j] = pkl.load(open(file, "rb"))[1][-1]
+    # opt_costs = np.zeros(len(omega_range))
+    # for j, omega in enumerate(omega_range):
+    #     file = SIM_RESULTS + "result_ev_{}_mat_{}.pkl".format(
+    #         "{:.2f}".format(omega), "{:.2f}".format(omega)
+    #     )
+    #     opt_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
-    return nominal_costs, opt_costs, robust_costs
+    return nominal_costs, robust_costs
 
 
 ################################################################################
