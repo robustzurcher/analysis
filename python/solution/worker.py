@@ -26,8 +26,8 @@ from ruspy.estimation.estimation_cost_parameters import lin_cost
 from worst_case_policies import calc_fixp_worst
 
 
-def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
-    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / 388))
+def wrapper_func(p_ml, sample_size, scale, costs, beta, num_states, threshold, omega):
+    rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / scale))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
     fname = "results/intermediate_{}.pkl".format("{:.2f}".format(omega))
     pkl.dump(result, open(fname, "wb"))
@@ -36,8 +36,8 @@ def wrapper_func(p_ml, sample_size, costs, beta, num_states, threshold, omega):
 
 
 spec = json.load(open("specification.json", "rb"))
-p_rust = np.loadtxt("../../pre_processed_data/parameters/p_1000_4292.txt")
-params_rust = np.array([10, 10])
+p_rust = np.loadtxt(spec["trans_probs"])
+params_rust = np.array(spec["params"])
 
 comm = MPI.Comm.Get_parent()
 
@@ -46,6 +46,7 @@ costs_rust = cost_func(spec["num_states"], lin_cost, params_rust)
 base_args = (
     p_rust,
     spec["sample_size"],
+    spec["scale"],
     costs_rust,
     spec["beta"],
     spec["num_states"],

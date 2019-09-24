@@ -8,8 +8,8 @@ __pycache__/
 *.png
 fixp_results_1000_10_10_4292.pkl
 fixp_results_1000_10_10_2223.pkl
+fixp_results_5000_50_400_4292.pkl
 sim_results/
-validation_results_2223/
-validation_results_4292/
+val_results/
 
 

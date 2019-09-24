@@ -1,9 +1,12 @@
 {
-  "num_points": 100,
-  "num_states": 400,
-  "sample_size": 2223,
+  "num_points": 10,
+  "num_states": 50,
+  "sample_size": 4292,
+  "scale": 1,
   "beta": 0.9999,
   "threshold": 1e-5,
-  "num_workers": 100
+  "num_workers": 4,
+  "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
+  "params": [50, 400]
 
 }

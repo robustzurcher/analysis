@@ -32,8 +32,8 @@ if __name__ == "__main__":
     # We now create a list of tasks.
     grid_task = list()
 
-    for fixp_key in [0.5, 0.95]:
-        for sample_size in [4292, 2223]:
+    for fixp_key in spec["strategies"]:
+        for sample_size in spec["sample_sizes"]:
             for run in range(spec["runs"]):
                 task = fixp_key, sample_size, run
                 grid_task.append(task)
