@@ -41,9 +41,9 @@ def extract_zips():
     os.makedirs("../pre_processed_data/sim_results")
     ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
 
-    # if os.path.exists(VAL_RESULTS):
-    #     shutil.rmtree(VAL_RESULTS)
-    # ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
+    if os.path.exists(VAL_RESULTS):
+        shutil.rmtree(VAL_RESULTS)
+    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
 
 
 ################################################################################
@@ -671,8 +671,8 @@ def get_out_of_sample_4292_05():
         ax.get_yaxis().set_major_formatter(formatter)
 
         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
-        ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"$\omega$")
+        ax.set_ylabel(r"Num_Obs")
+        ax.set_xlabel(r"Performance difference")
 
         # plt.legend()
         fig.savefig(
@@ -699,7 +699,7 @@ def get_out_of_sample_4292_95():
 
         # ax.set_ylim([robust_2223[-1], robust_2223[0]])
         ax.set_ylabel(r"Num_Obs")
-        ax.set_xlabel(r"Performance difference$")
+        ax.set_xlabel(r"Performance difference")
 
         # plt.legend()
         fig.savefig(
