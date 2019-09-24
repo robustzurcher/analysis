@@ -7,8 +7,8 @@
   "seed": 123,
   "runs": 1000,
   "sample_sizes": [4292],
-  "strategies": [0.01, 0.02, 0.04, 0.08],
+  "strategies": [0.55, 0.88],
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
-  "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
-  "policy_dict":  "../../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
+  "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw_full.txt",
+  "policy_dict":  "../../pre_processed_data/fixp_results_5000_50_400_4292_full.pkl"
 }
