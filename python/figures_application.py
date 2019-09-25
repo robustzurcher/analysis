@@ -76,6 +76,7 @@ def get_probabilities(state):
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
+        ax.set_ylim([0.00, 0.80])
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
@@ -101,10 +102,12 @@ def get_probabilities_bar(state):
         )
 
         ax.set_ylabel(r"Probability")
+        ax.set_ylim([0.00, 0.80])
+
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-probabilities-bar{spec_dict[color]['file']}"
         )
 
 
@@ -161,6 +164,7 @@ def get_probability_shift(state):
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
+        ax.set_ylim([0.0, 0.8])
         plt.xticks(x)
         ax.legend()
 
@@ -206,6 +210,8 @@ def get_probability_shift_data(state):
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
+        ax.set_ylim([0.0, 0.8])
+
         ax.legend()
 
         fig.savefig(
@@ -492,7 +498,7 @@ def get_performance_decision_rules():
             ls=spec_dict[color]["line"][1],
             label="actual",
         )
-
+        ax.set_ylim([-60000, 0])
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-performance-decision-rules{spec_dict[color]['file']}"
@@ -572,7 +578,7 @@ def get_difference_plot():
         else:
             third_color = spec_dict[color]["colors"][2]
         ax.axhline(color=third_color, ls=spec_dict[color]["line"][2])
-
+        ax.set_ylim([-300, 400])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
@@ -629,7 +635,7 @@ def get_out_of_sample_diff(key, bins, sample_size):
 
         ax.set_ylabel(r"Density")
         ax.set_xlabel(r"$\Delta$ Performance")
-        ax.set_ylim([0, None])
+        ax.set_ylim([0, 0.1])
 
         # ax.legend()
         fig.savefig(
@@ -658,8 +664,9 @@ def get_robust_performance(keys, width, sample_size):
             ls=spec_dict[color]["line"][0],
         )
 
-        ax.set_ylabel(r"Robust beats")
-        ax.set_xlabel(r"Robust strategy with $\omega$")
+        ax.set_ylabel(r"Share")
+        ax.set_xlabel(r"$\omega$")
+        ax.set_ylim([0., 0.3])
         plt.xticks(keys)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-perfor"
