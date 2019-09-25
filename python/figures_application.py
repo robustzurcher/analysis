@@ -71,13 +71,11 @@ def get_probabilities(state):
             width,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label="reference",
         )
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
-        ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
@@ -100,13 +98,11 @@ def get_probabilities_bar(state):
             capsize=capsize,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
-            label="reference",
         )
 
         ax.set_ylabel(r"Probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
-        ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{spec_dict[color]['file']}"
         )
@@ -335,20 +331,21 @@ def get_replacement_thresholds():
     y_1 = state_sections[-1][-1] + 2 * BIN_SIZE
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
-        ax.set_ylabel(r"Mean milage at replacement (in thousands)")
+        ax.set_ylabel(r"Mileage (in thousands)")
         ax.set_xlabel(r"$\omega$")
         ax.set_ylim([y_0, y_1])
+
         ax.plot(
             omega_range,
             means_ml,
-            color=spec_dict[color]["colors"][1],
+            color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
             label="optimal",
         )
         if color == "colored":
             second_color = "#ff7f0e"
         else:
-            second_color = spec_dict[color]["colors"][0]
+            second_color = spec_dict[color]["colors"][1]
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
                 i, state_sections[j], color=second_color, ls=spec_dict[color]["line"][1]
@@ -581,15 +578,21 @@ def get_out_of_sample_diff(key, bins, sample_size):
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
-        ax.plot(x, hist_data[0], color=spec_dict[color]["colors"][0])
+        if color == "colored":
+            third_color = "#ff7f0e"
+        else:
+            third_color = spec_dict[color]["colors"][2]
+            
+        ax.plot(x, hist_data[0] / sum(hist_data[0]) , color=spec_dict[color]["colors"][0])
+        ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
-        ax.set_xlabel(r"Performance difference")
+        ax.set_xlabel(r"$\Delta$ Performance")
 
         # ax.legend()
         fig.savefig(
-            "{}/fig-application-out-of-sample-color-{}-{}".format(
-                DIR_FIGURES, "{:.2f}".format(key)[2:], spec_dict[color]["file"]
+            "{}/fig-application-validation{}".format(
+                DIR_FIGURES, spec_dict[color]["file"]
             )
         )
 
