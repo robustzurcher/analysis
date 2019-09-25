@@ -315,7 +315,7 @@ def get_demonstration(max_period):
     labels = ["optimal", "robust ($\omega = 0.95$)"]
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
-        ax.set_xlabel(r"Month")
+        ax.set_xlabel(r"Months")
         ax.set_ylabel(r"Mileage (in thousands)")
 
         for i, state in enumerate(states):
@@ -326,11 +326,11 @@ def get_demonstration(max_period):
                 ls=spec_dict[color]["line"][i],
                 label=labels[i],
             )
-        ax.legend()
-        ax.set_ylim([0, None])
+        ax.legend(loc="upper left")
+        ax.set_ylim([0, 90])
 
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-sim-demonstration{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-demonstration{spec_dict[color]['file']}"
         )
 
 
