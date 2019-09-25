@@ -326,7 +326,6 @@ def get_replacement_thresholds():
 
     means_discrete = _threshold_data() * BIN_SIZE
 
-
     omega_range = np.linspace(0, 0.99, num_keys)
     means_ml = np.full(len(omega_range), np.round(means_discrete[0])).astype(int)
 
@@ -358,7 +357,7 @@ def get_replacement_thresholds():
             omega_sections[-1],
             state_sections[-1],
             color=second_color,
-            ls= spec_dict[color]["line"][1],
+            ls=spec_dict[color]["line"][1],
             label="robust",
         )
         ax.legend()
@@ -419,7 +418,7 @@ def get_decision_rule_df():
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
 
     return pd.DataFrame(
-        {"period": periods, "disc_strategy": v_disc_ml, "exp_value": v_exp_ml}
+        {"months": periods, "disc_strategy": v_disc_ml, "exp_value": v_exp_ml}
     )
 
 
@@ -436,7 +435,7 @@ def get_performance_decision_rules():
         fig, ax = plt.subplots(1, 1)
         ax.set_ylim([1.1 * v_disc_ml[-1], 0])
         ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"Periods")
+        ax.set_xlabel(r"Months")
 
         formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
         ax.get_xaxis().set_major_formatter(formatter)
@@ -574,70 +573,39 @@ def _performance_plot(omega_range):
 ################################################################################
 
 
-def get_out_of_sample_4292_05():
-    diff_95_4292, diff_05_4292 = _out_of_sample()
+def get_out_of_sample_diff(key, bins, sample_size):
+    robust, nominal = _out_of_sample(key, sample_size)
+    diff = robust - nominal
+    hist_data = np.histogram(diff, bins=bins)
+    x = np.linspace(np.min(hist_data[1]), np.max(hist_data[1]), bins)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
-        ax.hist(
-            diff_05_4292,
-            bins=20,
-            density=True,
-            color=spec_dict[color]["colors"][0],
-            histtype="step",
-        )
+        ax.plot(x, hist_data[0], color=spec_dict[color]["colors"][0])
 
-        ax.set_ylabel(r"Num_Obs")
+        ax.set_ylabel(r"Density")
         ax.set_xlabel(r"Performance difference")
 
-        # plt.legend()
+        # ax.legend()
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-out-of-sample-05-"
-            f"2223{spec_dict[color]['file']}"
+            "{}/fig-application-out-of-sample-color-{}-{}".format(
+                DIR_FIGURES, "{:.2f}".format(key)[2:], spec_dict[color]["file"]
+            )
         )
 
 
-def get_out_of_sample_4292_95():
-    diff_95_4292, diff_05_4292 = _out_of_sample()
-    for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
+def _out_of_sample(key, sample_size):
 
-        ax.hist(
-            diff_95_4292,
-            bins=20,
-            density=True,
-            color=spec_dict[color]["colors"][0],
-            histtype="step",
+    file_list = sorted(
+        glob.glob(
+            VAL_RESULTS
+            + "result_ev_{}_size_{}_*.pkl".format("{:.2f}".format(key), sample_size)
         )
-
-        ax.set_ylabel(r"Num_Obs")
-        ax.set_xlabel(r"Performance difference")
-
-        # plt.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-out-of-sample-05-"
-            f"4292{spec_dict[color]['file']}"
-        )
-
-
-def _out_of_sample():
-
-    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.50_size_4292_*.pkl"))
-    robust_05_4292 = np.zeros(len(file_list))
-    nominal_05_4292 = np.zeros(len(file_list))
+    )
+    robust = np.zeros(len(file_list))
+    nominal = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
         res = pkl.load(open(file, "rb"))
-        nominal_05_4292[j] = res[0]
-        robust_05_4292[j] = res[1]
-    diff_05_4292 = robust_05_4292 - nominal_05_4292
-
-    file_list = sorted(glob.glob(VAL_RESULTS + "result_ev_0.95_size_4292_*.pkl"))
-    robust_95_4292 = np.zeros(len(file_list))
-    nominal_95_4292 = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        res = pkl.load(open(file, "rb"))
-        nominal_95_4292[j] = res[0]
-        robust_95_4292[j] = res[1]
-    diff_95_4292 = robust_95_4292 - nominal_95_4292
-
-    return diff_95_4292, diff_05_4292
+        nominal[j] = res[0]
+        robust[j] = res[1]
+    return robust, nominal
