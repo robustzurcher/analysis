@@ -192,7 +192,7 @@ def get_probability_shift_data(state):
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="$N_k = 4,292$",
+            label="$N_k = 55$",
         )
         ax.bar(
             x + width,
@@ -200,7 +200,7 @@ def get_probability_shift_data(state):
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="$N_k = 2,223$",
+            label="$N_k = 29$",
         )
 
         ax.set_ylabel(r"Probability")
@@ -582,8 +582,10 @@ def get_out_of_sample_diff(key, bins, sample_size):
             third_color = "#ff7f0e"
         else:
             third_color = spec_dict[color]["colors"][2]
-            
-        ax.plot(x, hist_data[0] / sum(hist_data[0]) , color=spec_dict[color]["colors"][0])
+
+        ax.plot(
+            x, hist_data[0] / sum(hist_data[0]), color=spec_dict[color]["colors"][0]
+        )
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
@@ -597,13 +599,33 @@ def get_out_of_sample_diff(key, bins, sample_size):
         )
 
 
-def get_robust_performance(keys, sample_size):
+def get_robust_performance(keys, width, sample_size):
 
     performance = np.zeros(len(keys), dtype=float)
     for j, key in enumerate(keys):
         robust, nominal = _out_of_sample(key, sample_size)
         diff = robust - nominal
-        performance[j] =
+        performance[j] = len(diff[diff >= 0]) / 1000
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.bar(
+            keys,
+            performance,
+            width,
+            color=spec_dict[color]["colors"][0],
+            ls=spec_dict[color]["line"][0],
+        )
+
+        ax.set_ylabel(r"Robust beats")
+        ax.set_xlabel(r"Robust strategy with $\omega$")
+        plt.xticks(keys)
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-validation-perfor"
+            f"mance{spec_dict[color]['file']}"
+        )
+
 
 def _out_of_sample(key, sample_size):
 
