@@ -597,6 +597,14 @@ def get_out_of_sample_diff(key, bins, sample_size):
         )
 
 
+def get_robust_performance(keys, sample_size):
+
+    performance = np.zeros(len(keys), dtype=float)
+    for j, key in enumerate(keys):
+        robust, nominal = _out_of_sample(key, sample_size)
+        diff = robust - nominal
+        performance[j] =
+
 def _out_of_sample(key, sample_size):
 
     file_list = sorted(
