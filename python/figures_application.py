@@ -309,6 +309,14 @@ def _create_repl_prob_plot(file, keys):
 #                       Demonstration
 ################################################################################
 
+
+def get_demonstration_df():
+    states = get_file("../pre_processed_data/demonstration.pkl")
+    periods = np.arange(0, len(states[0]))
+    return pd.DataFrame({'months': periods, "opt_mileage": states[0] * BIN_SIZE,
+                         "rob_mileage": states[1] * BIN_SIZE})
+
+
 def get_demonstration(max_period):
     states = get_file("../pre_processed_data/demonstration.pkl")
     periods = np.arange(0, len(states[0]))
