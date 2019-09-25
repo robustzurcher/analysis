@@ -306,6 +306,37 @@ def _create_repl_prob_plot(file, keys):
 
 
 ################################################################################
+#                       Demonstration
+################################################################################
+
+def get_demonstration(max_period):
+    states = get_file("../pre_processed_data/demonstration.pkl")
+    periods = np.arange(0, len(states[0]))
+    labels = ["optimal", "robust ($\omega = 0.95$)"]
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+        ax.set_xlabel(r"Month")
+        ax.set_ylabel(r"Mileage (in thousands)")
+
+        for i, state in enumerate(states):
+            ax.plot(
+                periods[:max_period],
+                state[:max_period] * BIN_SIZE,
+                color=spec_dict[color]["colors"][i],
+                ls=spec_dict[color]["line"][i],
+                label=labels[i],
+            )
+        ax.legend()
+        ax.set_ylim([0, None])
+
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-sim-demonstration{spec_dict[color]['file']}"
+        )
+
+
+
+
+################################################################################
 #                       Threshold plot
 ################################################################################
 
@@ -590,6 +621,7 @@ def get_out_of_sample_diff(key, bins, sample_size):
 
         ax.set_ylabel(r"Density")
         ax.set_xlabel(r"$\Delta$ Performance")
+        ax.set_ylim([0, None])
 
         # ax.legend()
         fig.savefig(
