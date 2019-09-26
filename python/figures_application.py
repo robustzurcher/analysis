@@ -390,7 +390,7 @@ def get_replacement_thresholds():
         if color == "colored":
             second_color = "#ff7f0e"
         else:
-            second_color = spec_dict[color]["colors"][1]
+            second_color = spec_dict[color]["colors"][2]
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
                 i, state_sections[j], color=second_color, ls=spec_dict[color]["line"][1]
