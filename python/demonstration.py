@@ -2,6 +2,8 @@ from auxiliary import get_file
 from ruspy.simulation.simulation import simulate
 import pickle as pkl
 import numpy as np
+from zipfile import ZipFile, ZIP_DEFLATED
+import os
 
 init_dict = {
     "beta": 0.9999,
@@ -29,5 +31,7 @@ for i, df in enumerate([df_ml, df_95]):
     states[i] = np.insert(states[i], index, 0)
     periods[i] = np.insert(periods[i], index, index - 1)
 
-
-pkl.dump((states, periods), open("demonstration.pkl", "wb"))
+file = "demonstration."
+pkl.dump((states, periods), open(file + "pkl", "wb"))
+ZipFile(file + "zip", "w", ZIP_DEFLATED).write(file + "pkl")
+os.remove(file + "pkl")

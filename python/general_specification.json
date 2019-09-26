@@ -1,5 +1,6 @@
 {
   "num_points": 100,
+  "max_omega": 0.99,
   "num_workers": 100,
   "num_states": 50,
   "sample_size": 4292,
