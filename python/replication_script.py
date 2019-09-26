@@ -1,7 +1,7 @@
 import subprocess
 import os
 import json
-
+import sys
 
 general_dict = json.load(open("general_specification.json", "rb"))
 general_dict["policy_dict"] = "../solution/fixp_results_5000_{}_{}_{}.pkl".format(
@@ -17,5 +17,7 @@ for dir in ["solution", "simulation", "validation"]:
     json.dump(
         spec_dict, open("specification.json", "w"), indent=2, separators=(",", ": ")
     )
-    subprocess.run("mpiexec -n 1 python run.py", shell=True)
+    
+    cmd = f"mpiexec -n 1 {sys.executable} run.py"
+    subprocess.run(cmd, shell=True)
     os.chdir("..")
