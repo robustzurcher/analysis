@@ -1,15 +1,13 @@
 {
-  "num_workers": 2,
+  "num_workers": 100,
   "beta": 0.9999,
   "seed": 123,
-  "buses": 1,
-  "periods": 100,
+  "buses": 1000,
+  "periods": 100000,
   "params": [
     50,
     400
   ],
-  "sim_keys": [
-    0.0
-  ],
+  "sim_keys": [0.0, 0.5, 0.95],
   "policy_dict": "../solution/fixp_results_5000_50_400_4292.pkl"
 }
