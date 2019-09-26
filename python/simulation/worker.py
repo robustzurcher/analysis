@@ -24,10 +24,8 @@ from auxiliary import get_file
 
 comm = MPI.Comm.Get_parent()
 
-dict_polcies = get_file(
-    "../solution/fixp_results_5000_50_400_4292.pkl"
-)
 spec = json.load(open("specification.json", "rb"))
+dict_polcies = get_file(spec["policy_dict"])
 
 while True:
 

@@ -1,14 +1,19 @@
 {
-  "num_workers": 100,
+  "num_workers": 2,
   "beta": 0.9999,
-  "buses": 200,
-  "periods": 70000,
-  "params": [50, 400],
+  "buses": 1,
+  "periods": 100,
+  "params": [
+    50,
+    400
+  ],
   "seed": 123,
   "runs": 1000,
-  "sample_sizes": [4292],
-  "strategies": [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+  "strategies_validation": [
+    0.0,
+    0.99
+  ],
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
   "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
-  "policy_dict":  "../../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
+  "policy_dict": "../solution/fixp_results_5000_50_400_4292.pkl"
 }

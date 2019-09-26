@@ -41,10 +41,10 @@ while True:
         break
 
     if cmd == 1:
-        fixp_key, sample_size, run = comm.recv(source=0)
+        fixp_key, run = comm.recv(source=0)
 
-        fname = "val_results/result_ev_{}_size_{}_{}.pkl".format(
-            "{:.2f}".format(fixp_key), sample_size, run
+        fname = "val_results/result_ev_{}_size_{}.pkl".format(
+            "{:.2f}".format(fixp_key), run
         )
         dict_polcies = get_file(spec["policy_dict"])
         fixp_rob = dict_polcies[fixp_key][0]

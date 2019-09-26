@@ -21,10 +21,8 @@ from auxiliary import get_file
 
 if __name__ == "__main__":
 
-    grid_omega = get_file(
-        "../solution/fixp_results_5000_50_400_4292.pkl"
-    ).keys()
     spec = json.load(open("specification.json", "rb"))
+    grid_omega = get_file(spec["policy_dict"]).keys()
 
     os.makedirs("sim_results", exist_ok=True)
 
@@ -44,17 +42,9 @@ if __name__ == "__main__":
         task = omega, 0.0
         grid_task.append(task)
 
-        # Nominal strategy on varying omega
-        task = 0.0, omega
-        grid_task.append(task)
-
-        # Robust strategy with 0.5 on varying omega
-        task = 0.5, omega
-        grid_task.append(task)
-
-        # Robust strategy with 0.95 with varying omega
-        task = 0.95, omega
-        grid_task.append(task)
+        for key in spec["sim_keys"]:
+            task = 0.0, omega
+            grid_task.append(task)
 
         # # Optimal strategy with varying omega
         # task = omega, omega
