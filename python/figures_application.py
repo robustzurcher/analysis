@@ -305,6 +305,7 @@ def _create_repl_prob_plot(file, keys):
 
 def get_demonstration_df():
     states, periods = get_file("../pre_processed_data/demonstration.pkl")
+    print(len(states[0]), len(states[1]))
     return pd.DataFrame({'months_ml': periods[0], 'months_rob': periods[1],
                          "opt_mileage": states[0] * BIN_SIZE,
                          "rob_mileage": states[1] * BIN_SIZE})
