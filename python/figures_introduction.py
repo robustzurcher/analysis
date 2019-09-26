@@ -14,7 +14,8 @@ def df_num_obs(bin_size, init_dict, trans_results):
     hist_data = np.zeros(num_bins)
     for i in range(num_bins):
         hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
-    return pd.DataFrame({"Num_Obs": hist_data})
+    return pd.DataFrame({"Num_Obs": hist_data}, index=np.arange(1, len(hist_data) + 1)
+                                                      * bin_size)
 
 
 def get_number_observations(bin_size, init_dict, trans_results):
