@@ -127,12 +127,6 @@ def df_probability_shift(state):
 def get_probability_shift(state):
 
     width = 0.25 * BIN_SIZE
-    spec_dict["black_white"] = {
-        "colors": ["#808080", "#d3d3d3", "#d3d3d3", "#d3d3d3"],
-        "line": ["-", "--", ":"],
-        "hatch": ["", "OOO", "///"],
-        "file": "-sw",
-    }
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -257,13 +251,6 @@ def df_maintenance_probabilties():
 
 
 def get_maintenance_probabilities():
-
-    spec_dict["black_white"] = {
-        "colors": ["#808080", "#808080", "#808080", "#808080"],
-        "line": ["-", "--", ":"],
-        "hatch": ["", "OOO", "///"],
-        "file": "-sw",
-    }
 
     choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
     states = np.arange(max_state) * BIN_SIZE
@@ -531,13 +518,6 @@ def get_difference_df():
 
 
 def get_difference_plot():
-
-    spec_dict["black_white"] = {
-        "colors": ["#808080", "#808080", "#808080", "#808080"],
-        "line": ["-", "--", ":"],
-        "hatch": ["", "OOO", "///"],
-        "file": "-sw",
-    }
 
     num_keys = 100
 
