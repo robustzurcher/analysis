@@ -14,8 +14,9 @@ def df_num_obs(bin_size, init_dict, trans_results):
     hist_data = np.zeros(num_bins)
     for i in range(num_bins):
         hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
-    return pd.DataFrame({"Num_Obs": hist_data}, index=np.arange(1, len(hist_data) + 1)
-                                                      * bin_size)
+    return pd.DataFrame(
+        {"Num_Obs": hist_data}, index=np.arange(1, len(hist_data) + 1) * bin_size
+    )
 
 
 def get_number_observations(bin_size, init_dict, trans_results):
@@ -38,7 +39,7 @@ def get_number_observations(bin_size, init_dict, trans_results):
         ax.set_xlabel(r"Milage (in thousands)")
 
         cl = spec_dict[color]["colors"][0]
-        ax.bar(mileage, hist_data, width, align='edge', color=cl,)
+        ax.bar(mileage, hist_data, width, align="edge", color=cl)
 
         plt.savefig(
             f"{DIR_FIGURES}/fig-introduction-observations-mileage{spec_dict[color]['file']}"
