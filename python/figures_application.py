@@ -317,15 +317,14 @@ def _create_repl_prob_plot(file, keys):
 
 
 def get_demonstration_df():
-    states = get_file("../pre_processed_data/demonstration.pkl")
-    periods = np.arange(0, len(states[0]))
-    return pd.DataFrame({'months': periods, "opt_mileage": states[0] * BIN_SIZE,
+    states, periods = get_file("../pre_processed_data/demonstration.pkl")
+    return pd.DataFrame({'months_ml': periods[0], 'months_rob': periods[1],
+                         "opt_mileage": states[0] * BIN_SIZE,
                          "rob_mileage": states[1] * BIN_SIZE})
 
 
 def get_demonstration(max_period):
-    states = get_file("../pre_processed_data/demonstration.pkl")
-    periods = np.arange(0, len(states[0]))
+    states, periods = get_file("../pre_processed_data/demonstration.pkl")
     labels = ["optimal", "robust ($\omega = 0.95$)"]
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -334,7 +333,7 @@ def get_demonstration(max_period):
 
         for i, state in enumerate(states):
             ax.plot(
-                periods[:max_period],
+                periods[i][:max_period],
                 state[:max_period] * BIN_SIZE,
                 color=spec_dict[color]["colors"][i],
                 ls=spec_dict[color]["line"][i],
@@ -346,7 +345,6 @@ def get_demonstration(max_period):
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-demonstration{spec_dict[color]['file']}"
         )
-
 
 
 

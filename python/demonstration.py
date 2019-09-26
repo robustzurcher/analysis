@@ -1,6 +1,7 @@
 from auxiliary import get_file
 from ruspy.simulation.simulation import simulate
 import pickle as pkl
+import numpy as np
 
 init_dict = {
     "beta": 0.9999,
@@ -16,5 +17,17 @@ trans_mat = dict_policies[0.0][1]
 
 df_ml = simulate(init_dict, ev_ml, trans_mat, pool_trans=True)
 df_95 = simulate(init_dict, ev_95, trans_mat, pool_trans=True)
+periods_ml = np.array(df_ml["period"], dtype=int)
+periods_95 = np.array(df_95["period"], dtype=int)
+periods = [periods_ml, periods_95]
+states_ml = np.array(df_ml["state"], dtype=int)
+states_95 = np.array(df_95["state"], dtype=int)
+states = [states_ml, states_95]
 
-pkl.dump((df_ml["state"], df_95["state"]), open("demonstration.pkl", "wb"))
+for i, df in enumerate([df_ml, df_95]):
+    index = np.array(df[df["decision"] == 1].index, dtype=int) + 1
+    states[i] = np.insert(states[i], index, 0)
+    periods[i] = np.insert(periods[i], index, index - 1)
+
+
+pkl.dump((states, periods), open("demonstration.pkl", "wb"))
