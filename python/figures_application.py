@@ -4,6 +4,7 @@ import pandas as pd
 from zipfile import ZipFile
 import os
 import shutil
+from scipy.signal import savgol_filter
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -560,13 +561,15 @@ def get_difference_plot():
 
     diff_costs_95 = robust_costs_95 - nominal_costs
     diff_costs_50 = robust_costs_50 - nominal_costs
+    filter_95 = savgol_filter(diff_costs_95, 29, 3)
+    filter_50 = savgol_filter(diff_costs_50, 29, 3)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.plot(
             omega_range,
-            diff_costs_95,
+            filter_95,
             color=spec_dict[color]["colors"][0],
             label="robust $(\omega = 0.95)$",
             ls=spec_dict[color]["line"][0],
@@ -574,7 +577,7 @@ def get_difference_plot():
 
         ax.plot(
             omega_range,
-            diff_costs_50,
+            filter_50,
             color=spec_dict[color]["colors"][1],
             label="robust $(\omega = 0.50)$",
             ls=spec_dict[color]["line"][1],
