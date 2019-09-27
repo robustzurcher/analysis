@@ -39,6 +39,3 @@ json.dump(
 cmd = f"mpiexec -n 1 {sys.executable} run.py"
 subprocess.run(cmd, shell=True)
 os.chdir("..")
-
-# Demonstration
-subprocess.call("python demonstration.py")

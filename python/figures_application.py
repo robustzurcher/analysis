@@ -7,6 +7,7 @@ import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
+from ruspy.simulation.simulation import simulate
 
 from auxiliary import get_file
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func, choice_prob
@@ -303,16 +304,16 @@ def _create_repl_prob_plot(file, keys):
 ################################################################################
 
 
-def get_demonstration_df():
-    states, periods = get_file("../pre_processed_data/demonstration.pkl")
-    print(len(states[0]), len(states[1]))
+def get_demonstration_df(init_dict):
+    states, periods = get_demonstration_data(init_dict)
     return pd.DataFrame({'months_ml': periods[0], 'months_rob': periods[1],
                          "opt_mileage": states[0] * BIN_SIZE,
                          "rob_mileage": states[1] * BIN_SIZE})
 
 
-def get_demonstration(max_period):
-    states, periods = get_file("../pre_processed_data/demonstration.pkl")
+def get_demonstration(df, max_period):
+    states = (df["opt_mileage"], df["rob_mileage"])
+    periods = (df["months_ml"], df["months_rob"])
     labels = ["optimal", "robust ($\omega = 0.95$)"]
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -322,7 +323,7 @@ def get_demonstration(max_period):
         for i, state in enumerate(states):
             ax.plot(
                 periods[i][:max_period],
-                state[:max_period] * BIN_SIZE,
+                state[:max_period],
                 color=spec_dict[color]["colors"][i],
                 ls=spec_dict[color]["line"][i],
                 label=labels[i],
@@ -333,6 +334,32 @@ def get_demonstration(max_period):
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-demonstration{spec_dict[color]['file']}"
         )
+
+
+def get_demonstration_data(init_dict):
+
+    dict_policies = get_file("../pre_processed_data/fixp_results_5000_50_400_4292.pkl")
+    ev_ml = dict_policies[0.0][0]
+    ev_95 = dict_policies[0.95][0]
+    trans_mat = dict_policies[0.0][1]
+
+    df_ml = simulate(init_dict, ev_ml, trans_mat)
+    df_95 = simulate(init_dict, ev_95, trans_mat)
+
+    periods_ml = np.array(df_ml["period"], dtype=int)
+    periods_95 = np.array(df_95["period"], dtype=int)
+    periods = [periods_ml, periods_95]
+    states_ml = np.array(df_ml["state"], dtype=int)
+    states_95 = np.array(df_95["state"], dtype=int)
+    states = [states_ml, states_95]
+
+    for i, df in enumerate([df_ml, df_95]):
+        index = np.array(df[df["decision"] == 1].index, dtype=int) + 1
+        states[i] = np.insert(states[i], index, 0)
+        periods[i] = np.insert(periods[i], index, index - 1)
+
+    return states, periods
+
 
 
 
