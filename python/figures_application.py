@@ -18,7 +18,7 @@ BETA = 0.9999
 PARAMS = np.array([50, 400])
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
-NUM_PERIODS = 70000
+NUM_PERIODS = 100000
 GRIDSIZE = 1000
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT_4292 = "../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
@@ -551,7 +551,7 @@ def get_difference_plot():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, robust_costs_95 = _performance_plot(omega_range)
+    nominal_costs, robust_costs_95 = _performance_plot()
 
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
@@ -594,7 +594,7 @@ def get_difference_plot():
         )
 
 
-def _performance_plot(omega_range):
+def _performance_plot():
 
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.00_mat_*.pkl"))
     nominal_costs = np.zeros(len(file_list))

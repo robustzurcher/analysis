@@ -43,7 +43,7 @@ if __name__ == "__main__":
         grid_task.append(task)
 
         for key in spec["sim_keys"]:
-            task = 0.0, omega
+            task = key, omega
             grid_task.append(task)
 
         # # Optimal strategy with varying omega
