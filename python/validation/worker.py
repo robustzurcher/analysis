@@ -43,7 +43,7 @@ while True:
     if cmd == 1:
         fixp_key, run = comm.recv(source=0)
 
-        fname = "val_results/result_ev_{}_size_{}.pkl".format(
+        fname = "val_results/result_ev_{}_run_{}.pkl".format(
             "{:.2f}".format(fixp_key), run
         )
         dict_polcies = get_file(spec["policy_dict"])
@@ -54,9 +54,9 @@ while True:
         trans = create_asym_trans_mat(fixp_rob.shape[0], raw_params, raw_hesse_inv)
 
         df_rob = simulate(spec, fixp_rob, trans)
-        performance_rob = discount_utility(df_rob, 1000, spec["beta"])[-1]
+        performance_rob = discount_utility(df_rob, spec["periods"], spec["beta"])[-1]
 
         df_ml = simulate(spec, fixp_ml, trans)
-        performance_ml = discount_utility(df_ml, 1000, spec["beta"])[-1]
+        performance_ml = discount_utility(df_ml, spec["periods"], spec["beta"])[-1]
 
         pkl.dump((performance_ml, performance_rob), open(fname, "wb"))
