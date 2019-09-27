@@ -30,7 +30,7 @@ color_opts = ["colored", "black_white"]
 spec_dict = {
     "colored": {"colors": [None] * 4, "line": ["-"] * 3, "hatch": [""] * 3, "file": ""},
     "black_white": {
-        "colors": ["#808080", "#d3d3d3", "#d3d3d3", "#d3d3d3"],
+        "colors": ["#808080", "#d3d3d3", "#A9A9A9", "#C0C0C0"],
         "line": ["-", "--", ":"],
         "hatch": ["", "OOO", "///"],
         "file": "-sw",
@@ -397,14 +397,14 @@ def get_replacement_thresholds():
         ax.plot(
             omega_range,
             means_ml,
-            color=spec_dict[color]["colors"][0],
+                color=spec_dict[color]["colors"][1],
             ls=spec_dict[color]["line"][0],
             label="optimal",
         )
         if color == "colored":
             second_color = "#ff7f0e"
         else:
-            second_color = spec_dict[color]["colors"][2]
+            second_color = spec_dict[color]["colors"][0]
         for j, i in enumerate(omega_sections[:-1]):
             ax.plot(
                 i, state_sections[j], color=second_color, ls=spec_dict[color]["line"][1]
@@ -508,7 +508,7 @@ def get_performance_decision_rules():
         ax.plot(
             periods,
             v_disc_ml,
-            color=spec_dict[color]["colors"][1],
+            color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][1],
             label="actual",
         )
@@ -635,7 +635,7 @@ def get_out_of_sample_diff(key, bins, sample_size):
         if color == "colored":
             third_color = "#ff7f0e"
         else:
-            third_color = spec_dict[color]["colors"][2]
+            third_color = spec_dict[color]["colors"][0]
 
         ax.plot(
             x, hist_data[0] / sum(hist_data[0]), color=spec_dict[color]["colors"][0]
