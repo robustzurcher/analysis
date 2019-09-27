@@ -528,7 +528,7 @@ def get_difference_df():
 
     omega_range = np.linspace(0, 0.99, num_keys)
 
-    nominal_costs, robust_costs_95 = _performance_plot(omega_range)
+    nominal_costs, robust_costs_95 = _performance_plot()
 
     file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
