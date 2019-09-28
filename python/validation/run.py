@@ -19,8 +19,10 @@ import numpy as np
 
 if __name__ == "__main__":
 
+    if os.path.exists("val_results"):
+        shutil.rmtree('val_results')
+    os.mkdir('val_results')
     spec = json.load(open("specification.json", "rb"))
-    os.makedirs("val_results", exist_ok=True)
 
     status = MPI.Status()
 

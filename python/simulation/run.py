@@ -24,7 +24,9 @@ if __name__ == "__main__":
     spec = json.load(open("specification.json", "rb"))
     grid_omega = get_file(spec["policy_dict"]).keys()
 
-    os.makedirs("sim_results", exist_ok=True)
+    if os.path.exists("sim_results"):
+        shutil.rmtree('sim_results')
+    os.mkdir('sim_results')
 
     status = MPI.Status()
 
