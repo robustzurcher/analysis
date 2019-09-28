@@ -37,8 +37,9 @@ if __name__ == "__main__":
             task = fixp_key, run
             grid_task.append(task)
 
-    task = spec["density_strategy"], spec["density_runs"]
-    grid_task.append(task)
+    for run in range(spec["density_runs"]):
+        task = spec["density_strategy"], run
+        grid_task.append(task)
 
 
     # We wait for everybody to be ready and then clean up the criterion function.
