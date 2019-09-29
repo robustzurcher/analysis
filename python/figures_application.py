@@ -566,6 +566,8 @@ def get_difference_plot():
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
+        
+
 
         ax.plot(
             omega_range,
@@ -628,7 +630,9 @@ def get_out_of_sample_diff(key, bins, sample_size):
     robust, nominal = _out_of_sample(key, sample_size)
     diff = robust - nominal
     hist_data = np.histogram(diff, bins=bins)
+    hist_normed = hist_data[0] / sum(hist_data[0])
     x = np.linspace(np.min(hist_data[1]), np.max(hist_data[1]), bins)
+    hist_filter = savgol_filter(hist_normed, 29, 3)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -638,13 +642,13 @@ def get_out_of_sample_diff(key, bins, sample_size):
             third_color = spec_dict[color]["colors"][0]
 
         ax.plot(
-            x, hist_data[0] / sum(hist_data[0]), color=spec_dict[color]["colors"][0]
+            x, hist_filter, color=spec_dict[color]["colors"][0]
         )
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
         ax.set_xlabel(r"$\Delta$ Performance")
-        ax.set_ylim([0, 0.1])
+        ax.set_ylim([0, None])
 
         # ax.legend()
         fig.savefig(
@@ -660,7 +664,7 @@ def get_robust_performance(keys, width, sample_size):
     for j, key in enumerate(keys):
         robust, nominal = _out_of_sample(key, sample_size)
         diff = robust - nominal
-        performance[j] = len(diff[diff >= 0]) / 1000
+        performance[j] = len(diff[diff >= 0]) / len(diff)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -688,7 +692,7 @@ def _out_of_sample(key, sample_size):
     file_list = sorted(
         glob.glob(
             VAL_RESULTS
-            + "result_ev_{}_size_{}_*.pkl".format("{:.2f}".format(key), sample_size)
+            + "result_ev_{}_run_*.pkl".format("{:.2f}".format(key))
         )
     )
     robust = np.zeros(len(file_list))
