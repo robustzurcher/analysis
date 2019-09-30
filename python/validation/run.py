@@ -19,8 +19,10 @@ import numpy as np
 
 if __name__ == "__main__":
 
+    if os.path.exists("val_results"):
+        shutil.rmtree('val_results')
+    os.mkdir('val_results')
     spec = json.load(open("specification.json", "rb"))
-    os.makedirs("val_results", exist_ok=True)
 
     status = MPI.Status()
 
@@ -32,11 +34,15 @@ if __name__ == "__main__":
     # We now create a list of tasks.
     grid_task = list()
 
-    for fixp_key in spec["strategies"]:
-        for sample_size in spec["sample_sizes"]:
-            for run in range(spec["runs"]):
-                task = fixp_key, sample_size, run
-                grid_task.append(task)
+    for fixp_key in spec["strategies_validation"]:
+        for run in range(spec["runs_strategies_validation"]):
+            task = fixp_key, run
+            grid_task.append(task)
+
+    for run in range(spec["density_runs"]):
+        task = spec["density_strategy"], run
+        grid_task.append(task)
+
 
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype="float64")
