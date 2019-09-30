@@ -40,7 +40,7 @@ if __name__ == "__main__":
     cmd['terminate'] = np.array(0, dtype='int64')
     cmd['execute'] = np.array(1, dtype='int64')
 
-    grid_omega = np.round(np.linspace(0.00, 0.99, num=spec['num_points']), decimals=2)
+    grid_omega = np.round(np.linspace(0.00, spec['max_omega'], num=spec['num_points']), decimals=2)
 
     for omega in grid_omega:
 
