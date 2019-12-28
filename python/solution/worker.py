@@ -31,7 +31,9 @@ def wrapper_func(
 ):
     rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / scale))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
-    fname = "results/intermediate_{}_{}.pkl".format(f"{omega:.2f}", cost_func_name)
+    fname = "results_{}/intermediate_{}_{}.pkl".format(
+        cost_func_name, f"{omega:.2f}", cost_func_name
+    )
     pkl.dump(result, open(fname, "wb"))
 
     return result
@@ -46,12 +48,12 @@ cost_func = select_cost_func(spec["cost_func"])
 comm = MPI.Comm.Get_parent()
 
 # We want to let the master know we are ready to go
-costs_rust = calc_obs_costs(spec["num_states"], cost_func, params, spec["cost_scale"])
+costs = calc_obs_costs(spec["num_states"], cost_func, params, spec["cost_scale"])
 base_args = (
     p_rust,
     spec["sample_size"],
     spec["scale"],
-    costs_rust,
+    costs,
     spec["beta"],
     spec["num_states"],
     spec["cost_func"],

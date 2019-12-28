@@ -1,7 +1,7 @@
 import json
-import sys
 import os
 import shutil
+import sys
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -25,8 +25,8 @@ if __name__ == "__main__":
     grid_omega = get_file(spec["policy_dict"]).keys()
 
     if os.path.exists("sim_results"):
-        shutil.rmtree('sim_results')
-    os.mkdir('sim_results')
+        shutil.rmtree("sim_results")
+    os.mkdir("sim_results".format(spec["cost_func"]))
 
     status = MPI.Status()
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     )
 
     # We now create a list of tasks.
-    grid_task = list()
+    grid_task = {}
 
     for omega in grid_omega:
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype="float64")
 
-    cmd = dict()
+    cmd = {}
     cmd["terminate"] = np.array(0, dtype="int64")
     cmd["execute"] = np.array(1, dtype="int64")
 
@@ -72,5 +72,9 @@ if __name__ == "__main__":
     comm.Disconnect()
     # Now we aggregate all the results.
 
-    shutil.make_archive("simulation_results", "zip", "sim_results")
-    shutil.rmtree("sim_results")
+    shutil.make_archive(
+        "simulation_results_{}".format(spec["cost_func"]),
+        "zip",
+        "sim_results".format(spec["cost_func"]),
+    )
+    shutil.rmtree("sim_results".format(spec["cost_func"]))

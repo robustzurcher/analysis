@@ -28,10 +28,10 @@ import numpy as np
 if __name__ == "__main__":
 
     spec = json.load(open("specification.json", "rb"))
-
-    if os.path.exists("results"):
-        shutil.rmtree("results")
-    os.mkdir("results")
+    result_folder = "results_".format(spec["cost_func"])
+    if os.path.exists(result_folder):
+        shutil.rmtree(result_folder)
+    os.mkdir(result_folder)
 
     status = MPI.Status()
 
@@ -67,11 +67,11 @@ if __name__ == "__main__":
     file = "fixp_results_{}.".format(spec["cost_func"])
     rslt = {}
     for i, fname in enumerate(
-        sorted(glob.glob(f'results/intermediate_*_{spec["cost_func"]}.pkl'))
+        sorted(glob.glob(f'{result_folder}/intermediate_*_{spec["cost_func"]}.pkl'))
     ):
         rslt[grid_omega[i]] = pkl.load(open(fname, "rb"))
 
     pkl.dump(rslt, open(file + "pkl", "wb"))
-    shutil.rmtree("results")
+    shutil.rmtree(result_folder)
     ZipFile(file + "zip", "w", ZIP_DEFLATED).write(file + "pkl")
     os.remove(file + "pkl")

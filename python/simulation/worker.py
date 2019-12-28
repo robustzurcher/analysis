@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """This script provides all capabilities for the worker processes."""
-import pickle as pkl
 import json
 import os
+import pickle as pkl
+
+from auxiliary import select_cost_func
+from ruspy.model_code.cost_functions import calc_obs_costs
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -19,13 +22,17 @@ from mpi4py import MPI
 import numpy as np
 
 from ruspy.simulation.simulation import simulate
-from ruspy.simulation.value_zero import discount_utility
+from auxiliary import discount_utility
 from auxiliary import get_file
 
 comm = MPI.Comm.Get_parent()
 
 spec = json.load(open("specification.json", "rb"))
 dict_polcies = get_file(spec["policy_dict"])
+params = np.array(spec["params"])
+
+cost_func = select_cost_func(spec["cost_func"])
+costs = calc_obs_costs(spec["num_states"], cost_func, params, spec["cost_scale"])
 
 while True:
 
@@ -40,13 +47,15 @@ while True:
 
     if cmd == 1:
         fixp_key, trans_key = comm.recv(source=0)
-        fname = "sim_results/result_ev_{}_mat_{}.pkl".format(
-            "{:.2f}".format(fixp_key), "{:.2f}".format(trans_key)
+        fname = "sim_results/result_ev_{}_mat_{}_{}.pkl".format(
+            f"{fixp_key:.2f}", f"{trans_key:.2f}", spec["cost_func"]
         )
         fixp = dict_polcies[fixp_key][0]
         trans = dict_polcies[trans_key][1]
 
-        df = simulate(spec, fixp, trans)
+        df = simulate(spec, fixp, costs, trans)
         repl_state = df[df["decision"] == 1]["state"].mean()
-        performance = discount_utility(df, 1000, spec["beta"])
+        performance = discount_utility(
+            df, spec["buses"], spec["periods"], 1000, spec["beta"]
+        )
         pkl.dump((repl_state, performance), open(fname, "wb"))
