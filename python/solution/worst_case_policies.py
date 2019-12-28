@@ -1,7 +1,7 @@
 import numpy as np
 import numba
 from robupy.auxiliary import get_worst_case_probs
-from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
+from ruspy.estimation.estimation_transitions import create_transition_matrix
 
 
 @numba.jit(nopython=True)

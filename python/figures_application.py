@@ -11,12 +11,13 @@ import numpy as np
 from ruspy.simulation.simulation import simulate
 
 from auxiliary import get_file
-from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func, choice_prob
+from ruspy.model_code.cost_functions import lin_cost, calc_obs_costs
+from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from config import DIR_FIGURES
 
 # Global variables
 BETA = 0.9999
-PARAMS = np.array([50, 400])
+PARAMS_LIN = np.array([50, 400])
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
 NUM_PERIODS = 100000
@@ -292,11 +293,11 @@ def _create_repl_prob_plot(file, keys):
     dict_policies = get_file(file)
     ev_ml = dict_policies[0.0][0]
     num_states = ev_ml.shape[0]
-    costs = cost_func(num_states, lin_cost, PARAMS)
-    choice_ml = choice_prob(ev_ml, costs, BETA)
+    costs = calc_obs_costs(num_states, lin_cost, PARAMS_LIN)
+    choice_ml = choice_prob_gumbel(ev_ml, costs, BETA)
     choices = []
     for omega in keys[1:]:
-        choices += [choice_prob(dict_policies[omega][0], costs, BETA)]
+        choices += [choice_prob_gumbel(dict_policies[omega][0], costs, BETA)]
     return choice_ml, choices
 
 
