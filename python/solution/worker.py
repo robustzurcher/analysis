@@ -20,17 +20,18 @@ import json
 from scipy.stats import chi2
 from mpi4py import MPI
 
-from select_cost_func import select_cost_func
+from auxiliary import select_cost_func
 from ruspy.model_code.cost_functions import calc_obs_costs
-from ruspy.model_code.cost_functions import lin_cost
 
 from worst_case_policies import calc_fixp_worst
 
 
-def wrapper_func(p_ml, sample_size, scale, costs, beta, num_states, threshold, omega):
+def wrapper_func(
+    p_ml, sample_size, scale, costs, beta, num_states, cost_func_name, threshold, omega
+):
     rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / scale))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
-    fname = "results/intermediate_{}.pkl".format("{:.2f}".format(omega))
+    fname = "results/intermediate_{}_{}.pkl".format(f"{omega:.2f}", cost_func_name)
     pkl.dump(result, open(fname, "wb"))
 
     return result
@@ -40,17 +41,12 @@ spec = json.load(open("specification.json", "rb"))
 p_rust = np.loadtxt(spec["trans_probs"])
 params = np.array(spec["params"])
 
-if "cost_func" in spec:
-    cost_func = select_cost_func(spec["cost_func"])
-    cost_func_name = spec["cost_func"]
-else:
-    cost_func = lin_cost
-    cost_func_name = "linear"
+cost_func = select_cost_func(spec["cost_func"])
 
 comm = MPI.Comm.Get_parent()
 
 # We want to let the master know we are ready to go
-costs_rust = calc_obs_costs(spec["num_states"], cost_func, params, scale=0.001)
+costs_rust = calc_obs_costs(spec["num_states"], cost_func, params, spec["cost_scale"])
 base_args = (
     p_rust,
     spec["sample_size"],
@@ -58,6 +54,7 @@ base_args = (
     costs_rust,
     spec["beta"],
     spec["num_states"],
+    spec["cost_func"],
     spec["threshold"],
 )
 
