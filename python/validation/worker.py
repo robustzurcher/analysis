@@ -57,7 +57,7 @@ while True:
 
         cost_func = select_cost_func(spec["cost_func"])
         cost_sim = calc_obs_costs(
-            fixp_ml.shape[0], cost_func, spec["params"], spec["scale"]
+            fixp_ml.shape[0], cost_func, spec["params"], spec["cost_scale"]
         )
 
         df_rob = simulate(spec, fixp_rob, cost_sim, trans)

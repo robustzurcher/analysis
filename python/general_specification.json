@@ -1,21 +1,26 @@
 {
-  "num_points": 100,
+  "num_points": 2,
   "max_omega": 0.99,
-  "num_workers": 100,
-  "num_states": 50,
+  "num_workers": 2,
+  "num_states": 150,
   "sample_size": 4292,
   "scale": 78,
   "beta": 0.9999,
-  "threshold": 1e-5,
-  "params": [50, 400],
+  "threshold": 1e-05,
   "seed": 123,
-  "buses": 1000,
-  "periods": 100000,
-  "sim_keys": [0.0, 0.5, 0.95],
-  "density_strategy": 0.5,
-  "density_runs": 10000,
-  "runs_strategies_validation": 10000,
-  "strategies_validation": [0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9],
+  "buses": 5,
+  "periods": 100,
+  "sim_keys": [
+    0.0,
+    0.99
+  ],
+  "density_strategy": 0.99,
+  "density_runs": 5,
+  "runs_strategies_validation": 5,
+  "strategies_validation": [
+    0.0,
+    0.99
+  ],
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
   "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt"
