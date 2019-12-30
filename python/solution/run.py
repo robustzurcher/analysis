@@ -28,7 +28,7 @@ import numpy as np
 if __name__ == "__main__":
 
     spec = json.load(open("specification.json", "rb"))
-    result_folder = "results_".format(spec["cost_func"])
+    result_folder = "results_{}".format(spec["cost_func"])
     if os.path.exists(result_folder):
         shutil.rmtree(result_folder)
     os.mkdir(result_folder)

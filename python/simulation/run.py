@@ -24,9 +24,10 @@ if __name__ == "__main__":
     spec = json.load(open("specification.json", "rb"))
     grid_omega = get_file(spec["policy_dict"]).keys()
 
-    if os.path.exists("sim_results"):
-        shutil.rmtree("sim_results")
-    os.mkdir("sim_results".format(spec["cost_func"]))
+    result_folder = "sim_results_{}".format(spec["cost_func"])
+    if os.path.exists(result_folder):
+        shutil.rmtree(result_folder)
+    os.mkdir(result_folder)
 
     status = MPI.Status()
 
@@ -36,7 +37,7 @@ if __name__ == "__main__":
     )
 
     # We now create a list of tasks.
-    grid_task = {}
+    grid_task = []
 
     for omega in grid_omega:
 
@@ -73,8 +74,6 @@ if __name__ == "__main__":
     # Now we aggregate all the results.
 
     shutil.make_archive(
-        "simulation_results_{}".format(spec["cost_func"]),
-        "zip",
-        "sim_results".format(spec["cost_func"]),
+        result_folder, "zip", "sim_results_{}".format(spec["cost_func"]),
     )
-    shutil.rmtree("sim_results".format(spec["cost_func"]))
+    shutil.rmtree(result_folder)

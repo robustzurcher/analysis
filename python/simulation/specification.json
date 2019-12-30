@@ -1,13 +1,19 @@
 {
-  "num_workers": 100,
+  "num_workers": 2,
   "beta": 0.9999,
   "seed": 123,
-  "buses": 1000,
-  "periods": 100000,
+  "num_states": 120,
+  "buses": 200,
+  "periods": 200,
   "params": [
     50,
     400
   ],
-  "sim_keys": [0.0, 0.5, 0.95],
-  "policy_dict": "../solution/fixp_results_5000_50_400_4292.pkl"
+  "sim_keys": [
+    0.0,
+    0.99
+  ],
+  "policy_dict": "../solution/fixp_results_linear.pkl",
+  "cost_func": "linear",
+  "cost_scale": 0.001
 }
