@@ -6,12 +6,12 @@
   "scale": 78,
   "beta": 0.9999,
   "params": [
-    400,
-    35
+    460,
+    50
   ],
   "threshold": 1e-05,
   "num_workers": 2,
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
-  "cost_func": "linear",
-  "cost_scale": 0.001
+  "cost_func": "sqrt",
+  "cost_scale": 0.01
 }

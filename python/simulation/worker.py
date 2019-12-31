@@ -47,6 +47,7 @@ while True:
 
     if cmd == 1:
         fixp_key, trans_key = comm.recv(source=0)
+        print(fixp_key, trans_key)
         fname = "sim_results_{}/result_ev_{}_mat_{}_{}.pkl".format(
             spec["cost_func"], f"{fixp_key:.2f}", f"{trans_key:.2f}", spec["cost_func"]
         )

@@ -44,6 +44,7 @@ while True:
 
     if cmd == 1:
         fixp_key, run = comm.recv(source=0)
+        print(fixp_key, run)
 
         fname = "val_results_{}/result_ev_{}_run_{}_{}.pkl".format(
             spec["cost_func"], f"{fixp_key:.2f}", run, spec["cost_func"]

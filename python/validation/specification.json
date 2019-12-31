@@ -4,8 +4,8 @@
   "buses": 5,
   "periods": 100,
   "params": [
-    400,
-    35
+    460,
+    50
   ],
   "seed": 123,
   "density_strategy": 0.99,
@@ -17,7 +17,7 @@
   ],
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
   "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
-  "policy_dict": "../solution/fixp_results_5000_linear.pkl",
-  "cost_func": "linear",
-  "cost_scale": 0.001
+  "policy_dict": "../solution/fixp_results_4292_sqrt.pkl",
+  "cost_func": "sqrt",
+  "cost_scale": 0.01
 }

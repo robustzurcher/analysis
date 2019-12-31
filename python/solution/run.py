@@ -64,7 +64,7 @@ if __name__ == "__main__":
     comm.Disconnect()
 
     # Now we aggregate all the intermediate results.
-    file = "fixp_results_{}.".format(spec["cost_func"])
+    file = "fixp_results_{}_{}.".format(spec["sample_size"], spec["cost_func"])
     rslt = {}
     for i, fname in enumerate(
         sorted(glob.glob(f'{result_folder}/intermediate_*_{spec["cost_func"]}.pkl'))
