@@ -1,25 +1,29 @@
 {
-  "num_points": 2,
+  "num_points": 25,
   "max_omega": 0.99,
-  "num_workers": 2,
+  "num_workers": 5,
   "num_states": 150,
   "sample_size": 4292,
   "scale": 78,
   "beta": 0.9999,
   "threshold": 1e-05,
   "seed": 123,
-  "buses": 5,
-  "periods": 100,
+  "buses": 300,
+  "periods": 70000,
   "sim_keys": [
     0.0,
-    0.99
+    0.5,
+    0.95
   ],
-  "density_strategy": 0.99,
-  "density_runs": 5,
-  "runs_strategies_validation": 5,
+  "density_strategy": 0.5,
+  "density_runs": 200,
+  "runs_strategies_validation": 100,
   "strategies_validation": [
-    0.0,
-    0.99
+    0.12,
+    0.21,
+    0.29,
+    0.41,
+    0.5
   ],
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",

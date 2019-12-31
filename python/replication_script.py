@@ -36,11 +36,11 @@ for cost_func_name, scale, params in parametrizations:
         os.chdir("..")
 
     # Varying data probability shift
-    general_dict["max_omega"] = 0.99  # 0.95
+    general_dict["max_omega"] = 0.95
     general_dict["num_points"] = 2
     general_dict["num_workers"] = 2
     general_dict["sample_size"] = 2223
-    os.chdir("validation")
+    os.chdir("solution")
     spec_dict = json.load(open("specification.json", "rb"))
     for key in general_dict.keys():
         if key in spec_dict.keys():
@@ -48,7 +48,6 @@ for cost_func_name, scale, params in parametrizations:
     json.dump(
         spec_dict, open("specification.json", "w"), indent=2, separators=(",", ": ")
     )
-
     cmd = f"mpiexec -n 1 {sys.executable} run.py"
     subprocess.run(cmd, shell=True)
     os.chdir("..")

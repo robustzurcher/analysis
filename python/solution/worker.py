@@ -31,8 +31,8 @@ def wrapper_func(
 ):
     rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / scale))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
-    fname = "results_{}/intermediate_{}_{}.pkl".format(
-        cost_func_name, f"{omega:.2f}", cost_func_name
+    fname = "results_{}_{}/intermediate_{}_{}.pkl".format(
+        sample_size, cost_func_name, f"{omega:.2f}", cost_func_name
     )
     pkl.dump(result, open(fname, "wb"))
 
@@ -74,4 +74,5 @@ while True:
     if cmd == 1:
         omega = np.zeros(1, dtype="float")
         comm.Recv([omega, MPI.DOUBLE], source=0)
+        print(omega[0])
         wrapper_func(*base_args, omega[0])
