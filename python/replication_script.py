@@ -5,7 +5,7 @@ import sys
 
 PARAMS_LIN = [400, 35]
 PARAMS_SQRT = [460, 50]
-PARAMS_CUBIC = [700, 43200, -780, 4.5]
+PARAMS_CUBIC = [700, 43200, -780, 4.7]
 
 
 parametrizations = [

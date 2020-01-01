@@ -43,11 +43,15 @@ def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
     os.makedirs("../pre_processed_data/sim_results")
-    ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
+    ZipFile(
+        "../pre_processed_data/first_sub_results/simulation_results.zip"
+    ).extractall(SIM_RESULTS)
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
-    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
+    ZipFile(
+        "../pre_processed_data/first_sub_results/validation_results.zip"
+    ).extractall(VAL_RESULTS)
 
 
 ################################################################################

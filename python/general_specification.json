@@ -2,7 +2,7 @@
   "num_points": 25,
   "max_omega": 0.99,
   "num_workers": 5,
-  "num_states": 150,
+  "num_states": 300,
   "sample_size": 4292,
   "scale": 78,
   "beta": 0.9999,
@@ -22,8 +22,7 @@
     0.12,
     0.21,
     0.29,
-    0.41,
-    0.5
+    0.41
   ],
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
