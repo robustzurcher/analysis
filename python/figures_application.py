@@ -27,6 +27,7 @@ FIXP_DICT_4292 = "../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
 FIXP_DICT_2223 = "../pre_processed_data/fixp_results_5000_50_400_2223.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS = "../pre_processed_data/val_results/"
+DATA_FOLDER = "../pre_processed_data/"
 color_opts = ["colored", "black_white"]
 spec_dict = {
     "colored": {"colors": [None] * 4, "line": ["-"] * 3, "hatch": [""] * 3, "file": ""},
@@ -42,16 +43,18 @@ spec_dict = {
 def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
-    os.makedirs("../pre_processed_data/sim_results")
-    ZipFile(
-        "../pre_processed_data/first_sub_results/simulation_results.zip"
-    ).extractall(SIM_RESULTS)
+    os.makedirs(SIM_RESULTS)
+    sim_zip_list = sorted(glob.glob(DATA_FOLDER + "simulation_results*.zip"))
+    for file in sim_zip_list:
+        ZipFile(file).extractall(SIM_RESULTS)
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
-    ZipFile(
-        "../pre_processed_data/first_sub_results/validation_results.zip"
-    ).extractall(VAL_RESULTS)
+    os.makedirs(VAL_RESULTS)
+
+    val_zip_list = sorted(glob.glob(DATA_FOLDER + "validation_results*.zip"))
+    for file in val_zip_list:
+        ZipFile(file).extractall(VAL_RESULTS)
 
 
 ################################################################################

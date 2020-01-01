@@ -74,6 +74,6 @@ if __name__ == "__main__":
     # Now we aggregate all the results.
 
     shutil.make_archive(
-        result_folder, "zip", "sim_results_{}".format(spec["cost_func"]),
+        result_folder, "zip", "simulation_results_{}".format(spec["cost_func"]),
     )
     shutil.rmtree(result_folder)
