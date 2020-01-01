@@ -11,20 +11,27 @@ from auxiliary import get_file
 from config import DIR_FIGURES
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import lin_cost
+from ruspy.model_code.cost_functions import sqrt_costs
 from ruspy.simulation.simulation import simulate
 from scipy.signal import savgol_filter
 
 # Global variables
 BETA = 0.9999
-PARAMS_LIN = np.array([50, 400])
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
-NUM_PERIODS = 100000
+NUM_PERIODS = 70000
 GRIDSIZE = 1000
+NUM_KEYS = 25
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
-FIXP_DICT_4292 = "../pre_processed_data/fixp_results_5000_50_400_4292.pkl"
-FIXP_DICT_2223 = "../pre_processed_data/fixp_results_5000_50_400_2223.pkl"
+FIXP_DICT_4292_LINEAR = "../pre_processed_data/fixp_results_4292_linear.pkl"
+FIXP_DICT_4292_SQRT = "../pre_processed_data/fixp_results_4292_sqrt.pkl"
+FIXP_DICT_4292_CUBIC = "../pre_processed_data/fixp_results_4292_cubic.pkl"
+FIXP_DICT_2223_LINEAR = "../pre_processed_data/fixp_results_2223_linear.pkl"
+POLICIES_4292_LIN = get_file(FIXP_DICT_4292_LINEAR)
+POLICIES_4292_SQRT = get_file(FIXP_DICT_4292_SQRT)
+POLICIES_4292_CUBIC = get_file(FIXP_DICT_4292_CUBIC)
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS = "../pre_processed_data/val_results/"
 DATA_FOLDER = "../pre_processed_data/"
@@ -38,13 +45,23 @@ spec_dict = {
         "file": "-sw",
     },
 }
+STATES_POlICY = POLICIES_4292_LIN[0.0][0].shape[0]
+PARAMS_LIN = np.array([400, 35])
+PARAMS_SQRT = np.array([460, 50])
+PARAMS_CUBIC = np.array([700, 43200, -780, 4.7])
+SCALE_LIN = 0.001
+SCALE_CUBIC = 1e-5
+SCALE_SQRT = 1e-2
+COSTS_LIN = calc_obs_costs(STATES_POlICY, lin_cost, PARAMS_LIN, SCALE_SQRT)
+COSTS_CUBIC = calc_obs_costs(STATES_POlICY, cubic_costs, PARAMS_CUBIC, SCALE_CUBIC)
+COSTS_SQRT = calc_obs_costs(STATES_POlICY, sqrt_costs, PARAMS_SQRT, SCALE_SQRT)
 
 
 def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
     os.makedirs(SIM_RESULTS)
-    sim_zip_list = sorted(glob.glob(DATA_FOLDER + "simulation_results*.zip"))
+    sim_zip_list = glob.glob(DATA_FOLDER + "simulation_results*.zip")
     for file in sim_zip_list:
         ZipFile(file).extractall(SIM_RESULTS)
 
@@ -52,7 +69,7 @@ def extract_zips():
         shutil.rmtree(VAL_RESULTS)
     os.makedirs(VAL_RESULTS)
 
-    val_zip_list = sorted(glob.glob(DATA_FOLDER + "validation_results*.zip"))
+    val_zip_list = glob.glob(DATA_FOLDER + "validation_results*.zip")
     for file in val_zip_list:
         ZipFile(file).extractall(VAL_RESULTS)
 
@@ -63,14 +80,13 @@ def extract_zips():
 
 p_size = 3
 x = np.arange(1, p_size + 1) * BIN_SIZE
-dict_policies = get_file(FIXP_DICT_4292)
 width = 0.8 * BIN_SIZE
 p_raw = np.loadtxt("../pre_processed_data/parameters/rust_trans_raw.txt")
 hesse_inv_raw = np.loadtxt("../pre_processed_data/parameters/rust_cov_raw.txt")
 
 
 def get_probabilities(state):
-    p_ml = dict_policies[0.0][1][state, state : state + p_size]
+    p_ml = POLICIES_4292_LIN[0.0][1][state, state : state + p_size]
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -94,7 +110,7 @@ def get_probabilities(state):
 
 def get_probabilities_bar(state):
 
-    p_ml = dict_policies[0.0][1][state, state : state + p_size]
+    p_ml = POLICIES_4292_LIN[0.0][1][state, state : state + p_size]
     std_err = _get_standard_errors(p_ml, p_raw, hesse_inv_raw)
     capsize = 15
 
@@ -122,8 +138,8 @@ def get_probabilities_bar(state):
 
 
 def df_probability_shift(state):
-    dict_policies_4292 = get_file(FIXP_DICT_4292)
-    dict_policies_2223 = get_file(FIXP_DICT_2223)
+    dict_policies_4292 = get_file(FIXP_DICT_4292_LINEAR)
+    dict_policies_2223 = get_file(FIXP_DICT_2223_LINEAR)
     return pd.DataFrame(
         {
             "0": dict_policies_4292[0.0][1][state, state : state + p_size],
@@ -143,7 +159,7 @@ def get_probability_shift(state):
 
         ax.bar(
             x - width,
-            dict_policies[0.0][1][state, state : state + p_size],
+            POLICIES_4292_LIN[0.0][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][0],
             hatch=spec_dict[color]["hatch"][0],
@@ -151,7 +167,7 @@ def get_probability_shift(state):
         )
         ax.bar(
             x,
-            dict_policies[0.50][1][state, state : state + p_size],
+            POLICIES_4292_LIN[0.50][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
@@ -159,7 +175,7 @@ def get_probability_shift(state):
         )
         ax.bar(
             x + width,
-            dict_policies[0.95][1][state, state : state + p_size],
+            POLICIES_4292_LIN[0.95][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
@@ -180,8 +196,8 @@ def get_probability_shift(state):
 def get_probability_shift_data(state):
 
     width = 0.25 * BIN_SIZE
-    dict_policies_4292 = get_file(FIXP_DICT_4292)
-    dict_policies_2223 = get_file(FIXP_DICT_2223)
+    dict_policies_4292 = get_file(FIXP_DICT_4292_LINEAR)
+    dict_policies_2223 = get_file(FIXP_DICT_2223_LINEAR)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -223,6 +239,58 @@ def get_probability_shift_data(state):
         )
 
 
+def get_probability_shift_models(state, omega):
+
+    width = 0.2 * BIN_SIZE
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.bar(
+            x - 1.5 * width,
+            POLICIES_4292_LIN[0.0][1][state, state : state + p_size],
+            width,
+            color=spec_dict[color]["colors"][0],
+            hatch=spec_dict[color]["hatch"][0],
+            label="reference",
+        )
+        ax.bar(
+            x - 0.5 * width,
+            POLICIES_4292_LIN[omega][1][state, state : state + p_size],
+            width,
+            color=spec_dict[color]["colors"][3],
+            hatch=spec_dict[color]["hatch"][2],
+            label="linear",
+        )
+        ax.bar(
+            x + 0.5 * width,
+            POLICIES_4292_SQRT[omega][1][state, state : state + p_size],
+            width,
+            color=spec_dict[color]["colors"][1],
+            hatch=spec_dict[color]["hatch"][1],
+            label="sqrt",
+        )
+        ax.bar(
+            x + 1.5 * width,
+            POLICIES_4292_CUBIC[omega][1][state, state : state + p_size],
+            width,
+            color=spec_dict[color]["colors"][2],
+            hatch=spec_dict[color]["hatch"][2],
+            label="cubic",
+        )
+
+        ax.set_ylabel(r"Transition probability")
+        ax.set_xlabel(r"Mileage increase (in thousands)")
+        plt.xticks(x)
+        ax.set_ylim([0.0, 0.8])
+
+        ax.legend()
+
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-probability-shift-data{spec_dict[color]['file']}"
+        )
+
+
 def _get_standard_errors(p, p_raw, hesse_inv_raw):
     runs = 1000
     draws = np.zeros((runs, len(p_raw)), dtype=np.float)
@@ -244,63 +312,103 @@ def draw_from_raw(p_raw, hesse_inv_raw):
 #                       Replacement/Maintenance Probabilities
 ################################################################################
 keys = [0.0, 0.5, 0.95]
-max_state = 30
 
 
-def df_maintenance_probabilties():
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
+def df_maintenance_probabilties_lin(min_state, max_state):
+    choice_ml, choices = _create_repl_prob_plot(POLICIES_4292_LIN, COSTS_LIN, keys)
     states = np.arange(choice_ml.shape[0]) * BIN_SIZE
     return pd.DataFrame(
         {
-            "milage_thousands": states,
-            0.0: choice_ml[:, 0],
-            keys[1]: choices[0][:, 0],
-            keys[2]: choices[1][:, 0],
+            "milage_thousands": states[min_state:max_state],
+            0.0: choice_ml[min_state:max_state, 0],
+            keys[1]: choices[0][min_state:max_state, 0],
+            keys[2]: choices[1][min_state:max_state, 0],
         }
     )
 
 
-def get_maintenance_probabilities():
+def df_maintenance_probabilties_sqrt(min_state, max_state):
+    choice_ml, choices = _create_repl_prob_plot(POLICIES_4292_SQRT, COSTS_LIN, keys)
+    states = np.arange(choice_ml.shape[0]) * BIN_SIZE
+    return pd.DataFrame(
+        {
+            "milage_thousands": states[min_state:max_state],
+            0.0: choice_ml[min_state:max_state, 0],
+            keys[1]: choices[0][min_state:max_state, 0],
+            keys[2]: choices[1][min_state:max_state, 0],
+        }
+    )
 
-    choice_ml, choices = _create_repl_prob_plot(FIXP_DICT_4292, keys)
-    states = np.arange(max_state) * BIN_SIZE
+
+def df_maintenance_probabilties_cubic(min_state, max_state):
+    choice_ml, choices = _create_repl_prob_plot(POLICIES_4292_CUBIC, COSTS_LIN, keys)
+    states = np.arange(choice_ml.shape[0]) * BIN_SIZE
+    return pd.DataFrame(
+        {
+            "milage_thousands": states[min_state:max_state],
+            0.0: choice_ml[min_state:max_state, 0],
+            keys[1]: choices[0][min_state:max_state, 0],
+            keys[2]: choices[1][min_state:max_state, 0],
+        }
+    )
+
+
+def get_maintenance_probabilities(min_states, max_states, state_steps):
+
+    choice_ml_lin, choices_lin = _create_repl_prob_plot(
+        POLICIES_4292_LIN, COSTS_LIN, keys
+    )
+    choice_ml_sqrt, choices_sqrt = _create_repl_prob_plot(
+        POLICIES_4292_SQRT, COSTS_SQRT, keys
+    )
+    choice_ml_cubic, choices_cubic = _create_repl_prob_plot(
+        POLICIES_4292_CUBIC, COSTS_CUBIC, keys
+    )
+    choice_list = [
+        (choice_ml_lin, choices_lin, "linear"),
+        (choice_ml_sqrt, choices_sqrt, "sqrt"),
+        (choice_ml_cubic, choices_cubic, "cubic"),
+    ]
+
     for color in color_opts:
-        fig, ax = plt.subplots(1, 1)
 
-        ax.plot(
-            states,
-            choice_ml[:max_state, 0],
-            color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][0],
-            label="optimal",
-        )
-        for i, choice in enumerate(choices):
+        for choice_ml, choices, name in choice_list:
+            max_state = max_states[name]
+            min_state = min_states[name]
+            state_step = state_steps[name]
+            states = np.arange(max_state) * BIN_SIZE
+            fig, ax = plt.subplots(1, 1)
             ax.plot(
-                states,
-                choice[:max_state, 0],
-                color=spec_dict[color]["colors"][i + 1],
-                ls=spec_dict[color]["line"][i + 1],
-                label=fr"robust $(\omega = {keys[i+1]:.2f})$",
+                states[min_state:max_state],
+                choice_ml[min_state:max_state, 0],
+                color=spec_dict[color]["colors"][0],
+                ls=spec_dict[color]["line"][0],
+                label="optimal",
+            )
+            for i, choice in enumerate(choices):
+                ax.plot(
+                    states[min_state:max_state],
+                    choice[min_state:max_state, 0],
+                    color=spec_dict[color]["colors"][i + 1],
+                    ls=spec_dict[color]["line"][i + 1],
+                    label=fr"robust $(\omega = {keys[i+1]:.2f})$",
+                )
+
+            ax.set_ylabel(r"Maintenance probability")
+            ax.set_xlabel(r"Mileage (in thousands)")
+            ax.set_ylim([0, 1])
+
+            plt.xticks(states[min_state:max_state][::state_step])
+            ax.legend()
+
+            fig.savefig(
+                f"{DIR_FIGURES}/fig-application-maintenance-probabilities-{name}"
+                f"{spec_dict[color]['file']}"
             )
 
-        ax.set_ylabel(r"Maintenance probability")
-        ax.set_xlabel(r"Mileage (in thousands)")
-        ax.set_ylim([0, 1])
 
-        plt.xticks(states[::5])
-        ax.legend()
-
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-maintenance-probabilities"
-            f"{spec_dict[color]['file']}"
-        )
-
-
-def _create_repl_prob_plot(file, keys):
-    dict_policies = get_file(file)
+def _create_repl_prob_plot(dict_policies, costs, keys):
     ev_ml = dict_policies[0.0][0]
-    num_states = ev_ml.shape[0]
-    costs = calc_obs_costs(num_states, lin_cost, PARAMS_LIN, scale=0.001)
     choice_ml = choice_prob_gumbel(ev_ml, costs, BETA)
     choices = []
     for omega in keys[1:]:
@@ -325,7 +433,7 @@ def get_demonstration_df(init_dict, max_period):
     )
 
 
-def get_demonstration(df, max_period):
+def get_demonstration(df, max_period, max_mileage):
     states = (df["opt_mileage"], df["rob_mileage"])
     periods = (df["months_ml"], df["months_rob"])
     labels = ["optimal", r"robust ($\omega = 0.95$)"]
@@ -343,7 +451,7 @@ def get_demonstration(df, max_period):
                 label=labels[i],
             )
         ax.legend(loc="upper left")
-        ax.set_ylim([0, 90])
+        ax.set_ylim([0, max_mileage])
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-demonstration{spec_dict[color]['file']}"
@@ -352,7 +460,7 @@ def get_demonstration(df, max_period):
 
 def get_demonstration_data(init_dict):
 
-    dict_policies = get_file("../pre_processed_data/fixp_results_5000_50_400_4292.pkl")
+    dict_policies = POLICIES_4292_LIN.copy()
     ev_ml = dict_policies[0.0][0]
     ev_95 = dict_policies[0.95][0]
     trans_mat = dict_policies[0.0][1]
@@ -383,20 +491,18 @@ def get_demonstration_data(init_dict):
 #                       Threshold plot
 ################################################################################
 
-num_keys = 100
 
-
-def df_thresholds():
-    means_discrete = _threshold_data()
-    omega_range = np.linspace(0, 0.99, num_keys)
+def df_thresholds(cost_func_name):
+    means_discrete = _threshold_data(cost_func_name)
+    omega_range = np.linspace(0, 0.99, NUM_KEYS)
     return pd.DataFrame({"omega": omega_range, "threshold": means_discrete})
 
 
-def get_replacement_thresholds():
+def get_replacement_thresholds(cost_func_name):
 
-    means_discrete = _threshold_data() * BIN_SIZE
+    means_discrete = _threshold_data(cost_func_name) * BIN_SIZE
 
-    omega_range = np.linspace(0, 0.99, num_keys)
+    omega_range = np.round(np.linspace(0, 0.99, NUM_KEYS), decimals=2)
     means_ml = np.full(len(omega_range), np.round(means_discrete[0])).astype(int)
 
     omega_sections, state_sections = _create_sections(means_discrete, omega_range)
@@ -438,8 +544,10 @@ def get_replacement_thresholds():
         )
 
 
-def _threshold_data():
-    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_*_mat_0.00.pkl"))
+def _threshold_data(cost_func_name):
+    file_list = sorted(
+        glob.glob(SIM_RESULTS + f"result_ev_*_mat_0.00_" f"{cost_func_name}.pkl")
+    )
     if len(file_list) != 0:
         means_robust_strat = np.array([])
         for file in file_list:
@@ -479,12 +587,14 @@ def _create_sections(mean_disc, om_range):
 ################################################################################
 
 
-def get_decision_rule_df():
-    dict_policies = get_file(FIXP_DICT_4292)
+def get_decision_rule_df(func_name):
+    dict_policies = select_policy_dict(func_name)
 
     v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
 
-    v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl", "rb"))[1]
+    v_disc_ml = pkl.load(
+        open(SIM_RESULTS + f"result_ev_0.00_mat_0.95_{func_name}.pkl", "rb")
+    )[1]
 
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
 
@@ -493,14 +603,17 @@ def get_decision_rule_df():
     )
 
 
-def get_performance_decision_rules():
+def get_performance_decision_rules(func_name):
     print("The underlying transition matrix is the worst case given omega=0.95")
-    dict_policies = get_file(FIXP_DICT_4292)
+    dict_policies = select_policy_dict(func_name)
 
     v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
 
-    v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.00_mat_0.95.pkl", "rb"))[1]
+    v_disc_ml = pkl.load(
+        open(SIM_RESULTS + f"result_ev_0.00_mat_0.95_{func_name}.pkl", "rb")
+    )[1]
 
+    print(v_disc_ml[-1] / v_exp_ml[-1])
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -527,10 +640,10 @@ def get_performance_decision_rules():
             ls=spec_dict[color]["line"][1],
             label="actual",
         )
-        ax.set_ylim([-60000, 0])
+        ax.set_ylim([1.3 * v_exp_ml[0], 0])
         ax.legend()
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-performance-decision-rules"
+            f"{DIR_FIGURES}/fig-application-performance-decision-rules-{func_name}"
             f" {spec_dict[color]['file']}"
         )
 
@@ -540,14 +653,13 @@ def get_performance_decision_rules():
 ################################################################################
 
 
-def get_difference_df():
-    num_keys = 100
+def get_difference_df(func_name):
 
-    omega_range = np.linspace(0, 0.99, num_keys)
+    omega_range = np.round(np.linspace(0, 0.99, NUM_KEYS), decimals=2)
 
-    nominal_costs, robust_costs_95 = _performance_plot()
+    nominal_costs, robust_costs_95 = _performance_plot(func_name)
 
-    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
+    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.50_mat_*_{func_name}.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
         robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
@@ -562,23 +674,21 @@ def get_difference_df():
     )
 
 
-def get_difference_plot():
+def get_difference_plot(func_name, window_length):
 
-    num_keys = 100
+    omega_range = np.linspace(0, 0.99, NUM_KEYS)
 
-    omega_range = np.linspace(0, 0.99, num_keys)
+    nominal_costs, robust_costs_95 = _performance_plot(func_name)
 
-    nominal_costs, robust_costs_95 = _performance_plot()
-
-    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
+    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.50_mat_*_{func_name}.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
         robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
 
     diff_costs_95 = robust_costs_95 - nominal_costs
     diff_costs_50 = robust_costs_50 - nominal_costs
-    filter_95 = savgol_filter(diff_costs_95, 29, 3)
-    filter_50 = savgol_filter(diff_costs_50, 29, 3)
+    filter_95 = savgol_filter(diff_costs_95, window_length, 3)
+    filter_50 = savgol_filter(diff_costs_50, window_length, 3)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -613,14 +723,14 @@ def get_difference_plot():
         )
 
 
-def _performance_plot():
+def _performance_plot(func_name):
 
-    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.00_mat_*.pkl"))
+    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.00_mat_*_{func_name}.pkl"))
     nominal_costs = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
         nominal_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
-    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.95_mat_*.pkl"))
+    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.95_mat_*_{func_name}.pkl"))
     robust_costs = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
         robust_costs[j] = pkl.load(open(file, "rb"))[1][-1]
@@ -640,13 +750,10 @@ def _performance_plot():
 ################################################################################
 
 
-def get_out_of_sample_diff(key, bins, sample_size):
-    robust, nominal = _out_of_sample(key, sample_size)
-    diff = robust - nominal
-    hist_data = np.histogram(diff, bins=bins)
-    hist_normed = hist_data[0] / sum(hist_data[0])
-    x = np.linspace(np.min(hist_data[1]), np.max(hist_data[1]), bins)
-    hist_filter = savgol_filter(hist_normed, 29, 3)
+def get_out_of_sample_diff(key, bins, window_lenth):
+    hist_filter_lin, x_lin = filtered_hist_data(key, bins, window_lenth, "linear")
+    hist_filter_cubic, x_cubic = filtered_hist_data(key, bins, window_lenth, "cubic")
+    hist_filter_sqrt, x_sqrt = filtered_hist_data(key, bins, window_lenth, "sqrt")
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -655,14 +762,26 @@ def get_out_of_sample_diff(key, bins, sample_size):
         else:
             third_color = spec_dict[color]["colors"][4]
 
-        ax.plot(x, hist_filter, color=spec_dict[color]["colors"][0])
+        ax.plot(
+            x_lin, hist_filter_lin, color=spec_dict[color]["colors"][0], label="linear"
+        )
+        ax.plot(
+            x_sqrt, hist_filter_sqrt, color=spec_dict[color]["colors"][1], label="sqrt"
+        )
+        ax.plot(
+            x_cubic,
+            hist_filter_cubic,
+            color=spec_dict[color]["colors"][2],
+            label="cubic",
+        )
+
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
         ax.set_xlabel(r"$\Delta$ Performance")
         ax.set_ylim([0, None])
 
-        # ax.legend()
+        ax.legend()
         fig.savefig(
             "{}/fig-application-validation{}".format(
                 DIR_FIGURES, spec_dict[color]["file"]
@@ -670,25 +789,44 @@ def get_out_of_sample_diff(key, bins, sample_size):
         )
 
 
-def get_robust_performance(keys, width, sample_size):
+def get_robust_performance(keys, width):
+    performance_lin = calc_perfomance(keys, "linear")
+    performance_sqrt = calc_perfomance(keys, "sqrt")
+    performance_cubic = calc_perfomance(keys, "cubic")
 
-    performance = np.zeros(len(keys), dtype=float)
-    for j, key in enumerate(keys):
-        robust, nominal = _out_of_sample(key, sample_size)
-        diff = robust - nominal
-        performance[j] = len(diff[diff >= 0]) / len(diff)
+    keys_np = np.array(keys)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
         ax.bar(
-            keys,
-            performance,
+            keys_np - width,
+            performance_lin,
             width,
             color=spec_dict[color]["colors"][0],
             ls=spec_dict[color]["line"][0],
+            label="linear",
         )
 
+        ax.bar(
+            keys_np,
+            performance_sqrt,
+            width,
+            color=spec_dict[color]["colors"][1],
+            ls=spec_dict[color]["line"][1],
+            label="sqrt",
+        )
+
+        ax.bar(
+            keys_np + width,
+            performance_cubic,
+            width,
+            color=spec_dict[color]["colors"][2],
+            ls=spec_dict[color]["line"][2],
+            label="cubic",
+        )
+
+        ax.legend()
         ax.set_ylabel(r"Share")
         ax.set_xlabel(r"$\omega$")
         ax.set_ylim([0.0, 0.35])
@@ -699,10 +837,31 @@ def get_robust_performance(keys, width, sample_size):
         )
 
 
-def _out_of_sample(key, sample_size):
+def calc_perfomance(keys, func_name):
+    performance = np.zeros(len(keys), dtype=float)
+    for j, key in enumerate(keys):
+        robust, nominal = _out_of_sample(key, func_name)
+        diff = robust - nominal
+        performance[j] = len(diff[diff >= 0]) / len(diff)
+    return performance
+
+
+def filtered_hist_data(key, bins, window_length, func_name):
+    robust, nominal = _out_of_sample(key, func_name)
+    diff = robust - nominal
+    hist_data = np.histogram(diff, bins=bins)
+    hist_normed = hist_data[0] / sum(hist_data[0])
+    hist_filter = savgol_filter(hist_normed, window_length, 3)
+    x = np.linspace(np.min(hist_data[1]), np.max(hist_data[1]), bins)
+    return hist_filter, x
+
+
+def _out_of_sample(key, func_name):
 
     file_list = sorted(
-        glob.glob(VAL_RESULTS + "result_ev_{}_run_*.pkl".format(f"{key:.2f}"))
+        glob.glob(
+            VAL_RESULTS + "result_ev_{}_run_*_{}.pkl".format(f"{key:.2f}", func_name)
+        )
     )
     robust = np.zeros(len(file_list))
     nominal = np.zeros(len(file_list))
@@ -711,3 +870,12 @@ def _out_of_sample(key, sample_size):
         nominal[j] = res[0]
         robust[j] = res[1]
     return robust, nominal
+
+
+def select_policy_dict(func_name):
+    if func_name == "linear":
+        return POLICIES_4292_LIN
+    elif func_name == "cubic":
+        return POLICIES_4292_CUBIC
+    elif func_name == "sqrt":
+        return POLICIES_4292_SQRT
