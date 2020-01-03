@@ -287,7 +287,8 @@ def get_probability_shift_models(state, omega):
         ax.legend()
 
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-probability-shift-data{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-probability-shift-models"
+            f"{spec_dict[color]['file']}"
         )
 
 
@@ -540,7 +541,8 @@ def get_replacement_thresholds(cost_func_name):
         ax.legend()
 
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-replacement-thresholds{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-replacement-thresholds"
+            f"-{cost_func_name}{spec_dict[color]['file']}"
         )
 
 
@@ -605,15 +607,16 @@ def get_decision_rule_df(func_name):
 
 def get_performance_decision_rules(func_name):
     print("The underlying transition matrix is the worst case given omega=0.95")
-    dict_policies = select_policy_dict(func_name)
+    policy_dict = select_policy_dict(func_name)
 
-    v_exp_ml = np.full(NUM_POINTS, dict_policies[0.0][0][0])
+    v_exp_ml = np.full(NUM_POINTS, policy_dict[0.0][0][0])
+    v_exp_095 = np.full(NUM_POINTS, policy_dict[0.95][0][0])
 
     v_disc_ml = pkl.load(
         open(SIM_RESULTS + f"result_ev_0.00_mat_0.95_{func_name}.pkl", "rb")
     )[1]
 
-    print(v_disc_ml[-1] / v_exp_ml[-1])
+    print(v_disc_ml[-1] / v_exp_ml[-1], v_disc_ml[-1] / v_exp_095[-1])
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -640,11 +643,20 @@ def get_performance_decision_rules(func_name):
             ls=spec_dict[color]["line"][1],
             label="actual",
         )
+
+        ax.plot(
+            periods,
+            v_exp_095,
+            color=spec_dict[color]["colors"][0],
+            ls=spec_dict[color]["line"][1],
+            label="true",
+        )
+
         ax.set_ylim([1.3 * v_exp_ml[0], 0])
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-performance-decision-rules-{func_name}"
-            f" {spec_dict[color]['file']}"
+            f"{spec_dict[color]['file']}"
         )
 
 
@@ -719,7 +731,7 @@ def get_difference_plot(func_name, window_length):
         ax.set_xlabel(r"$\omega$")
         ax.legend()
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-difference{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-application-difference-{func_name}{spec_dict[color]['file']}"
         )
 
 
