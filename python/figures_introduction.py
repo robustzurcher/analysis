@@ -1,29 +1,32 @@
 import numpy as np
-from matplotlib import pyplot as plt
-from scipy.interpolate import interp1d
 import pandas as pd
 from config import DIR_FIGURES
-from figures_application import color_opts, spec_dict
+from figures_application import color_opts
+from figures_application import spec_dict
+from matplotlib import pyplot as plt
+from scipy.interpolate import interp1d
 
 
-def df_num_obs(bin_size, init_dict, trans_results):
-    max_state = trans_results["state_count"].shape[0]
-    numobs_per_state = trans_results["state_count"].sum(axis=1)
-    num_steps = int(bin_size / init_dict["binsize"])
+def df_num_obs(repl_data, bin_size_plot, init_dict):
+    max_state = repl_data["state"].max()
+    numobs_per_state = np.bincount(repl_data[repl_data["decision"] == 0]["state"])
+    numobs_per_state[0] += len(repl_data[repl_data["decision"] == 1])
+    num_steps = int(bin_size_plot / init_dict["binsize"])
     num_bins = int(max_state / num_steps)
     hist_data = np.zeros(num_bins)
     for i in range(num_bins):
         hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
     return pd.DataFrame(
-        {"Num_Obs": hist_data}, index=np.arange(1, len(hist_data) + 1) * bin_size
+        {"Num_Obs": hist_data}, index=np.arange(1, len(hist_data) + 1) * bin_size_plot
     )
 
 
-def get_number_observations(bin_size, init_dict, trans_results):
+def get_number_observations(repl_data, bin_size_plot, init_dict):
 
-    max_state = trans_results["state_count"].shape[0]
-    numobs_per_state = trans_results["state_count"].sum(axis=1)
-    num_steps = int(bin_size / init_dict["binsize"])
+    max_state = repl_data["state"].max()
+    numobs_per_state = np.bincount(repl_data[repl_data["decision"] == 0]["state"])
+    numobs_per_state[0] += len(repl_data[repl_data["decision"] == 1])
+    num_steps = int(bin_size_plot / init_dict["binsize"])
     num_bins = int(max_state / num_steps)
     hist_data = np.zeros(num_bins)
     for i in range(num_bins):
