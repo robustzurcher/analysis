@@ -23,7 +23,6 @@ for cost_func_name, scale, params in parametrizations:
     )
     for directory in ["solution", "simulation", "validation"]:
         os.chdir(directory)
-        print(directory, cost_func_name)
         spec_dict = json.load(open("specification.json", "rb"))
         for key in general_dict.keys():
             if key in spec_dict.keys():

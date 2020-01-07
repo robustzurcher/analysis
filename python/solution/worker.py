@@ -74,5 +74,4 @@ while True:
     if cmd == 1:
         omega = np.zeros(1, dtype="float")
         comm.Recv([omega, MPI.DOUBLE], source=0)
-        print(omega[0])
         wrapper_func(*base_args, omega[0])

@@ -1,0 +1,18 @@
+This file contains the instructions for running the analysis on my econ thesis.
+
+- analysis should be on the latest commit of the branch econ_thesis
+
+- submodules/ruspy should be on the latest commit of branch kantevorich
+  (Commit message: Rewrote scale.)
+
+- subomodules/zurcher_data should be on the latest commit of branch polishing_data
+  (Commit message: New draft.)
+
+- submodules/robupy should be on the latest commit of master
+
+
+If everything is set up, please go into folder python and run:
+
+"python replication_script.py"
+
+For best performance I would need at least 100 cores and more than 8GB of Ram.
