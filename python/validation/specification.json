@@ -2,16 +2,17 @@
   "num_workers": 5,
   "beta": 0.9999,
   "buses": 300,
-  "periods": 70000,
+  "periods": 75000,
   "params": [
-    460,
-    50
+    140,
+    152266
   ],
   "seed": 123,
   "density_strategy": 0.5,
   "density_runs": 200,
   "runs_strategies_validation": 100,
   "strategies_validation": [
+    0.04,
     0.12,
     0.21,
     0.29,
@@ -21,5 +22,5 @@
   "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
   "policy_dict": "../solution/fixp_results_4292_sqrt.pkl",
   "cost_func": "sqrt",
-  "cost_scale": 0.01
+  "cost_scale": 1e-05
 }

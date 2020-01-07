@@ -7,6 +7,7 @@ import numba
 import numpy as np
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import lin_cost
+from ruspy.model_code.cost_functions import quadratic_costs
 from ruspy.model_code.cost_functions import sqrt_costs
 
 
@@ -31,6 +32,8 @@ def select_cost_func(key):
         return cubic_costs
     elif key == "sqrt":
         return sqrt_costs
+    elif key == "quad":
+        return quadratic_costs
     else:
         raise NotImplementedError("Cost function is not implemented")
 

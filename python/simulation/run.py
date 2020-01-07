@@ -24,7 +24,7 @@ if __name__ == "__main__":
     spec = json.load(open("specification.json", "rb"))
     grid_omega = get_file(spec["policy_dict"]).keys()
 
-    result_folder = "sim_results_{}".format(spec["cost_func"])
+    result_folder = "simulation_results_{}".format(spec["cost_func"])
     if os.path.exists(result_folder):
         shutil.rmtree(result_folder)
     os.mkdir(result_folder)

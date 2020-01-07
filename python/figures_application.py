@@ -11,8 +11,8 @@ from auxiliary import get_file
 from config import DIR_FIGURES
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
-from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import lin_cost
+from ruspy.model_code.cost_functions import quadratic_costs
 from ruspy.model_code.cost_functions import sqrt_costs
 from ruspy.simulation.simulation import simulate
 from scipy.signal import savgol_filter
@@ -21,17 +21,17 @@ from scipy.signal import savgol_filter
 BETA = 0.9999
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
-NUM_PERIODS = 70000
+NUM_PERIODS = 75000
 GRIDSIZE = 1000
 NUM_KEYS = 25
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT_4292_LINEAR = "../pre_processed_data/fixp_results_4292_linear.pkl"
 FIXP_DICT_4292_SQRT = "../pre_processed_data/fixp_results_4292_sqrt.pkl"
-FIXP_DICT_4292_CUBIC = "../pre_processed_data/fixp_results_4292_cubic.pkl"
+FIXP_DICT_4292_QUAD = "../pre_processed_data/fixp_results_4292_quad.pkl"
 FIXP_DICT_2223_LINEAR = "../pre_processed_data/fixp_results_2223_linear.pkl"
 POLICIES_4292_LIN = get_file(FIXP_DICT_4292_LINEAR)
 POLICIES_4292_SQRT = get_file(FIXP_DICT_4292_SQRT)
-POLICIES_4292_CUBIC = get_file(FIXP_DICT_4292_CUBIC)
+POLICIES_4292_QUAD = get_file(FIXP_DICT_4292_QUAD)
 SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS = "../pre_processed_data/val_results/"
 DATA_FOLDER = "../pre_processed_data/"
@@ -46,15 +46,13 @@ spec_dict = {
     },
 }
 STATES_POlICY = POLICIES_4292_LIN[0.0][0].shape[0]
-PARAMS_LIN = np.array([400, 35])
-PARAMS_SQRT = np.array([460, 50])
-PARAMS_CUBIC = np.array([700, 43200, -780, 4.7])
-SCALE_LIN = 0.001
-SCALE_CUBIC = 1e-5
-SCALE_SQRT = 1e-2
-COSTS_LIN = calc_obs_costs(STATES_POlICY, lin_cost, PARAMS_LIN, SCALE_SQRT)
-COSTS_CUBIC = calc_obs_costs(STATES_POlICY, cubic_costs, PARAMS_CUBIC, SCALE_CUBIC)
-COSTS_SQRT = calc_obs_costs(STATES_POlICY, sqrt_costs, PARAMS_SQRT, SCALE_SQRT)
+PARAMS_LIN = np.array([203, 27800])
+PARAMS_SQRT = np.array([140, 152266])
+PARAMS_QUAD = np.array([266, -1000, 960])
+SCALE = 1e-5
+COSTS_LIN = calc_obs_costs(STATES_POlICY, lin_cost, PARAMS_LIN, SCALE)
+COSTS_QUAD = calc_obs_costs(STATES_POlICY, quadratic_costs, PARAMS_QUAD, SCALE)
+COSTS_SQRT = calc_obs_costs(STATES_POlICY, sqrt_costs, PARAMS_SQRT, SCALE)
 
 
 def extract_zips():
@@ -112,6 +110,9 @@ def get_probabilities_bar(state):
 
     p_ml = POLICIES_4292_LIN[0.0][1][state, state : state + p_size]
     std_err = _get_standard_errors(p_ml, p_raw, hesse_inv_raw)
+    print(p_raw)
+    print(hesse_inv_raw)
+    print(std_err)
     capsize = 15
 
     for color in color_opts:
@@ -272,11 +273,11 @@ def get_probability_shift_models(state, omega):
         )
         ax.bar(
             x + 1.5 * width,
-            POLICIES_4292_CUBIC[omega][1][state, state : state + p_size],
+            POLICIES_4292_QUAD[omega][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="cubic",
+            label="quad",
         )
 
         ax.set_ylabel(r"Transition probability")
@@ -293,7 +294,7 @@ def get_probability_shift_models(state, omega):
 
 
 def _get_standard_errors(p, p_raw, hesse_inv_raw):
-    runs = 1000
+    runs = 10000
     draws = np.zeros((runs, len(p_raw)), dtype=np.float)
     for i in range(runs):
         draws[i, :] = draw_from_raw(p_raw, hesse_inv_raw)
@@ -341,8 +342,8 @@ def df_maintenance_probabilties_sqrt(min_state, max_state):
     )
 
 
-def df_maintenance_probabilties_cubic(min_state, max_state):
-    choice_ml, choices = _create_repl_prob_plot(POLICIES_4292_CUBIC, COSTS_LIN, keys)
+def df_maintenance_probabilties_quadratic(min_state, max_state):
+    choice_ml, choices = _create_repl_prob_plot(POLICIES_4292_QUAD, COSTS_LIN, keys)
     states = np.arange(choice_ml.shape[0]) * BIN_SIZE
     return pd.DataFrame(
         {
@@ -362,13 +363,13 @@ def get_maintenance_probabilities(min_states, max_states, state_steps):
     choice_ml_sqrt, choices_sqrt = _create_repl_prob_plot(
         POLICIES_4292_SQRT, COSTS_SQRT, keys
     )
-    choice_ml_cubic, choices_cubic = _create_repl_prob_plot(
-        POLICIES_4292_CUBIC, COSTS_CUBIC, keys
+    choice_ml_quadratic, choices_quadratic = _create_repl_prob_plot(
+        POLICIES_4292_QUAD, COSTS_QUAD, keys
     )
     choice_list = [
         (choice_ml_lin, choices_lin, "linear"),
         (choice_ml_sqrt, choices_sqrt, "sqrt"),
-        (choice_ml_cubic, choices_cubic, "cubic"),
+        (choice_ml_quadratic, choices_quadratic, "quad"),
     ]
 
     for color in color_opts:
@@ -465,11 +466,9 @@ def get_demonstration_data(init_dict):
     ev_ml = dict_policies[0.0][0]
     ev_95 = dict_policies[0.95][0]
     trans_mat = dict_policies[0.0][1]
-    n_states = ev_ml.shape[0]
-    cost_sim = calc_obs_costs(n_states, lin_cost, PARAMS_LIN, scale=0.001)
 
-    df_ml = simulate(init_dict, ev_ml, cost_sim, trans_mat)
-    df_95 = simulate(init_dict, ev_95, cost_sim, trans_mat)
+    df_ml = simulate(init_dict, ev_ml, COSTS_LIN, trans_mat)
+    df_95 = simulate(init_dict, ev_95, COSTS_LIN, trans_mat)
 
     periods_ml = np.arange(NUM_PERIODS)
     periods_95 = np.arange(NUM_PERIODS)
@@ -699,6 +698,8 @@ def get_difference_plot(func_name, window_length):
 
     diff_costs_95 = robust_costs_95 - nominal_costs
     diff_costs_50 = robust_costs_50 - nominal_costs
+    print(diff_costs_95)
+    print(diff_costs_50)
     filter_95 = savgol_filter(diff_costs_95, window_length, 3)
     filter_50 = savgol_filter(diff_costs_50, window_length, 3)
 
@@ -764,7 +765,7 @@ def _performance_plot(func_name):
 
 def get_out_of_sample_diff(key, bins, window_lenth):
     hist_filter_lin, x_lin = filtered_hist_data(key, bins, window_lenth, "linear")
-    hist_filter_cubic, x_cubic = filtered_hist_data(key, bins, window_lenth, "cubic")
+    hist_filter_quad, x_quad = filtered_hist_data(key, bins, window_lenth, "quad")
     hist_filter_sqrt, x_sqrt = filtered_hist_data(key, bins, window_lenth, "sqrt")
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -781,10 +782,7 @@ def get_out_of_sample_diff(key, bins, window_lenth):
             x_sqrt, hist_filter_sqrt, color=spec_dict[color]["colors"][1], label="sqrt"
         )
         ax.plot(
-            x_cubic,
-            hist_filter_cubic,
-            color=spec_dict[color]["colors"][2],
-            label="cubic",
+            x_quad, hist_filter_quad, color=spec_dict[color]["colors"][2], label="quad",
         )
 
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
@@ -804,7 +802,7 @@ def get_out_of_sample_diff(key, bins, window_lenth):
 def get_robust_performance(keys, width):
     performance_lin = calc_perfomance(keys, "linear")
     performance_sqrt = calc_perfomance(keys, "sqrt")
-    performance_cubic = calc_perfomance(keys, "cubic")
+    performance_quad = calc_perfomance(keys, "quad")
 
     keys_np = np.array(keys)
 
@@ -831,11 +829,11 @@ def get_robust_performance(keys, width):
 
         ax.bar(
             keys_np + width,
-            performance_cubic,
+            performance_quad,
             width,
             color=spec_dict[color]["colors"][2],
             ls=spec_dict[color]["line"][2],
-            label="cubic",
+            label="quad",
         )
 
         ax.legend()
@@ -887,7 +885,7 @@ def _out_of_sample(key, func_name):
 def select_policy_dict(func_name):
     if func_name == "linear":
         return POLICIES_4292_LIN
-    elif func_name == "cubic":
-        return POLICIES_4292_CUBIC
+    elif func_name == "quad":
+        return POLICIES_4292_QUAD
     elif func_name == "sqrt":
         return POLICIES_4292_SQRT
