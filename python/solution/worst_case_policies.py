@@ -1,5 +1,5 @@
-import numpy as np
 import numba
+import numpy as np
 from robupy.auxiliary import get_worst_case_probs
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 
@@ -22,7 +22,7 @@ def create_worst_trans_mat(trans_mat, v, rho):
 
 @numba.jit(nopython=True)
 def calc_fixp_worst(
-    num_states, p_ml, costs, beta, rho, threshold=1e-8, max_it=1000000
+    num_states, p_ml, costs, disc_fac, rho, threshold=1e-8, max_it=1000000
 ):
     ev = np.zeros(num_states)
     worst_trans_mat = trans_mat = create_transition_matrix(num_states, p_ml)
@@ -32,8 +32,8 @@ def calc_fixp_worst(
     success = True
     while converge_crit > threshold:
         ev = ev_new
-        maint_value = beta * ev - costs[:, 0]
-        repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
+        maint_value = disc_fac * ev - costs[:, 0]
+        repl_value = disc_fac * ev[0] - costs[0, 1] - costs[0, 0]
 
         # Select the minimal absolute value to rescale the value vector for the
         # exponential function.

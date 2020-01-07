@@ -62,13 +62,13 @@ while True:
 
         df_rob = simulate(spec, fixp_rob, cost_sim, trans)
         performance_rob = discount_utility(
-            df_rob, spec["buses"], spec["periods"], spec["periods"], spec["beta"]
+            df_rob, spec["buses"], spec["periods"], spec["periods"], spec["disc_fac"]
         )[-1]
         del df_rob
 
         df_ml = simulate(spec, fixp_ml, cost_sim, trans)
         performance_ml = discount_utility(
-            df_ml, spec["buses"], spec["periods"], spec["periods"], spec["beta"]
+            df_ml, spec["buses"], spec["periods"], spec["periods"], spec["disc_fac"]
         )[-1]
         del df_ml
 

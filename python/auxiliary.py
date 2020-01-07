@@ -38,18 +38,18 @@ def select_cost_func(key):
         raise NotImplementedError("Cost function is not implemented")
 
 
-def discount_utility(df, num_buses, num_periods, gridsize, beta):
+def discount_utility(df, num_buses, num_periods, gridsize, disc_fac):
     num_points = int(num_periods / gridsize) + 1
     utilities = df["utilities"].to_numpy(np.float64).reshape(num_buses, num_periods)
-    return disc_ut_loop(gridsize, num_buses, num_points, utilities, beta)
+    return disc_ut_loop(gridsize, num_buses, num_points, utilities, disc_fac)
 
 
 @numba.jit(nopython=True)
-def disc_ut_loop(gridsize, num_buses, num_points, utilities, beta):
+def disc_ut_loop(gridsize, num_buses, num_points, utilities, disc_fac):
     v_disc = np.zeros(num_points, dtype=numba.float64)
     for point in range(num_points):
         v = 0.0
         for i in range(point * gridsize):
-            v += (beta ** i) * np.sum(utilities[:, i])
+            v += (disc_fac ** i) * np.sum(utilities[:, i])
         v_disc[point] = v / num_buses
     return v_disc

@@ -56,6 +56,6 @@ while True:
         df = simulate(spec, fixp, costs, trans)
         repl_state = df[df["decision"] == 1]["state"].mean()
         performance = discount_utility(
-            df, spec["buses"], spec["periods"], 1000, spec["beta"]
+            df, spec["buses"], spec["periods"], 1000, spec["disc_fac"]
         )
         pkl.dump((repl_state, performance), open(fname, "wb"))
