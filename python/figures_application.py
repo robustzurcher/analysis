@@ -18,7 +18,7 @@ from ruspy.simulation.simulation import simulate
 from scipy.signal import savgol_filter
 
 # Global variables
-BETA = 0.9999
+DISC_FAC = 0.9999
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
 NUM_PERIODS = 75000
@@ -411,10 +411,10 @@ def get_maintenance_probabilities(min_states, max_states, state_steps):
 
 def _create_repl_prob_plot(dict_policies, costs, keys):
     ev_ml = dict_policies[0.0][0]
-    choice_ml = choice_prob_gumbel(ev_ml, costs, BETA)
+    choice_ml = choice_prob_gumbel(ev_ml, costs, DISC_FAC)
     choices = []
     for omega in keys[1:]:
-        choices += [choice_prob_gumbel(dict_policies[omega][0], costs, BETA)]
+        choices += [choice_prob_gumbel(dict_policies[omega][0], costs, DISC_FAC)]
     return choice_ml, choices
 
 
