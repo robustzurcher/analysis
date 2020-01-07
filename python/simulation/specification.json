@@ -1,17 +1,19 @@
 {
-  "num_workers": 2,
+  "num_workers": 100,
   "disc_fac": 0.9999,
   "seed": 123,
   "num_states": 100,
-  "buses": 1,
-  "periods": 1000,
+  "buses": 1000,
+  "periods": 100000,
   "params": [
     266,
     -1000,
     960
   ],
   "sim_keys": [
-    0.5
+    0.0,
+    0.5,
+    0.95
   ],
   "policy_dict": "../solution/fixp_results_4292_quad.pkl",
   "cost_func": "quad",

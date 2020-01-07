@@ -1,5 +1,5 @@
 {
-  "num_points": 2,
+  "num_points": 100,
   "max_omega": 0.99,
   "num_states": 100,
   "sample_size": 4292,
@@ -11,7 +11,7 @@
     960
   ],
   "threshold": 1e-05,
-  "num_workers": 2,
+  "num_workers": 100,
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
   "cost_func": "quad",
   "cost_scale": 1e-05
