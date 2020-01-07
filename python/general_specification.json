@@ -16,7 +16,7 @@
     0.95
   ],
   "density_strategy": 0.5,
-  "density_runs": 10000,
+  "density_runs": 5000,
   "runs_strategies_validation": 1000,
   "strategies_validation": [
     0.05,
