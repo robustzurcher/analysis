@@ -3,6 +3,7 @@
   "disc_fac": 0.9999,
   "buses": 1000,
   "periods": 100000,
+  "sample_size": 4292,
   "params": [
     266,
     -1000,
@@ -23,8 +24,5 @@
     0.95
   ],
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
-  "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
-  "policy_dict": "../solution/fixp_results_4292_quad.pkl",
-  "cost_func": "quad",
-  "cost_scale": 1e-05
+  "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt"
 }

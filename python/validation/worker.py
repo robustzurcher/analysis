@@ -28,8 +28,9 @@ from ruspy.model_code.cost_functions import calc_obs_costs
 comm = MPI.Comm.Get_parent()
 
 spec = json.load(open("specification.json", "rb"))
-raw_params = np.loadtxt(spec["raw_trans"])
+raw_trans = np.loadtxt(spec["raw_trans"])
 raw_hesse_inv = np.loadtxt(spec["raw_cov"])
+SCALE = 1e-5
 
 while True:
 
@@ -43,22 +44,23 @@ while True:
         break
 
     if cmd == 1:
-        fixp_key, run = comm.recv(source=0)
+        fixp_key, run, cost_func_name, params = comm.recv(source=0)
 
-        fname = "val_results_{}/result_ev_{}_run_{}_{}.pkl".format(
-            spec["cost_func"], f"{fixp_key:.2f}", run, spec["cost_func"]
+        fname = "val_results/result_ev_{}_run_{}_{}.pkl".format(
+            f"{fixp_key:.2f}", run, cost_func_name
         )
-        dict_polcies = get_file(spec["policy_dict"])
+        policy_dict = "../solution/fixp_results_{}_{}.pkl".format(
+            spec["sample_size"], cost_func_name
+        )
+        dict_polcies = get_file(policy_dict)
         fixp_rob = dict_polcies[fixp_key][0]
         fixp_ml = dict_polcies[0.0][0]
 
         np.random.seed()
-        trans = create_asym_trans_mat(fixp_rob.shape[0], raw_params, raw_hesse_inv)
+        trans = create_asym_trans_mat(fixp_rob.shape[0], raw_trans, raw_hesse_inv)
 
-        cost_func = select_cost_func(spec["cost_func"])
-        cost_sim = calc_obs_costs(
-            fixp_ml.shape[0], cost_func, spec["params"], spec["cost_scale"]
-        )
+        cost_func = select_cost_func(cost_func_name)
+        cost_sim = calc_obs_costs(fixp_ml.shape[0], cost_func, params, SCALE)
 
         df_rob = simulate(spec, fixp_rob, cost_sim, trans)
         performance_rob = discount_utility(
