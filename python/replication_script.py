@@ -9,12 +9,11 @@ PARAMS_QUAD = [266, -1000, 960]
 SCALE = 1e-5
 
 parametrizations = [
-    ("quad", SCALE, PARAMS_QUAD),
     ("linear", SCALE, PARAMS_LIN),
     ("sqrt", SCALE, PARAMS_SQRT),
 ]
 
-for directory in ["solution", "simulation"]:
+for directory in ["simulation"]:
     for cost_func_name, scale, params in parametrizations:
         general_dict = json.load(open("general_specification.json", "rb"))
         general_dict["cost_func"] = cost_func_name

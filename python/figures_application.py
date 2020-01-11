@@ -19,11 +19,11 @@ from scipy.signal import savgol_filter
 
 # Global variables
 DISC_FAC = 0.9999
-NUM_BUSES = 200
+NUM_BUSES = 10000
 BIN_SIZE = 5  # in thousand
-NUM_PERIODS = 75000
+NUM_PERIODS = 100000
 GRIDSIZE = 1000
-NUM_KEYS = 25
+NUM_KEYS = 100
 NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 FIXP_DICT_4292_LINEAR = "../pre_processed_data/fixp_results_4292_linear.pkl"
 FIXP_DICT_4292_SQRT = "../pre_processed_data/fixp_results_4292_sqrt.pkl"
@@ -470,8 +470,8 @@ def get_demonstration_data(init_dict):
     df_ml = simulate(init_dict, ev_ml, COSTS_LIN, trans_mat)
     df_95 = simulate(init_dict, ev_95, COSTS_LIN, trans_mat)
 
-    periods_ml = np.arange(NUM_PERIODS)
-    periods_95 = np.arange(NUM_PERIODS)
+    periods_ml = np.arange(init_dict["periods"])
+    periods_95 = np.arange(init_dict["periods"])
     periods = [periods_ml, periods_95]
     states_ml = np.array(df_ml["state"], dtype=int)
     states_95 = np.array(df_95["state"], dtype=int)
@@ -643,13 +643,13 @@ def get_performance_decision_rules(func_name):
             label="actual",
         )
 
-        ax.plot(
-            periods,
-            v_exp_095,
-            color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][1],
-            label="true",
-        )
+        # ax.plot(
+        #     periods,
+        #     v_exp_095,
+        #     color=spec_dict[color]["colors"][0],
+        #     ls=spec_dict[color]["line"][1],
+        #     label="true",
+        # )
 
         ax.set_ylim([1.3 * v_exp_ml[0], 0])
         ax.legend()
@@ -668,7 +668,8 @@ def get_difference_df(func_name):
 
     omega_range = np.round(np.linspace(0, 0.99, NUM_KEYS), decimals=2)
 
-    nominal_costs, robust_costs_95 = _performance_plot(func_name)
+    nominal_costs = _performance_plot(func_name, 0.0)
+    robust_costs_95 = _performance_plot(func_name, 0.09)
 
     file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.50_mat_*_{func_name}.pkl"))
     robust_costs_50 = np.zeros(len(file_list))
@@ -685,23 +686,22 @@ def get_difference_df(func_name):
     )
 
 
-def get_difference_plot(func_name, window_length):
+def get_difference_plot(func_name):
 
     omega_range = np.linspace(0, 0.99, NUM_KEYS)
 
-    nominal_costs, robust_costs_95 = _performance_plot(func_name)
-
-    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.50_mat_*_{func_name}.pkl"))
-    robust_costs_50 = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
+    nominal_costs = _performance_plot(func_name, 0.0)
+    robust_costs_95 = _performance_plot(func_name, 0.95)
+    robust_costs_50 = _performance_plot(func_name, 0.5)
+    robust_costs_050 = _performance_plot(func_name, 0.05)
 
     diff_costs_95 = robust_costs_95 - nominal_costs
     diff_costs_50 = robust_costs_50 - nominal_costs
-    print(diff_costs_95)
-    print(diff_costs_50)
-    filter_95 = savgol_filter(diff_costs_95, window_length, 3)
-    filter_50 = savgol_filter(diff_costs_50, window_length, 3)
+    diff_costs_050 = robust_costs_050 - nominal_costs
+
+    filter_95 = savgol_filter(diff_costs_95, 29, 3)
+    filter_50 = savgol_filter(diff_costs_50, 29, 3)
+    filter_050 = savgol_filter(diff_costs_050, 29, 3)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -721,12 +721,19 @@ def get_difference_plot(func_name, window_length):
             label=r"robust $(\omega = 0.50)$",
             ls=spec_dict[color]["line"][1],
         )
+        ax.plot(
+            omega_range,
+            filter_050,
+            color=spec_dict[color]["colors"][0],
+            label=r"robust $(\omega = 0.05)$",
+            ls=spec_dict[color]["line"][1],
+        )
         if color == "colored":
-            third_color = "#2ca02c"
+            third_color = "black"
         else:
             third_color = spec_dict[color]["colors"][4]
-        ax.axhline(color=third_color, ls=spec_dict[color]["line"][2])
-        ax.set_ylim([-300, 400])
+        ax.axhline(color=third_color, ls=spec_dict["black_white"]["line"][2])
+        ax.set_ylim([-450, 450])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
@@ -736,17 +743,17 @@ def get_difference_plot(func_name, window_length):
         )
 
 
-def _performance_plot(func_name):
+def _performance_plot(func_name, sim_key):
 
-    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.00_mat_*_{func_name}.pkl"))
-    nominal_costs = np.zeros(len(file_list))
+    file_list = sorted(
+        glob.glob(
+            SIM_RESULTS
+            + "result_ev_{}_mat_*_{}.pkl".format(f"{sim_key:.2f}", func_name)
+        )
+    )
+    costs = np.zeros(len(file_list))
     for j, file in enumerate(file_list):
-        nominal_costs[j] = pkl.load(open(file, "rb"))[1][-1]
-
-    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.95_mat_*_{func_name}.pkl"))
-    robust_costs = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        robust_costs[j] = pkl.load(open(file, "rb"))[1][-1]
+        costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
     # opt_costs = np.zeros(len(omega_range))
     # for j, omega in enumerate(omega_range):
@@ -755,7 +762,7 @@ def _performance_plot(func_name):
     #     )
     #     opt_costs[j] = pkl.load(open(file, "rb"))[1][-1]
 
-    return nominal_costs, robust_costs
+    return costs
 
 
 ################################################################################
