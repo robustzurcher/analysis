@@ -30,6 +30,7 @@ FIXP_DICT_4292_SQRT = "../pre_processed_data/fixp_results_4292_sqrt.pkl"
 FIXP_DICT_4292_QUAD = "../pre_processed_data/fixp_results_4292_quad.pkl"
 FIXP_DICT_2223_LINEAR = "../pre_processed_data/fixp_results_2223_linear.pkl"
 POLICIES_4292_LIN = get_file(FIXP_DICT_4292_LINEAR)
+POLICIES_2223_LIN = get_file(FIXP_DICT_2223_LINEAR)
 POLICIES_4292_SQRT = get_file(FIXP_DICT_4292_SQRT)
 POLICIES_4292_QUAD = get_file(FIXP_DICT_4292_QUAD)
 SIM_RESULTS = "../pre_processed_data/sim_results/"
@@ -67,7 +68,7 @@ def extract_zips():
         shutil.rmtree(VAL_RESULTS)
     os.makedirs(VAL_RESULTS)
 
-    val_zip_list = glob.glob(DATA_FOLDER + "validation_results*.zip")
+    val_zip_list = glob.glob(DATA_FOLDER + "validation_results.zip")
     for file in val_zip_list:
         ZipFile(file).extractall(VAL_RESULTS)
 
@@ -110,9 +111,7 @@ def get_probabilities_bar(state):
 
     p_ml = POLICIES_4292_LIN[0.0][1][state, state : state + p_size]
     std_err = _get_standard_errors(p_ml, p_raw, hesse_inv_raw)
-    print(p_raw)
-    print(hesse_inv_raw)
-    print(std_err)
+
     capsize = 15
 
     for color in color_opts:
@@ -139,14 +138,18 @@ def get_probabilities_bar(state):
 
 
 def df_probability_shift(state):
-    dict_policies_4292 = get_file(FIXP_DICT_4292_LINEAR)
-    dict_policies_2223 = get_file(FIXP_DICT_2223_LINEAR)
     return pd.DataFrame(
         {
-            "0": dict_policies_4292[0.0][1][state, state : state + p_size],
-            "4292_0.50": dict_policies_4292[0.5][1][state, state : state + p_size],
-            "4292_0.95": dict_policies_4292[0.95][1][state, state : state + p_size],
-            "2223_0.95": dict_policies_2223[0.95][1][state, state : state + p_size],
+            "0": POLICIES_4292_LIN[0.0][1][state, state : state + p_size],
+            "4292_0.50_lin": POLICIES_4292_LIN[0.5][1][state, state : state + p_size],
+            "4292_0.95_lin": POLICIES_4292_LIN[0.95][1][state, state : state + p_size],
+            "4292_0.95_quad": POLICIES_4292_QUAD[0.95][1][
+                state, state : state + p_size
+            ],
+            "4292_0.95_sqrt": POLICIES_4292_SQRT[0.95][1][
+                state, state : state + p_size
+            ],
+            "2223_0.95_lin": POLICIES_2223_LIN[0.95][1][state, state : state + p_size],
         }
     )
 
@@ -269,7 +272,7 @@ def get_probability_shift_models(state, omega):
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="sqrt",
+            label="square root",
         )
         ax.bar(
             x + 1.5 * width,
@@ -277,7 +280,7 @@ def get_probability_shift_models(state, omega):
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="quad",
+            label="quadratic",
         )
 
         ax.set_ylabel(r"Transition probability")
@@ -288,7 +291,7 @@ def get_probability_shift_models(state, omega):
         ax.legend()
 
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-probability-shift-models"
+            f"{DIR_FIGURES}/fig-application-probability-shift-models-{state}"
             f"{spec_dict[color]['file']}"
         )
 
@@ -670,19 +673,22 @@ def get_difference_df(func_name):
 
     nominal_costs = _performance_plot(func_name, 0.0)
     robust_costs_95 = _performance_plot(func_name, 0.09)
-
-    file_list = sorted(glob.glob(SIM_RESULTS + f"result_ev_0.50_mat_*_{func_name}.pkl"))
-    robust_costs_50 = np.zeros(len(file_list))
-    for j, file in enumerate(file_list):
-        robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
+    robust_costs_50 = _performance_plot(func_name, 0.5)
+    robust_costs_050 = _performance_plot(func_name, 0.05)
 
     diff_costs_95 = robust_costs_95 - nominal_costs
     diff_costs_50 = robust_costs_50 - nominal_costs
+    diff_costs_050 = robust_costs_050 - nominal_costs
 
     print("The dataframe contains the difference for robust - nominal strategy.")
 
     return pd.DataFrame(
-        {"omega": omega_range, "robust_95": diff_costs_95, "robust_050": diff_costs_50}
+        {
+            "omega": omega_range,
+            "robust_95": diff_costs_95,
+            "robust_50": diff_costs_50,
+            "robust_05": diff_costs_050,
+        }
     )
 
 
