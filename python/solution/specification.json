@@ -6,12 +6,13 @@
   "scale": 78,
   "disc_fac": 0.9999,
   "params": [
-    140,
-    152266
+    63,
+    -100,
+    3500
   ],
   "threshold": 1e-05,
-  "num_workers": 5,
+  "num_workers": 100,
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
-  "cost_func": "sqrt",
+  "cost_func": "quad",
   "cost_scale": 1e-05
 }

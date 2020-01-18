@@ -1,21 +1,21 @@
 {
-  "num_workers": 5,
+  "num_workers": 100,
   "disc_fac": 0.9999,
   "seed": 123,
   "num_states": 100,
   "buses": 1000,
   "periods": 100000,
   "params": [
-    140,
-    152266
+    63,
+    -100,
+    3500
   ],
   "sim_keys": [
     0.0,
-    0.05,
     0.5,
     0.95
   ],
-  "policy_dict": "../solution/fixp_results_4292_sqrt.pkl",
-  "cost_func": "sqrt",
+  "policy_dict": "../solution/fixp_results_4292_quad.pkl",
+  "cost_func": "quad",
   "cost_scale": 1e-05
 }

@@ -3,18 +3,16 @@
   "disc_fac": 0.9999,
   "buses": 1000,
   "periods": 100000,
-  "sample_size": 4292,
   "params": [
-    266,
-    -1000,
-    960
+    63,
+    -100,
+    3500
   ],
   "seed": 123,
   "density_strategy": 0.5,
   "density_runs": 5000,
   "runs_strategies_validation": 1000,
   "strategies_validation": [
-    0.01,
     0.05,
     0.1,
     0.2,
@@ -24,5 +22,8 @@
     0.95
   ],
   "raw_trans": "../../pre_processed_data/parameters/rust_trans_raw.txt",
-  "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt"
+  "raw_cov": "../../pre_processed_data/parameters/rust_cov_raw.txt",
+  "policy_dict": "../solution/fixp_results_4292_quad.pkl",
+  "cost_func": "quad",
+  "cost_scale": 1e-05
 }

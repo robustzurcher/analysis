@@ -37,6 +37,18 @@ SIM_RESULTS = "../pre_processed_data/sim_results/"
 VAL_RESULTS = "../pre_processed_data/val_results/"
 DATA_FOLDER = "../pre_processed_data/"
 color_opts = ["colored", "black_white"]
+jet_color_map = [
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+]
 spec_dict = {
     "colored": {"colors": [None] * 4, "line": ["-"] * 3, "hatch": [""] * 3, "file": ""},
     "black_white": {
@@ -110,7 +122,7 @@ def get_probabilities(state):
 def get_probabilities_bar(state):
 
     p_ml = POLICIES_4292_LIN[0.0][1][state, state : state + p_size]
-    std_err = _get_standard_errors(p_ml, p_raw, hesse_inv_raw)
+    std_err = _get_95_conf_interv(p_ml, p_raw, hesse_inv_raw)
 
     capsize = 15
 
@@ -220,7 +232,7 @@ def get_probability_shift_data(state):
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="$N_k = 55$",
+            label="$N_x = 55$",
         )
         ax.bar(
             x + width,
@@ -228,7 +240,7 @@ def get_probability_shift_data(state):
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="$N_k = 29$",
+            label="$N_x = 29$",
         )
 
         ax.set_ylabel(r"Transition probability")
@@ -260,19 +272,19 @@ def get_probability_shift_models(state, omega):
         )
         ax.bar(
             x - 0.5 * width,
-            POLICIES_4292_LIN[omega][1][state, state : state + p_size],
-            width,
-            color=spec_dict[color]["colors"][3],
-            hatch=spec_dict[color]["hatch"][2],
-            label="linear",
-        )
-        ax.bar(
-            x + 0.5 * width,
             POLICIES_4292_SQRT[omega][1][state, state : state + p_size],
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
             label="square root",
+        )
+        ax.bar(
+            x + 0.5 * width,
+            POLICIES_4292_LIN[omega][1][state, state : state + p_size],
+            width,
+            color=spec_dict[color]["colors"][3],
+            hatch=spec_dict[color]["hatch"][2],
+            label="linear",
         )
         ax.bar(
             x + 1.5 * width,
@@ -296,7 +308,7 @@ def get_probability_shift_models(state, omega):
         )
 
 
-def _get_standard_errors(p, p_raw, hesse_inv_raw):
+def _get_95_conf_interv(p, p_raw, hesse_inv_raw):
     runs = 10000
     draws = np.zeros((runs, len(p_raw)), dtype=np.float)
     for i in range(runs):
@@ -320,14 +332,29 @@ keys = [0.0, 0.5, 0.95]
 
 
 def df_maintenance_probabilties_lin(min_state, max_state):
-    choice_ml, choices = _create_repl_prob_plot(POLICIES_4292_LIN, COSTS_LIN, keys)
-    states = np.arange(choice_ml.shape[0]) * BIN_SIZE
+    choice_ml_sqrt, choices_sqrt = _create_repl_prob_plot(
+        POLICIES_4292_SQRT, COSTS_SQRT, keys
+    )
+    choice_ml_lin, choices_lin = _create_repl_prob_plot(
+        POLICIES_4292_LIN, COSTS_LIN, keys
+    )
+    choice_ml_quad, choices_quad = _create_repl_prob_plot(
+        POLICIES_4292_QUAD, COSTS_QUAD, keys
+    )
+
+    states = np.arange(choice_ml_lin.shape[0]) * BIN_SIZE
     return pd.DataFrame(
         {
-            "milage_thousands": states[min_state:max_state],
-            0.0: choice_ml[min_state:max_state, 0],
-            keys[1]: choices[0][min_state:max_state, 0],
-            keys[2]: choices[1][min_state:max_state, 0],
+            "mileage_thousands": states[min_state:max_state],
+            "0_lin": choice_ml_lin[min_state:max_state, 0],
+            str(keys[1]) + "_lin": choices_lin[0][min_state:max_state, 0],
+            str(keys[2]) + "_lin": choices_lin[1][min_state:max_state, 0],
+            "0_sqrt": choice_ml_sqrt[min_state:max_state, 0],
+            str(keys[1]) + "_sqrt": choices_sqrt[0][min_state:max_state, 0],
+            str(keys[2]) + "_sqrt": choices_sqrt[1][min_state:max_state, 0],
+            "0_quad": choice_ml_quad[min_state:max_state, 0],
+            str(keys[1]) + "_quad": choices_quad[0][min_state:max_state, 0],
+            str(keys[2]) + "_quad": choices_quad[1][min_state:max_state, 0],
         }
     )
 
@@ -501,7 +528,7 @@ def df_thresholds(cost_func_name):
     return pd.DataFrame({"omega": omega_range, "threshold": means_discrete})
 
 
-def get_replacement_thresholds(cost_func_name):
+def get_replacement_thresholds(cost_func_name, y_0, y_1):
 
     means_discrete = _threshold_data(cost_func_name) * BIN_SIZE
 
@@ -510,8 +537,6 @@ def get_replacement_thresholds(cost_func_name):
 
     omega_sections, state_sections = _create_sections(means_discrete, omega_range)
 
-    y_0 = state_sections[0][0] - 2 * BIN_SIZE
-    y_1 = state_sections[-1][-1] + 2 * BIN_SIZE
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
         ax.set_ylabel(r"Mileage (in thousands)")
@@ -618,7 +643,7 @@ def get_performance_decision_rules(func_name):
         open(SIM_RESULTS + f"result_ev_0.00_mat_0.95_{func_name}.pkl", "rb")
     )[1]
 
-    print(v_disc_ml[-1] / v_exp_ml[-1], v_disc_ml[-1] / v_exp_095[-1])
+    print(v_disc_ml[-1] / v_exp_ml[-1], v_disc_ml[-1] / v_exp_095[-1], v_exp_ml[-1])
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -635,24 +660,16 @@ def get_performance_decision_rules(func_name):
             periods,
             v_exp_ml,
             color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][0],
+            ls="--",
             label="long-run expectation",
         )
         ax.plot(
             periods,
             v_disc_ml,
             color=spec_dict[color]["colors"][0],
-            ls=spec_dict[color]["line"][1],
+            ls=spec_dict[color]["line"][0],
             label="actual",
         )
-
-        # ax.plot(
-        #     periods,
-        #     v_exp_095,
-        #     color=spec_dict[color]["colors"][0],
-        #     ls=spec_dict[color]["line"][1],
-        #     label="true",
-        # )
 
         ax.set_ylim([1.3 * v_exp_ml[0], 0])
         ax.legend()
@@ -672,7 +689,7 @@ def get_difference_df(func_name):
     omega_range = np.round(np.linspace(0, 0.99, NUM_KEYS), decimals=2)
 
     nominal_costs = _performance_plot(func_name, 0.0)
-    robust_costs_95 = _performance_plot(func_name, 0.09)
+    robust_costs_95 = _performance_plot(func_name, 0.95)
     robust_costs_50 = _performance_plot(func_name, 0.5)
     robust_costs_050 = _performance_plot(func_name, 0.05)
 
@@ -699,15 +716,12 @@ def get_difference_plot(func_name):
     nominal_costs = _performance_plot(func_name, 0.0)
     robust_costs_95 = _performance_plot(func_name, 0.95)
     robust_costs_50 = _performance_plot(func_name, 0.5)
-    robust_costs_050 = _performance_plot(func_name, 0.05)
 
     diff_costs_95 = robust_costs_95 - nominal_costs
     diff_costs_50 = robust_costs_50 - nominal_costs
-    diff_costs_050 = robust_costs_050 - nominal_costs
 
     filter_95 = savgol_filter(diff_costs_95, 29, 3)
     filter_50 = savgol_filter(diff_costs_50, 29, 3)
-    filter_050 = savgol_filter(diff_costs_050, 29, 3)
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -727,19 +741,13 @@ def get_difference_plot(func_name):
             label=r"robust $(\omega = 0.50)$",
             ls=spec_dict[color]["line"][1],
         )
-        ax.plot(
-            omega_range,
-            filter_050,
-            color=spec_dict[color]["colors"][0],
-            label=r"robust $(\omega = 0.05)$",
-            ls=spec_dict[color]["line"][1],
-        )
+
         if color == "colored":
-            third_color = "black"
+            third_color = "#7f7f7f"
         else:
             third_color = spec_dict[color]["colors"][4]
         ax.axhline(color=third_color, ls=spec_dict["black_white"]["line"][2])
-        ax.set_ylim([-450, 450])
+        ax.set_ylim([-500, 900])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
@@ -784,18 +792,26 @@ def get_out_of_sample_diff(key, bins, window_lenth):
         fig, ax = plt.subplots(1, 1)
 
         if color == "colored":
-            third_color = "#ff7f0e"
+            third_color = "#7f7f7f"
         else:
             third_color = spec_dict[color]["colors"][4]
 
         ax.plot(
+            x_sqrt,
+            hist_filter_sqrt,
+            color=spec_dict[color]["colors"][1],
+            label="square root",
+        )
+
+        ax.plot(
             x_lin, hist_filter_lin, color=spec_dict[color]["colors"][0], label="linear"
         )
+
         ax.plot(
-            x_sqrt, hist_filter_sqrt, color=spec_dict[color]["colors"][1], label="sqrt"
-        )
-        ax.plot(
-            x_quad, hist_filter_quad, color=spec_dict[color]["colors"][2], label="quad",
+            x_quad,
+            hist_filter_quad,
+            color=spec_dict[color]["colors"][2],
+            label="quadratic",
         )
 
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
@@ -817,10 +833,19 @@ def get_robust_performance(keys, width):
     performance_sqrt = calc_perfomance(keys, "sqrt")
     performance_quad = calc_perfomance(keys, "quad")
 
-    keys_np = np.array(keys)
+    keys_np = np.arange(0, len(keys))
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
+
+        ax.bar(
+            keys_np,
+            performance_sqrt,
+            width,
+            color=spec_dict[color]["colors"][1],
+            ls=spec_dict[color]["line"][1],
+            label="square root",
+        )
 
         ax.bar(
             keys_np - width,
@@ -832,28 +857,19 @@ def get_robust_performance(keys, width):
         )
 
         ax.bar(
-            keys_np,
-            performance_sqrt,
-            width,
-            color=spec_dict[color]["colors"][1],
-            ls=spec_dict[color]["line"][1],
-            label="sqrt",
-        )
-
-        ax.bar(
             keys_np + width,
             performance_quad,
             width,
             color=spec_dict[color]["colors"][2],
             ls=spec_dict[color]["line"][2],
-            label="quad",
+            label="quadratic",
         )
 
         ax.legend()
         ax.set_ylabel(r"Share")
         ax.set_xlabel(r"$\omega$")
         ax.set_ylim([0.0, 0.35])
-        plt.xticks(keys)
+        plt.xticks(keys_np, keys)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-perfor"
             f"mance{spec_dict[color]['file']}"
