@@ -123,6 +123,8 @@ def get_probabilities_bar(state):
 
     p_ml = POLICIES_4292_LIN[0.0][1][state, state : state + p_size]
     std_err = _get_95_conf_interv(p_ml, p_raw, hesse_inv_raw)
+    print("upper bound", p_ml + std_err[1, :])
+    print("lower bound", p_ml - std_err[0, :])
 
     capsize = 15
 
@@ -788,6 +790,7 @@ def get_out_of_sample_diff(key, bins, window_lenth):
     hist_filter_lin, x_lin = filtered_hist_data(key, bins, window_lenth, "linear")
     hist_filter_quad, x_quad = filtered_hist_data(key, bins, window_lenth, "quad")
     hist_filter_sqrt, x_sqrt = filtered_hist_data(key, bins, window_lenth, "sqrt")
+
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
@@ -890,6 +893,7 @@ def filtered_hist_data(key, bins, window_length, func_name):
     diff = robust - nominal
     hist_data = np.histogram(diff, bins=bins)
     hist_normed = hist_data[0] / sum(hist_data[0])
+    print(len(diff[diff > 0]) / len(diff))
     hist_filter = savgol_filter(hist_normed, window_length, 3)
     x = np.linspace(np.min(hist_data[1]), np.max(hist_data[1]), bins)
     return hist_filter, x
