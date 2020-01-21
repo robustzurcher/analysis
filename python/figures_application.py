@@ -80,7 +80,7 @@ def extract_zips():
         shutil.rmtree(VAL_RESULTS)
     os.makedirs(VAL_RESULTS)
 
-    val_zip_list = glob.glob(DATA_FOLDER + "validation_results.zip")
+    val_zip_list = glob.glob(DATA_FOLDER + "validation_results*.zip")
     for file in val_zip_list:
         ZipFile(file).extractall(VAL_RESULTS)
 

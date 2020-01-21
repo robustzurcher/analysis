@@ -1,18 +1,17 @@
 {
-  "num_points": 100,
-  "max_omega": 0.99,
+  "num_points": 2,
+  "max_omega": 0.95,
   "num_states": 100,
-  "sample_size": 4292,
+  "sample_size": 2223,
   "scale": 78,
   "disc_fac": 0.9999,
   "params": [
-    63,
-    -100,
-    3500
+    36.4,
+    144000
   ],
   "threshold": 1e-05,
-  "num_workers": 100,
+  "num_workers": 2,
   "trans_probs": "../../pre_processed_data/parameters/rust_trans_probs.txt",
-  "cost_func": "quad",
+  "cost_func": "sqrt",
   "cost_scale": 1e-05
 }
