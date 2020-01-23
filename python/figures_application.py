@@ -59,9 +59,9 @@ spec_dict = {
     },
 }
 STATES_POlICY = POLICIES_4292_LIN[0.0][0].shape[0]
-PARAMS_LIN = np.array([203, 27800])
-PARAMS_SQRT = np.array([140, 152266])
-PARAMS_QUAD = np.array([266, -1000, 960])
+PARAMS_LIN = [50, 41600]
+PARAMS_SQRT = [36.4, 144000]
+PARAMS_QUAD = [63, -100, 3500]
 SCALE = 1e-5
 COSTS_LIN = calc_obs_costs(STATES_POlICY, lin_cost, PARAMS_LIN, SCALE)
 COSTS_QUAD = calc_obs_costs(STATES_POlICY, quadratic_costs, PARAMS_QUAD, SCALE)
@@ -673,7 +673,7 @@ def get_performance_decision_rules(func_name):
             label="actual",
         )
 
-        ax.set_ylim([1.3 * v_exp_ml[0], 0])
+        ax.set_ylim([-65000, 0])
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-performance-decision-rules-{func_name}"
@@ -749,7 +749,7 @@ def get_difference_plot(func_name):
         else:
             third_color = spec_dict[color]["colors"][4]
         ax.axhline(color=third_color, ls=spec_dict["black_white"]["line"][2])
-        ax.set_ylim([-500, 900])
+        ax.set_ylim([-250, 400])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
@@ -871,7 +871,7 @@ def get_robust_performance(keys, width):
         ax.legend()
         ax.set_ylabel(r"Share")
         ax.set_xlabel(r"$\omega$")
-        ax.set_ylim([0.0, 0.35])
+        ax.set_ylim([0.0, 0.4])
         plt.xticks(keys_np, keys)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-perfor"
