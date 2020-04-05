@@ -725,6 +725,11 @@ def get_difference_plot(func_name):
     filter_95 = savgol_filter(diff_costs_95, 29, 3)
     filter_50 = savgol_filter(diff_costs_50, 29, 3)
 
+    df = pd.DataFrame(
+        {"omega": omega_range, "robust_050": filter_50, "robust_95": filter_95}
+    )
+    df.to_pickle("robust_illustration.pkl")
+
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
 
