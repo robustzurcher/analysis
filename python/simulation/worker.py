@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """This script provides all capabilities for the worker processes."""
-import pickle as pkl
 import json
 import os
+import pickle as pkl
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -41,7 +41,7 @@ while True:
     if cmd == 1:
         fixp_key, trans_key = comm.recv(source=0)
         fname = "sim_results/result_ev_{}_mat_{}.pkl".format(
-            "{:.2f}".format(fixp_key), "{:.2f}".format(trans_key)
+            f"{fixp_key:.2f}", f"{trans_key:.2f}"
         )
         fixp = dict_polcies[fixp_key][0]
         trans = dict_polcies[trans_key][1]

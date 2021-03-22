@@ -1,5 +1,5 @@
-import numpy as np
 import numba
+import numpy as np
 from robupy.auxiliary import get_worst_case_probs
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
@@ -21,9 +21,7 @@ def create_worst_trans_mat(trans_mat, v, rho):
 
 
 @numba.jit(nopython=True)
-def calc_fixp_worst(
-    num_states, p_ml, costs, beta, rho, threshold=1e-8, max_it=1000000
-):
+def calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold=1e-8, max_it=1000000):
     ev = np.zeros(num_states)
     worst_trans_mat = trans_mat = create_transition_matrix(num_states, p_ml)
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))

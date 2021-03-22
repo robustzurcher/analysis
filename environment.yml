@@ -23,7 +23,7 @@ dependencies:
   - estimagic
   - seaborn
   - jupyterlab
-  - mpi4py 
+  - mpi4py
   - pip:
       - flake8
       - black

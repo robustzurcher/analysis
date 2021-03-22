@@ -1,21 +1,23 @@
-import pickle as pkl
 import glob
-import pandas as pd
-from zipfile import ZipFile
 import os
+import pickle as pkl
 import shutil
-from scipy.signal import savgol_filter
+from zipfile import ZipFile
 
 import matplotlib.pyplot as plt
 import numpy as np
-from ruspy.simulation.simulation import simulate
-
+import pandas as pd
 from auxiliary import get_file
-from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func, choice_prob
 from config import DIR_FIGURES
+from ruspy.model_code.choice_probabilities import choice_prob_gumbel
+from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.cost_functions import lin_cost
+from ruspy.simulation.simulation import simulate
+from scipy.signal import savgol_filter
 
 # Global variables
 BETA = 0.9999
+cost_scale = 0.001
 PARAMS = np.array([50, 400])
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
@@ -147,7 +149,7 @@ def get_probability_shift(state):
             width,
             color=spec_dict[color]["colors"][1],
             hatch=spec_dict[color]["hatch"][1],
-            label="$\omega=0.50$",
+            label=r"$\omega=0.50$",
         )
         ax.bar(
             x + width,
@@ -155,7 +157,7 @@ def get_probability_shift(state):
             width,
             color=spec_dict[color]["colors"][2],
             hatch=spec_dict[color]["hatch"][2],
-            label="$\omega=0.95$",
+            label=r"$\omega=0.95$",
         )
 
         ax.set_ylabel(r"Transition probability")
@@ -272,7 +274,7 @@ def get_maintenance_probabilities():
                 choice[:max_state, 0],
                 color=spec_dict[color]["colors"][i + 1],
                 ls=spec_dict[color]["line"][i + 1],
-                label=f"robust $(\omega = {keys[i+1]:.2f})$",
+                label=fr"robust $(\omega = {keys[i+1]:.2f})$",
             )
 
         ax.set_ylabel(r"Maintenance probability")
@@ -292,11 +294,11 @@ def _create_repl_prob_plot(file, keys):
     dict_policies = get_file(file)
     ev_ml = dict_policies[0.0][0]
     num_states = ev_ml.shape[0]
-    costs = cost_func(num_states, lin_cost, PARAMS)
-    choice_ml = choice_prob(ev_ml, costs, BETA)
+    costs = calc_obs_costs(num_states, lin_cost, PARAMS, scale=cost_scale)
+    choice_ml = choice_prob_gumbel(ev_ml, costs, BETA)
     choices = []
     for omega in keys[1:]:
-        choices += [choice_prob(dict_policies[omega][0], costs, BETA)]
+        choices += [choice_prob_gumbel(dict_policies[omega][0], costs, BETA)]
     return choice_ml, choices
 
 
@@ -307,15 +309,20 @@ def _create_repl_prob_plot(file, keys):
 
 def get_demonstration_df(init_dict):
     states, periods = get_demonstration_data(init_dict)
-    return pd.DataFrame({'months_ml': periods[0], 'months_rob': periods[1],
-                         "opt_mileage": states[0] * BIN_SIZE,
-                         "rob_mileage": states[1] * BIN_SIZE})
+    return pd.DataFrame(
+        {
+            "months_ml": periods[0],
+            "months_rob": periods[1],
+            "opt_mileage": states[0] * BIN_SIZE,
+            "rob_mileage": states[1] * BIN_SIZE,
+        }
+    )
 
 
 def get_demonstration(df, max_period):
     states = (df["opt_mileage"], df["rob_mileage"])
     periods = (df["months_ml"], df["months_rob"])
-    labels = ["optimal", "robust ($\omega = 0.95$)"]
+    labels = ["optimal", r"robust ($\omega = 0.95$)"]
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
         ax.set_xlabel(r"Months")
@@ -344,24 +351,31 @@ def get_demonstration_data(init_dict):
     ev_95 = dict_policies[0.95][0]
     trans_mat = dict_policies[0.0][1]
 
-    df_ml = simulate(init_dict, ev_ml, trans_mat)
-    df_95 = simulate(init_dict, ev_95, trans_mat)
+    num_states = ev_ml.shape[0]
 
-    periods_ml = np.array(df_ml["period"], dtype=int)
-    periods_95 = np.array(df_95["period"], dtype=int)
+    costs = calc_obs_costs(num_states, lin_cost, PARAMS, scale=cost_scale)
+
+    df_ml = simulate(init_dict, ev_ml, costs, trans_mat)
+    df_95 = simulate(init_dict, ev_95, costs, trans_mat)
+
+    periods_ml = np.array(range(init_dict["periods"]), dtype=int)
+    periods_95 = np.array(range(init_dict["periods"]), dtype=int)
     periods = [periods_ml, periods_95]
     states_ml = np.array(df_ml["state"], dtype=int)
     states_95 = np.array(df_95["state"], dtype=int)
     states = [states_ml, states_95]
 
     for i, df in enumerate([df_ml, df_95]):
-        index = np.array(df[df["decision"] == 1].index, dtype=int) + 1
+        index = (
+            np.array(
+                df[df["decision"] == 1].index.get_level_values("period"), dtype=int
+            )
+            + 1
+        )
         states[i] = np.insert(states[i], index, 0)
         periods[i] = np.insert(periods[i], index, index - 1)
 
     return states, periods
-
-
 
 
 ################################################################################
@@ -397,7 +411,7 @@ def get_replacement_thresholds():
         ax.plot(
             omega_range,
             means_ml,
-                color=spec_dict[color]["colors"][1],
+            color=spec_dict[color]["colors"][1],
             ls=spec_dict[color]["line"][0],
             label="optimal",
         )
@@ -515,7 +529,8 @@ def get_performance_decision_rules():
         ax.set_ylim([-60000, 0])
         ax.legend()
         fig.savefig(
-            f"{DIR_FIGURES}/fig-application-performance-decision-rules{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/"
+            f"fig-application-performance-decision-rules{spec_dict[color]['file']}"
         )
 
 
@@ -547,7 +562,6 @@ def get_difference_df():
 
 
 def get_difference_plot():
-
     num_keys = 100
 
     omega_range = np.linspace(0, 0.99, num_keys)
@@ -566,14 +580,12 @@ def get_difference_plot():
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
-        
-
 
         ax.plot(
             omega_range,
             filter_95,
             color=spec_dict[color]["colors"][0],
-            label="robust $(\omega = 0.95)$",
+            label=r"robust $(\omega = 0.95)$",
             ls=spec_dict[color]["line"][0],
         )
 
@@ -581,7 +593,7 @@ def get_difference_plot():
             omega_range,
             filter_50,
             color=spec_dict[color]["colors"][0],
-            label="robust $(\omega = 0.50)$",
+            label=r"robust $(\omega = 0.50)$",
             ls=spec_dict[color]["line"][1],
         )
         if color == "colored":
@@ -590,6 +602,55 @@ def get_difference_plot():
             third_color = spec_dict[color]["colors"][4]
         ax.axhline(color=third_color, ls=spec_dict[color]["line"][2])
         ax.set_ylim([-300, 400])
+        # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
+        ax.set_ylabel(r"$\Delta$ Performance")
+        ax.set_xlabel(r"$\omega$")
+        ax.legend()
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-application-difference{spec_dict[color]['file']}"
+        )
+
+
+def get_absolute_plot():
+
+    num_keys = 100
+
+    omega_range = np.linspace(0, 0.99, num_keys)
+
+    nominal_costs, robust_costs_95 = _performance_plot()
+
+    file_list = sorted(glob.glob(SIM_RESULTS + "result_ev_0.50_mat_*.pkl"))
+    robust_costs_50 = np.zeros(len(file_list))
+    for j, file in enumerate(file_list):
+        robust_costs_50[j] = pkl.load(open(file, "rb"))[1][-1]
+
+    for color in color_opts:
+        fig, ax = plt.subplots(1, 1)
+
+        ax.plot(
+            omega_range,
+            nominal_costs,
+            color=spec_dict[color]["colors"][0],
+            label="optimal",
+            ls=spec_dict[color]["line"][0],
+        )
+
+        ax.plot(
+            omega_range,
+            robust_costs_50,
+            color=spec_dict[color]["colors"][1],
+            label=r"robust $(\omega = 0.50)$",
+            ls=spec_dict[color]["line"][1],
+        )
+
+        ax.plot(
+            omega_range,
+            robust_costs_95,
+            color=spec_dict[color]["colors"][2],
+            label=r"robust $(\omega = 0.95)$",
+            ls=spec_dict[color]["line"][2],
+        )
+        ax.set_ylim([-54000, -47000])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")
@@ -641,9 +702,7 @@ def get_out_of_sample_diff(key, bins, sample_size):
         else:
             third_color = spec_dict[color]["colors"][4]
 
-        ax.plot(
-            x, hist_filter, color=spec_dict[color]["colors"][0]
-        )
+        ax.plot(x, hist_filter, color=spec_dict[color]["colors"][0])
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
@@ -679,7 +738,7 @@ def get_robust_performance(keys, width, sample_size):
 
         ax.set_ylabel(r"Share")
         ax.set_xlabel(r"$\omega$")
-        ax.set_ylim([0., 0.35])
+        ax.set_ylim([0.0, 0.35])
         plt.xticks(keys)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-perfor"
@@ -690,10 +749,7 @@ def get_robust_performance(keys, width, sample_size):
 def _out_of_sample(key, sample_size):
 
     file_list = sorted(
-        glob.glob(
-            VAL_RESULTS
-            + "result_ev_{}_run_*.pkl".format("{:.2f}".format(key))
-        )
+        glob.glob(VAL_RESULTS + "result_ev_{}_run_*.pkl".format(f"{key:.2f}"))
     )
     robust = np.zeros(len(file_list))
     nominal = np.zeros(len(file_list))

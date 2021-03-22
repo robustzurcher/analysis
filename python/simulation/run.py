@@ -1,7 +1,7 @@
 import json
-import sys
 import os
 import shutil
+import sys
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -25,8 +25,8 @@ if __name__ == "__main__":
     grid_omega = get_file(spec["policy_dict"]).keys()
 
     if os.path.exists("sim_results"):
-        shutil.rmtree('sim_results')
-    os.mkdir('sim_results')
+        shutil.rmtree("sim_results")
+    os.mkdir("sim_results")
 
     status = MPI.Status()
 

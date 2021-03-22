@@ -1,7 +1,7 @@
 import json
-import sys
 import os
 import shutil
+import sys
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
 # done right at the beginning of the script.
@@ -20,8 +20,8 @@ import numpy as np
 if __name__ == "__main__":
 
     if os.path.exists("val_results"):
-        shutil.rmtree('val_results')
-    os.mkdir('val_results')
+        shutil.rmtree("val_results")
+    os.mkdir("val_results")
     spec = json.load(open("specification.json", "rb"))
 
     status = MPI.Status()
@@ -43,7 +43,6 @@ if __name__ == "__main__":
         task = spec["density_strategy"], run
         grid_task.append(task)
 
-
     # We wait for everybody to be ready and then clean up the criterion function.
     check_in = np.zeros(1, dtype="float64")
 
@@ -64,7 +63,5 @@ if __name__ == "__main__":
     comm.Disconnect()
     # Now we aggregate all the results.
 
-    shutil.make_archive(
-        "validation_results", "zip", "val_results"
-    )
+    shutil.make_archive("validation_results", "zip", "val_results")
     shutil.rmtree("val_results")

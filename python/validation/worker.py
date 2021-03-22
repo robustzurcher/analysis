@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """This script provides all capabilities for the worker processes."""
-import pickle as pkl
 import json
 import os
+import pickle as pkl
+
 from out_of_sample import create_asym_trans_mat
 
 # In this script we only have explicit use of MPI as our level of parallelism. This needs to be
@@ -43,9 +44,7 @@ while True:
     if cmd == 1:
         fixp_key, run = comm.recv(source=0)
 
-        fname = "val_results/result_ev_{}_run_{}.pkl".format(
-            "{:.2f}".format(fixp_key), run
-        )
+        fname = "val_results/result_ev_{}_run_{}.pkl".format(f"{fixp_key:.2f}", run)
         dict_polcies = get_file(spec["policy_dict"])
         fixp_rob = dict_polcies[fixp_key][0]
         fixp_ml = dict_polcies[0.0][0]

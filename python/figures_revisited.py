@@ -1,16 +1,17 @@
+import glob
 import os
+import pickle as pkl
 import shutil
 from zipfile import ZipFile
-from config import DIR_FIGURES
+
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import savgol_filter
-import pickle as pkl
-import glob
-
-from ruspy.model_code.cost_functions import lin_cost, calc_obs_costs
+from config import DIR_FIGURES
 from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.fix_point_alg import calc_fixp
+from scipy.signal import savgol_filter
 
 color_opts = ["colored", "black_white"]
 spec_dict = {
@@ -36,7 +37,9 @@ def extract_zips_revisited():
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
     os.makedirs("../pre_processed_data/validation_results")
-    ZipFile("../pre_processed_data/validation_results_revisited.zip").extractall(VAL_RESULTS)
+    ZipFile("../pre_processed_data/validation_results_revisited.zip").extractall(
+        VAL_RESULTS
+    )
 
 
 ################################################################################
@@ -53,7 +56,7 @@ def get_out_of_sample_diff_to_true(index, bins):
     ev, _, _ = calc_fixp(trans_mat, obs_costs, disc_fac)
 
     perfomance_strategies = np.zeros_like(performance)
-    for i, omega in enumerate(omega_strategies):
+    for i in range(len(omega_strategies)):
         perfomance_strategies[:, i] = performance[:, i] - ev[0]
 
     hist_data = np.histogram(perfomance_strategies[:, index], bins=bins)
@@ -68,9 +71,7 @@ def get_out_of_sample_diff_to_true(index, bins):
         else:
             third_color = spec_dict[color]["colors"][4]
 
-        ax.plot(
-            x, hist_filter, color=spec_dict[color]["colors"][0]
-        )
+        ax.plot(x, hist_filter, color=spec_dict[color]["colors"][0])
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
@@ -89,7 +90,7 @@ def get_out_of_sample_diff(index, bins):
     performance = _out_of_sample()
 
     perfomance_strategies = np.zeros((performance.shape[0], len(omega_strategies)))
-    for i, omega in enumerate(omega_strategies):
+    for i in range(len(omega_strategies)):
         perfomance_strategies[:, i] = performance[:, 1 + i] - performance[:, 0]
 
     hist_data = np.histogram(perfomance_strategies[:, index], bins=bins)
@@ -104,9 +105,7 @@ def get_out_of_sample_diff(index, bins):
         else:
             third_color = spec_dict[color]["colors"][4]
 
-        ax.plot(
-            x, hist_filter, color=spec_dict[color]["colors"][0]
-        )
+        ax.plot(x, hist_filter, color=spec_dict[color]["colors"][0])
         ax.axvline(color=third_color, ls=spec_dict[color]["line"][2])
 
         ax.set_ylabel(r"Density")
@@ -126,9 +125,8 @@ def get_robust_performance_revisited(width):
     performance = _out_of_sample()
 
     perfomance_strategies = np.zeros(len(omega_strategies))
-    for i, omega in enumerate(omega_strategies):
-        perfomance_strategies[i] = np.mean(
-            performance[:, 1 + i] > performance[:, 0])
+    for i in range(len(omega_strategies)):
+        perfomance_strategies[i] = np.mean(performance[:, 1 + i] > performance[:, 0])
 
     for color in color_opts:
         fig, ax = plt.subplots(1, 1)
@@ -143,7 +141,7 @@ def get_robust_performance_revisited(width):
 
         ax.set_ylabel(r"Share")
         ax.set_xlabel(r"$\omega$")
-        ax.set_ylim([0., 0.35])
+        ax.set_ylim([0.0, 0.35])
         plt.xticks(omega_strategies)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-bar-plot"
@@ -153,9 +151,7 @@ def get_robust_performance_revisited(width):
 
 def _out_of_sample():
 
-    file_list = glob.glob(
-            VAL_RESULTS
-            + "run_*.pkl")
+    file_list = glob.glob(VAL_RESULTS + "run_*.pkl")
     performance = np.zeros((len(file_list), len(omega_strategies) + 1))
 
     for j, file in enumerate(file_list):

@@ -29,7 +29,7 @@ from worst_case_policies import calc_fixp_worst
 def wrapper_func(p_ml, sample_size, scale, costs, beta, num_states, threshold, omega):
     rho = chi2.ppf(omega, len(p_ml) - 1) / (2 * (sample_size / scale))
     result = calc_fixp_worst(num_states, p_ml, costs, beta, rho, threshold)
-    fname = "results/intermediate_{}.pkl".format("{:.2f}".format(omega))
+    fname = "results/intermediate_{}.pkl".format(f"{omega:.2f}")
     pkl.dump(result, open(fname, "wb"))
 
     return result

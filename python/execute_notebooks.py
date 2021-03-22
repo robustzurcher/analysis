@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 """This module executes all notebooks. It serves the main purpose to ensure that all can be
 executed and work proper independently."""
-import subprocess as sp
 import glob
 import os
+import subprocess as sp
 
-os.chdir(os.environ['PROJECT_ROOT'] + '/notebooks')
+os.chdir(os.environ["PROJECT_ROOT"] + "/notebooks")
 
-for notebook in sorted(glob.glob('*.ipynb')):
+for notebook in sorted(glob.glob("*.ipynb")):
 
-    
-    cmd = ' jupyter nbconvert --execute {}  --ExecutePreprocessor.timeout=-1'.format(notebook)
+    cmd = f" jupyter nbconvert --execute {notebook}  --ExecutePreprocessor.timeout=-1"
     sp.check_call(cmd, shell=True)
-
