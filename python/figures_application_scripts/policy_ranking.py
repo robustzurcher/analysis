@@ -3,6 +3,7 @@ import pickle as pkl
 
 import matplotlib.pyplot as plt
 import numpy as np
+from config import DIR_FIGURES
 from global_vals_funcs import VAL_RESULTS
 from global_vals_funcs import VAL_STRATS
 
@@ -45,7 +46,7 @@ def create_ranking_graph(df, name):
             ncol=4,
             fontsize=14,
         )
-        fig.savefig(f"performance_graph_{name}.png")
+        fig.savefig(f"{DIR_FIGURES}/performance_graph_{name}.png")
 
 
 def out_of_sample():

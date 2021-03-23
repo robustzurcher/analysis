@@ -35,7 +35,7 @@ def plot_performance():
     fig.savefig(f"{DIR_FIGURES}/fig-illustration-performance")
 
 
-def create_ranking_graph(df):
+def create_ranking_graph_illustrive(df):
     fig, ax = plt.subplots(figsize=(12, 5))
     colors = ["tab:blue", "tab:orange", "tab:red", "tab:purple"]
     linestyle = ["--", "-.", "-", ":"]
