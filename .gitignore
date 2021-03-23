@@ -6,6 +6,7 @@ __pycache__/
 */jupyter/migrated*
 *.pbs
 *.png
+*.html
 fixp_results_2223.pkl
 fixp_results_4292.pkl
 sim_results/
