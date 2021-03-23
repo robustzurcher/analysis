@@ -1,9 +1,10 @@
 import numpy as np
-from matplotlib import pyplot as plt
-from scipy.interpolate import interp1d
 import pandas as pd
 from config import DIR_FIGURES
-from figures_application import color_opts, spec_dict
+from figures_application import color_opts
+from figures_application import spec_dict
+from matplotlib import pyplot as plt
+from scipy.interpolate import interp1d
 
 
 def df_num_obs(bin_size, init_dict, trans_results):

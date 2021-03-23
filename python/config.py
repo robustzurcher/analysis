@@ -1,3 +1,3 @@
 import os
 
-DIR_FIGURES = os.environ['DIR_FIGURES']
+DIR_FIGURES = os.environ["DIR_FIGURES"]
