@@ -9,5 +9,8 @@ os.chdir(os.environ["PROJECT_ROOT"] + "/notebooks")
 
 for notebook in sorted(glob.glob("*.ipynb")):
 
-    cmd = f" jupyter nbconvert --to html {notebook}  --ExecutePreprocessor.timeout=-1"
+    cmd = (
+        f" jupyter nbconvert --to notebook --execute {notebook}"
+        f"  --ExecutePreprocessor.timeout=-1"
+    )
     sp.check_call(cmd, shell=True)
