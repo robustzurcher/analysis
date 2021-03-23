@@ -3,12 +3,12 @@ import numpy as np
 from config import DIR_FIGURES
 
 
-
 def model_robust(x):
-    return -(x - 0.6)**2 - 0.5
+    return -((x - 0.6) ** 2) - 0.5
+
 
 def model_optimal(x):
-    return -(x*2)**2
+    return -((x * 2) ** 2)
 
 
 def plot_performance():
@@ -18,20 +18,17 @@ def plot_performance():
     ax.plot(grid, model_robust(grid), label=r"robust")
     ax.plot(grid, model_optimal(grid), label=r"optimal")
 
-    xticks = [-1,  0.0, 0.60, 1.0]
+    xticks = [-1, 0.0, 0.60, 1.0]
 
     ax.set_xticks(xticks)
 
-    ax.set_xticklabels(
-            [0,  r"$p_0$", r"$p^{\omega}_0$", 1.0]
-        )
+    ax.set_xticklabels([0, r"$p_0$", r"$p^{\omega}_0$", 1.0])
     ax.set_xlim(-1, 1)
 
     ax.axes.yaxis.set_ticklabels([])
     ax.set_ylabel("Performance")
-    ax.set_xlabel("$\hat{p}$")
+    ax.set_xlabel(r"$\hat{p}$")
     ax.legend()
-
 
     fig.savefig(f"{DIR_FIGURES}/fig-illustration-performance")
 
@@ -58,8 +55,8 @@ def create_ranking_graph_illustrive(df):
 
         plt.yticks([0, 1], labels=["Rank 1", "Rank 2"], fontsize=14)
         plt.xticks(
-            [0, 1, 2],
-            labels=["Subjective \n Bayes", "Minimax \n regret", "Maximin"],
+            [0, 1, 2, 3],
+            labels=["Subjective \n Bayes", "Minimax \n regret", "Maximin", "As-if"],
             fontsize=14,
         )
         plt.xlabel("")

@@ -1,55 +1,53 @@
 import numpy as np
 import pandas as pd
 from config import DIR_FIGURES
-from figures_application import color_opts
-from figures_application import spec_dict
+from global_vals_funcs import COLOR_OPTS
+from global_vals_funcs import SPEC_DICT
 from matplotlib import pyplot as plt
 from scipy.interpolate import interp1d
 
 
-def df_num_obs(bin_size, init_dict, trans_results):
-    max_state = trans_results["state_count"].shape[0]
-    numobs_per_state = trans_results["state_count"].sum(axis=1)
+def df_num_obs(bin_size, init_dict, num_obs_per_state):
+    max_state = num_obs_per_state.index.max()
     num_steps = int(bin_size / init_dict["binsize"])
     num_bins = int(max_state / num_steps)
     hist_data = np.zeros(num_bins)
     for i in range(num_bins):
-        hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
+        hist_data[i] = np.sum(num_obs_per_state[i * num_steps : (i + 1) * num_steps])
     return pd.DataFrame(
         {"Num_Obs": hist_data}, index=np.arange(1, len(hist_data) + 1) * bin_size
     )
 
 
-def get_number_observations(bin_size, init_dict, trans_results):
+def get_number_observations(bin_size, init_dict, num_obs_per_state):
 
-    max_state = trans_results["state_count"].shape[0]
-    numobs_per_state = trans_results["state_count"].sum(axis=1)
+    max_state = num_obs_per_state.index.max()
     num_steps = int(bin_size / init_dict["binsize"])
     num_bins = int(max_state / num_steps)
     hist_data = np.zeros(num_bins)
     for i in range(num_bins):
-        hist_data[i] = np.sum(numobs_per_state[i * num_steps : (i + 1) * num_steps])
+        hist_data[i] = np.sum(num_obs_per_state[i * num_steps : (i + 1) * num_steps])
 
     scale = 10
     mileage = np.arange(num_bins) * scale
     width = 0.75 * scale
-    for color in color_opts:
+    for color in COLOR_OPTS:
 
         fig, ax = plt.subplots(1, 1)
         ax.set_ylabel(r"Number of observations")
         ax.set_xlabel(r"Milage (in thousands)")
 
-        cl = spec_dict[color]["colors"][0]
+        cl = SPEC_DICT[color]["colors"][0]
         ax.bar(mileage, hist_data, width, align="edge", color=cl)
 
         plt.savefig(
-            f"{DIR_FIGURES}/fig-introduction-observations-mileage{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-introduction-observations-mileage{SPEC_DICT[color]['file']}"
         )
 
 
 def get_intorduction_decision_making():
 
-    for color in color_opts:
+    for color in COLOR_OPTS:
 
         fig, ax = plt.subplots(1, 1)
 
@@ -59,8 +57,8 @@ def get_intorduction_decision_making():
         f = interp1d(x_values, y_values, kind="quadratic")
         x_grid = np.linspace(0, 1, num=41, endpoint=True)
 
-        cl = spec_dict[color]["colors"][0]
-        ls = spec_dict[color]["line"][0]
+        cl = SPEC_DICT[color]["colors"][0]
+        ls = SPEC_DICT[color]["line"][0]
 
         ax.plot(x_grid, f(x_grid), label="optimal", color=cl, ls=ls)
 
@@ -69,8 +67,8 @@ def get_intorduction_decision_making():
 
         f = interp1d(x_values, y_values, kind="quadratic")
 
-        cl = spec_dict[color]["colors"][1]
-        ls = spec_dict[color]["line"][1]
+        cl = SPEC_DICT[color]["colors"][1]
+        ls = SPEC_DICT[color]["line"][1]
 
         x_grid = np.linspace(0, 1, num=41)
 
@@ -89,5 +87,5 @@ def get_intorduction_decision_making():
         ax.legend()
 
         plt.savefig(
-            f"{DIR_FIGURES}/fig-introduction-robust-performance{spec_dict[color]['file']}"
+            f"{DIR_FIGURES}/fig-introduction-robust-performance{SPEC_DICT[color]['file']}"
         )
