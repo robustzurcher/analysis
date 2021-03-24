@@ -52,40 +52,45 @@ def plot_performance():
 
 
 def create_ranking_graph_illustrive(df):
-    fig, ax = plt.subplots(figsize=(12, 5))
-    colors = ["tab:blue", "tab:orange", "tab:red", "tab:purple"]
+
     linestyle = ["--", "-.", "-", ":"]
 
-    ax.spines["bottom"].set_color("white")
-    ax.spines["left"].set_color("white")
-    for i, col in enumerate(df.columns):
-        kwargs = {
-            "marker": "o",
-            "linestyle": linestyle[i],
-            "linewidth": 3,
-            "markersize": 35,
-            "color": colors[i],
-        }
+    for color in COLOR_OPTS:
+        fig, ax = plt.subplots()
+        ax.spines["bottom"].set_color("white")
+        ax.spines["left"].set_color("white")
+        for i, col in enumerate(df.columns):
 
-        df[col].plot(**kwargs)
-        # Flip y-axis.
-        plt.axis([-0.1, 3.1, 1.2, -0.2])
+            ax.plot(
+                df[col].index,
+                df[col].values,
+                marker="o",
+                linestyle=linestyle[i],
+                linewidth=3,
+                markersize=25,
+                color=SPEC_DICT[color]["colors"][i],
+                label=df.columns[i],
+            )
 
-        plt.yticks([0, 1], labels=["Rank 1", "Rank 2"], fontsize=14)
-        plt.xticks(
-            [0, 1, 2, 3],
-            labels=["Subjective \n Bayes", "Minimax \n regret", "Maximin", "As-if"],
-            fontsize=14,
-        )
-        plt.xlabel("")
-        plt.tick_params(axis="both", color="white", pad=20)
-        plt.legend(
-            markerscale=0.3,
-            labelspacing=0.8,
-            handlelength=3,
-            bbox_to_anchor=(0.45, 1.2),
-            loc="upper center",
-            ncol=4,
-            fontsize=14,
-        )
-    fig.savefig(f"{DIR_FIGURES}/fig-illustration-ranking")
+            # df[col].plot(**kwargs)
+            # Flip y-axis.
+            ax.axis([-0.1, 2.1, 1.2, -0.2])
+
+            plt.yticks([0, 1], labels=["Rank 1", "Rank 2"], fontsize=14)
+            plt.xticks(
+                [0, 1, 2],
+                labels=["Subjective \n Bayes", "Minimax \n regret", "Maximin"],
+                fontsize=14,
+            )
+            plt.xlabel("")
+            ax.tick_params(axis="both", color="white", pad=20)
+            ax.legend(
+                markerscale=0.3,
+                labelspacing=0.8,
+                handlelength=3,
+                bbox_to_anchor=(0.45, 1.2),
+                loc="upper center",
+                ncol=4,
+                fontsize=14,
+            )
+        fig.savefig(f"{DIR_FIGURES}/fig-illustration-ranking{SPEC_DICT[color]['file']}")
