@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from config import DIR_FIGURES
+from global_vals_funcs import COLOR_OPTS
+from global_vals_funcs import SPEC_DICT
 
 
 def model_robust(x):
@@ -12,25 +14,41 @@ def model_optimal(x):
 
 
 def plot_performance():
-    fig, ax = plt.subplots()
     grid = np.linspace(-1, 1, 100)
 
-    ax.plot(grid, model_robust(grid), label=r"robust")
-    ax.plot(grid, model_optimal(grid), label=r"optimal")
+    for color in COLOR_OPTS:
+        fig, ax = plt.subplots()
 
-    xticks = [-1, 0.0, 0.60, 1.0]
+        ax.plot(
+            grid,
+            model_robust(grid),
+            color=SPEC_DICT[color]["colors"][0],
+            ls=SPEC_DICT[color]["line"][0],
+            label=r"robust",
+        )
+        ax.plot(
+            grid,
+            model_optimal(grid),
+            color=SPEC_DICT[color]["colors"][1],
+            ls=SPEC_DICT[color]["line"][1],
+            label=r"optimal",
+        )
 
-    ax.set_xticks(xticks)
+        xticks = [-1, 0.0, 0.60, 1.0]
 
-    ax.set_xticklabels([0, r"$p_0$", r"$p^{\omega}_0$", 1.0])
-    ax.set_xlim(-1, 1)
+        ax.set_xticks(xticks)
 
-    ax.axes.yaxis.set_ticklabels([])
-    ax.set_ylabel("Performance")
-    ax.set_xlabel(r"$\hat{p}$")
-    ax.legend()
+        ax.set_xticklabels([0, r"$p_0$", r"$p^{\omega}_0$", 1.0])
+        ax.set_xlim(-1, 1)
 
-    fig.savefig(f"{DIR_FIGURES}/fig-illustration-performance")
+        ax.axes.yaxis.set_ticklabels([])
+        ax.set_ylabel("Performance")
+        ax.set_xlabel(r"$\hat{p}$")
+        ax.legend()
+
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-illustration-performance{SPEC_DICT[color]['file']}"
+        )
 
 
 def create_ranking_graph_illustrive(df):
