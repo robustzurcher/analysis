@@ -127,7 +127,7 @@ def get_difference_plot():
             third_color = "#2ca02c"
         else:
             third_color = SPEC_DICT[color]["colors"][4]
-        ax.axhline(color=third_color, ls=SPEC_DICT[color]["line"][2])
+        ax.axhline(color=third_color, ls=SPEC_DICT[color]["line"][2], label="optimal")
         ax.set_ylim([-300, 400])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
