@@ -138,46 +138,46 @@ def get_difference_plot():
         )
 
 
-def get_absolute_plot():
-
-    nominal_costs = _performance_plot(0.0)
-    robust_costs_50 = _performance_plot(0.5)
-    robust_costs_95 = _performance_plot(0.95)
-
-    for color in COLOR_OPTS:
-        fig, ax = plt.subplots(1, 1)
-
-        ax.plot(
-            OMEGA_GRID,
-            nominal_costs,
-            color=SPEC_DICT[color]["colors"][0],
-            label="optimal",
-            ls=SPEC_DICT[color]["line"][0],
-        )
-
-        ax.plot(
-            OMEGA_GRID,
-            robust_costs_50,
-            color=SPEC_DICT[color]["colors"][1],
-            label=r"robust $(\omega = 0.50)$",
-            ls=SPEC_DICT[color]["line"][1],
-        )
-
-        ax.plot(
-            OMEGA_GRID,
-            robust_costs_95,
-            color=SPEC_DICT[color]["colors"][2],
-            label=r"robust $(\omega = 0.95)$",
-            ls=SPEC_DICT[color]["line"][2],
-        )
-        ax.set_ylim([-54000, -47000])
-        # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
-        ax.set_ylabel(r"$\Delta$ Performance")
-        ax.set_xlabel(r"$\omega$")
-        ax.legend()
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-application-difference{SPEC_DICT[color]['file']}"
-        )
+# def get_absolute_plot():
+#
+#     nominal_costs = _performance_plot(0.0)
+#     robust_costs_50 = _performance_plot(0.5)
+#     robust_costs_95 = _performance_plot(0.95)
+#
+#     for color in COLOR_OPTS:
+#         fig, ax = plt.subplots(1, 1)
+#
+#         ax.plot(
+#             OMEGA_GRID,
+#             nominal_costs,
+#             color=SPEC_DICT[color]["colors"][0],
+#             label="optimal",
+#             ls=SPEC_DICT[color]["line"][0],
+#         )
+#
+#         ax.plot(
+#             OMEGA_GRID,
+#             robust_costs_50,
+#             color=SPEC_DICT[color]["colors"][1],
+#             label=r"robust $(\omega = 0.50)$",
+#             ls=SPEC_DICT[color]["line"][1],
+#         )
+#
+#         ax.plot(
+#             OMEGA_GRID,
+#             robust_costs_95,
+#             color=SPEC_DICT[color]["colors"][2],
+#             label=r"robust $(\omega = 0.95)$",
+#             ls=SPEC_DICT[color]["line"][2],
+#         )
+#         ax.set_ylim([-54000, -47000])
+#         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
+#         ax.set_ylabel(r"$\Delta$ Performance")
+#         ax.set_xlabel(r"$\omega$")
+#         ax.legend()
+#         fig.savefig(
+#             f"{DIR_FIGURES}/fig-application-difference{SPEC_DICT[color]['file']}"
+#         )
 
 
 def _performance_plot(sim_omega):
