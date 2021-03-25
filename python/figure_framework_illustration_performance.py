@@ -207,7 +207,7 @@ def report_decision_inputs():
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["$p_1$", "$p_2$"])
     ax.legend()
-    fig.savefig("fig-illustration-expected-performance-sw.png")
+    fig.savefig(f"{DIR_FIGURES}/fig-illustration-expected-performance-sw.png")
 
     fig, ax = plt.subplots()
     ax.bar(x - width / 2, df.loc["optimal"], width, label="Optimal")
@@ -218,7 +218,7 @@ def report_decision_inputs():
     ax.set_xticklabels(["$p_1$", "$p_2$"])
     ax.legend()
 
-    fig.savefig("fig-illustration-expected-regret-sw.png")
+    fig.savefig(f"{DIR_FIGURES}/fig-illustration-expected-regret-sw.png")
 
 
 if __name__ == "__main__":
