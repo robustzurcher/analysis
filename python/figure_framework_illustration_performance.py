@@ -20,6 +20,7 @@ GRID = np.linspace(0, 1, 1000)
 INCR_1 = 0.0
 INCR_2 = 0.0
 
+
 def dist_func_1(grid):
     vals = stats.norm.pdf(grid, 0.5, 0.2)
     return vals / vals.sum()
@@ -155,7 +156,7 @@ def create_plot_2():
     mpl.rcParams["axes.spines.right"] = False
 
 
-def construct_regret(df):
+def construct_regret():
     df = pd.DataFrame(None, columns=[1, 2], index=["robust", "optimal"])
     df.index.names = ["Strategy"]
 
@@ -176,62 +177,61 @@ def construct_regret(df):
 
     return df_regret
 
-def report_decisions(df):
-    
-    df_regret = construct_regret(df)
+
+def report_decisions():
+
+    df = construct_regret()
 
     # Get decision based on maximin
     print("Maximin:", df.min(axis=1).idxmax())
 
     # Get decision based on minimax regret
-    print("Minimax:", df_regret.max(axis=1).idxmin())
+    print("Minimax:", df.max(axis=1).idxmin())
 
     # Get decision based on subjective Bayes
     print("Bayes:  ", df.mean(axis=1).idxmax())
 
 
-def report_decision_inputs(df):
-    
-    df_regret = construct_regret(df)
+def report_decision_inputs():
+
+    df = construct_regret()
 
     width = 0.35  # the width of the bars
     x = np.arange(2)
 
     fig, ax = plt.subplots()
-    ax.bar(x - width / 2, df.loc["optimal"], width, label='Optimal')
-    ax.bar(x + width / 2, df.loc["robust"], width, label='Robust')
+    ax.bar(x - width / 2, df.loc["optimal"], width, label="Optimal")
+    ax.bar(x + width / 2, df.loc["robust"], width, label="Robust")
 
-    ax.set_ylabel('Expected performance')
+    ax.set_ylabel("Expected performance")
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(['$p_1$', '$p_2$'])
+    ax.set_xticklabels(["$p_1$", "$p_2$"])
     ax.legend()
     fig.savefig("fig-illustration-expected-performance-sw.png")
 
     fig, ax = plt.subplots()
-    ax.bar(x - width / 2, df_regret.loc["optimal"], width, label='Optimal')
-    ax.bar(x + width / 2, df_regret.loc["robust"], width, label='Robust')
+    ax.bar(x - width / 2, df.loc["optimal"], width, label="Optimal")
+    ax.bar(x + width / 2, df.loc["robust"], width, label="Robust")
 
-    ax.set_ylabel('Expected regret')
+    ax.set_ylabel("Expected regret")
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(['$p_1$', '$p_2$'])
+    ax.set_xticklabels(["$p_1$", "$p_2$"])
     ax.legend()
 
     fig.savefig("fig-illustration-expected-regret-sw.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-   # We need both decision rules to have the same maximum for consistency.
+    # We need both decision rules to have the same maximum for consistency.
     INCR_1 = max(perf_opt_1(GRID)) - max(perf_rob_1(GRID))
     INCR_2 = max(perf_opt_2(GRID)) - max(perf_rob_2(GRID))
 
     df_results = pd.DataFrame(None, columns=[1, 2], index=["robust", "optimal"])
     df_results.index.names = ["Strategy"]
 
-    df_results = create_plot_1(df_results)
-    df_results = create_plot_2(df_results)
+    df_results = create_plot_1()
+    df_results = create_plot_2()
 
-    report_decision_inputs(df_results)
-    report_decisions(df_results)
-
-
+    report_decision_inputs()
+    report_decisions()
