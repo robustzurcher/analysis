@@ -220,8 +220,8 @@ def report_decision_inputs(df):
 
 
 if __name__ == '__main__':
-    
-    # We need both decision rules to have the same maximum for consistency.
+
+   # We need both decision rules to have the same maximum for consistency.
     INCR_1 = max(perf_opt_1(GRID)) - max(perf_rob_1(GRID))
     INCR_2 = max(perf_opt_2(GRID)) - max(perf_rob_2(GRID))
 
