@@ -6,7 +6,7 @@ import scipy.stats as stats
 import pandas as pd
 import numpy as np
 
-GRID = np.linspace(0, 1, 100)
+GRID = np.linspace(0, 1, 1000)
 
 
 def dist_func_1(grid):
@@ -21,7 +21,9 @@ def perf_rob_1(grid):
 
 
 def perf_opt_1(grid):
-    y = [-2.0, 1.1, -3.0]
+    # This function does have its maximum very close to 0.5, which corresponds to the mean of
+    # the normal sampling distribution
+    y = [-3.0, 1.2, -3.0]
     x = [+0.0, 0.5, +1.0]
     return interpolate.interp1d(x, y, kind="quadratic")(grid)
 
@@ -47,7 +49,7 @@ def create_plot_1(df):
     
     fig, ax = plt.subplots()
 
-    ax.plot(GRID, dist_func_1(GRID) * 100 - 4, label="sampling distribution")
+    ax.plot(GRID, dist_func_1(GRID) * 1000 - 4, label="sampling distribution")
     ax.plot(GRID, perf_rob_1(GRID), label=r"robust",)
     ax.plot(GRID, perf_opt_1(GRID), label=r"optimal")
     ax.yaxis.set_ticklabels([])
@@ -64,7 +66,7 @@ def create_plot_1(df):
     fig.savefig("fig-illustration-performance-1-sw")
 
     for label, perf_func in [("robust", perf_rob_1), ("optimal", perf_opt_1)]:
-        df.loc[label, 0] = calculate_perf(dist_func_1, perf_func)
+        df.loc[label, 1] = calculate_perf(dist_func_1, perf_func)
 
     return df
 
@@ -77,13 +79,13 @@ def create_plot_2(df):
 
     fig, ax = plt.subplots()
 
-    ax.plot(GRID, dist_func_2(GRID) * 100 - 3, label="sampling distribution")
+    ax.plot(GRID, dist_func_2(GRID) * 1000 - 3, label="sampling distribution")
     ax.plot(GRID, perf_rob_2(GRID), label="robust")
     ax.plot(GRID, perf_opt_2(GRID), label="optimal")
     ax.yaxis.set_ticklabels([])
     ax.legend()
 
-    ax.set_xticks([0.0, 0.3, 1.0])
+    ax.set_xticks([0.0, GRID[perf_opt_2(GRID).argmax()], 1.0])
     ax.set_xticklabels([0.0, "$p_2$", 1.0])
     ax.set_xlim([0, 1])
     ax.legend()
@@ -94,7 +96,7 @@ def create_plot_2(df):
     fig.savefig("fig-illustration-performance-2-sw")
 
     for label, perf_func in [("robust", perf_rob_2), ("optimal", perf_opt_2)]:
-        df.loc[label, 1] = calculate_perf(dist_func_2, perf_func)
+        df.loc[label, 2] = calculate_perf(dist_func_2, perf_func)
 
     return df
 
@@ -104,8 +106,9 @@ def report_decisions(df):
     df_regret = df.copy()
     df_regret.loc[slice(None), :] = None
 
-    for label, point in product(["robust", "optimal"], [0, 1]):
-        df_regret.loc[label, point] = df.loc[slice(None), point].max() - df.loc[label, point]
+    for label, info in product(["robust", "optimal"], [[1, perf_opt_1], [2, perf_opt_2]]):
+        pos, func = info
+        df_regret.loc[label, pos] = max(func(GRID)) - df.loc[label, pos]
 
     # Get decision based on maximin
     print("Maximin:", df.min(axis=1).idxmax())
@@ -119,7 +122,7 @@ def report_decisions(df):
 
 if __name__ == '__main__':
 
-    df_results = pd.DataFrame(None, columns=range(2), index=["robust", "optimal"])
+    df_results = pd.DataFrame(None, columns=[1, 2], index=["robust", "optimal"])
     df_results.index.names = ["Strategy"]
 
     df_results = create_plot_1(df_results)

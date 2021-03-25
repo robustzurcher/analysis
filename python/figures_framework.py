@@ -79,7 +79,7 @@ def create_ranking_graph_illustrive(df):
             plt.yticks([0, 1], labels=["Rank 1", "Rank 2"], fontsize=14)
             plt.xticks(
                 [0, 1, 2],
-                labels=["Subjective \n Bayes", "Minimax \n regret", "Maximin"],
+                labels=["Maximin", "Minimax \n regret", "Subjective \n Bayes"],
                 fontsize=14,
             )
             plt.xlabel("")
