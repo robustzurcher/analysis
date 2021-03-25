@@ -1,54 +1,7 @@
 import matplotlib.pyplot as plt
-import numpy as np
 from config import DIR_FIGURES
 from global_vals_funcs import COLOR_OPTS
 from global_vals_funcs import SPEC_DICT
-
-
-def model_robust(x):
-    return -((x - 0.6) ** 2) - 0.5
-
-
-def model_optimal(x):
-    return -((x * 2) ** 2)
-
-
-def plot_performance():
-    grid = np.linspace(-1, 1, 100)
-
-    for color in COLOR_OPTS:
-        fig, ax = plt.subplots()
-
-        ax.plot(
-            grid,
-            model_robust(grid),
-            color=SPEC_DICT[color]["colors"][0],
-            ls=SPEC_DICT[color]["line"][0],
-            label=r"robust",
-        )
-        ax.plot(
-            grid,
-            model_optimal(grid),
-            color=SPEC_DICT[color]["colors"][1],
-            ls=SPEC_DICT[color]["line"][1],
-            label=r"optimal",
-        )
-
-        xticks = [-1, 0.0, 0.60, 1.0]
-
-        ax.set_xticks(xticks)
-
-        ax.set_xticklabels([0, r"$p_0$", r"$p^{\omega}_0$", 1.0])
-        ax.set_xlim(-1, 1)
-
-        ax.axes.yaxis.set_ticklabels([])
-        ax.set_ylabel("Performance")
-        ax.set_xlabel(r"$\hat{p}$")
-        ax.legend()
-
-        fig.savefig(
-            f"{DIR_FIGURES}/fig-illustration-performance{SPEC_DICT[color]['file']}"
-        )
 
 
 def create_ranking_graph_illustrive(df):
