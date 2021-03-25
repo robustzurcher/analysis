@@ -1,5 +1,6 @@
 from itertools import product
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -50,11 +51,11 @@ def perf_rob_2(grid):
 
 
 def create_plot_1():
-
+    mpl.rcParams["axes.spines.right"] = True
     for color in COLOR_OPTS:
         fig, ax = plt.subplots()
-
-        ax.plot(
+        ax2 = ax.twinx()
+        ax2.plot(
             GRID,
             dist_func_1(GRID) * 1000 - 4,
             label="sampling distribution",
@@ -72,20 +73,27 @@ def create_plot_1():
             label=r"optimal",
             color=SPEC_DICT[color]["colors"][2],
         )
-        ax.yaxis.set_ticklabels([])
 
         ax.set_xticks([0.0, 0.5, 1.0])
         ax.set_xticklabels([0.0, "$p_1$", 1.0])
         ax.set_xlim([0, 1])
-
-        ax.legend()
-
-        ax.set_ylabel("Performance")
         ax.set_xlabel(r"$\hat{p}$")
+
+        ax.set_yticks([])
+        ax.set_ylim(-3, 2)
+        ax.set_ylabel("Performance")
+
+        ax2.set_yticks([])
+        ax2.set_ylim(-5, 1)
+        ax2.set_ylabel("Sampling Distribution")
+
+        ax.legend(loc="upper left", ncol=1)
+        ax2.legend(loc="upper right")
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-illustration-performance-1{SPEC_DICT[color]['file']}"
         )
+    mpl.rcParams["axes.spines.right"] = False
 
 
 def calculate_perf(dist_func, perf_func):
@@ -93,11 +101,12 @@ def calculate_perf(dist_func, perf_func):
 
 
 def create_plot_2():
+    mpl.rcParams["axes.spines.right"] = True
     for color in COLOR_OPTS:
 
         fig, ax = plt.subplots()
-
-        ax.plot(
+        ax2 = ax.twinx()
+        ax2.plot(
             GRID,
             dist_func_2(GRID) * 1000 - 3,
             label="sampling distribution",
@@ -121,14 +130,23 @@ def create_plot_2():
         ax.set_xticks([0.0, GRID[perf_opt_2(GRID).argmax()], 1.0])
         ax.set_xticklabels([0.0, "$p_2$", 1.0])
         ax.set_xlim([0, 1])
-        ax.legend()
 
+        ax.set_yticks([])
         ax.set_ylabel("Performance")
         ax.set_xlabel(r"$\hat{p}$")
+        ax.set_ylim(-2, 3)
+
+        ax2.set_yticks([])
+        ax2.set_ylim(-3, 1)
+        ax2.set_ylabel("Sampling Distribution")
+
+        ax.legend(loc="upper left", ncol=1)
+        ax2.legend(loc="upper right")
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-illustration-performance-2{SPEC_DICT[color]['file']}"
         )
+    mpl.rcParams["axes.spines.right"] = False
 
 
 def report_decisions():
