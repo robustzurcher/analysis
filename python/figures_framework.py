@@ -179,7 +179,7 @@ def create_plot_2():
     mpl.rcParams["axes.spines.right"] = False
 
 
-def construct_regret():
+def construct_performance():
     df = pd.DataFrame(None, columns=[1, 2], index=["robust", "optimal"])
     df.index.names = ["Strategy"]
 
@@ -188,6 +188,10 @@ def construct_regret():
 
     for label, perf_func in [("robust", perf_rob_2), ("optimal", perf_opt_2)]:
         df.loc[label, 2] = calculate_perf(dist_func_2, perf_func)
+    return df
+
+
+def construct_regret(df):
 
     df_regret = df.copy()
     df_regret.loc[slice(None), :] = None
@@ -201,13 +205,13 @@ def construct_regret():
     return df_regret
 
 
-def report_decisions(df):
+def report_decisions(df, df_regret):
 
     # Get decision based on maximin
     print("Maximin:", df.min(axis=1).idxmax())
 
     # Get decision based on minimax regret
-    print("Minimax:", df.max(axis=1).idxmin())
+    print("Minimax:", df_regret.max(axis=1).idxmin())
 
     # Get decision based on subjective Bayes
     print("Bayes:  ", df.mean(axis=1).idxmax())
