@@ -49,7 +49,7 @@ def perf_opt_2(grid):
 
 
 def perf_rob_2(grid):
-    y = [0.5, 1.0, 0.5]
+    y = [-0.3, 1.0, 0.5]
     x = [0.0, 0.5, 1.0]
     interpoled_result = interpolate.interp1d(x, y, kind="quadratic")(grid)
     # We need both decision rules to have the same maximum for consistency.
