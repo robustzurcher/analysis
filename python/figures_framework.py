@@ -205,7 +205,7 @@ def construct_regret(df):
     return df_regret
 
 
-def report_decisions(df, df_regret):
+def report_decisions(df, df_regret, measures):
 
     # Get decision based on maximin
     print("Maximin:", df.min(axis=1).idxmax())
@@ -215,6 +215,15 @@ def report_decisions(df, df_regret):
 
     # Get decision based on subjective Bayes
     print("Bayes:  ", df.mean(axis=1).idxmax())
+
+    df_rank = pd.DataFrame(
+        data=[[1, 1], [1, 1], [1, 1]], index=measures, columns=["optimal", "robust"]
+    )
+
+    df_rank.loc["Subjective \n Bayes", df.mean(axis=1).idxmax()] = 0
+    df_rank.loc["Minimax \n regret", df_regret.max(axis=1).idxmin()] = 0
+    df_rank.loc["Maximin", df.min(axis=1).idxmax()] = 0
+    return df_rank
 
 
 def expected_performance(df):
@@ -308,7 +317,7 @@ def create_ranking_graph_illustrive(df):
             plt.yticks([0, 1], labels=["Rank 1", "Rank 2"], fontsize=14)
             plt.xticks(
                 [0, 1, 2],
-                labels=["Maximin", "Minimax \n regret", "Subjective \n Bayes"],
+                labels=df.index.to_list(),
                 fontsize=14,
             )
             plt.xlabel("")
