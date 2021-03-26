@@ -10,8 +10,8 @@ from global_vals_funcs import COLOR_OPTS
 from global_vals_funcs import SPEC_DICT
 from scipy import interpolate
 
-
-GRID = np.linspace(0, 1, 1000)
+GRIP_POINTS = 1000
+GRID = np.linspace(0, 1, GRIP_POINTS)
 
 
 def dist_func_1(grid):
@@ -59,12 +59,13 @@ def perf_rob_2(grid):
 
 def create_plot_1():
     mpl.rcParams["axes.spines.right"] = True
+    density = dist_func_1(GRID) * GRIP_POINTS
     for color in COLOR_OPTS:
         fig, ax = plt.subplots()
         ax2 = ax.twinx()
         ax2.plot(
             GRID,
-            dist_func_1(GRID) * 1000,
+            density,
             label="sampling distribution",
             color=SPEC_DICT[color]["colors"][0],
         )
@@ -79,6 +80,16 @@ def create_plot_1():
             perf_opt_1(GRID),
             label=r"optimal",
             color=SPEC_DICT[color]["colors"][2],
+        )
+
+        intersect_idx = np.argwhere(
+            np.diff(np.sign(perf_rob_1(GRID) - perf_opt_1(GRID)))
+        )
+        ax2.fill_between(
+            GRID[intersect_idx[0][0] : intersect_idx[1][0]],
+            density[intersect_idx[0][0] : intersect_idx[1][0]],
+            color=SPEC_DICT[color]["colors"][0],
+            alpha=0.4,
         )
 
         ax.set_xticks([0.0, 0.5, 1.0])
@@ -109,13 +120,14 @@ def calculate_perf(dist_func, perf_func):
 
 def create_plot_2():
     mpl.rcParams["axes.spines.right"] = True
+    density = dist_func_2(GRID) * GRIP_POINTS
     for color in COLOR_OPTS:
 
         fig, ax = plt.subplots()
         ax2 = ax.twinx()
         ax2.plot(
             GRID,
-            dist_func_2(GRID) * 1000,
+            density,
             label="sampling distribution",
             color=SPEC_DICT[color]["colors"][0],
         )
@@ -131,6 +143,17 @@ def create_plot_2():
             label="optimal",
             color=SPEC_DICT[color]["colors"][2],
         )
+
+        intersect_idx = np.argwhere(
+            np.diff(np.sign(perf_rob_2(GRID) - perf_opt_2(GRID)))
+        )
+        ax2.fill_between(
+            GRID[intersect_idx[0][0] : intersect_idx[1][0]],
+            density[intersect_idx[0][0] : intersect_idx[1][0]],
+            color=SPEC_DICT[color]["colors"][0],
+            alpha=0.4,
+        )
+
         ax.yaxis.set_ticklabels([])
         ax.legend()
 
