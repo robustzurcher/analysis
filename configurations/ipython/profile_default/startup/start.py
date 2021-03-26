@@ -21,7 +21,6 @@ from figures_application_scripts.performance_plots import *
 from figures_application_scripts.policy_ranking import *
 from figures_framework import *
 from figures_introduction import *
-from figure_framework_illustration_performance import *
 
 
 DIR_FIGURES = os.environ["DIR_FIGURES"]
