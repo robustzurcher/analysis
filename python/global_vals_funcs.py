@@ -37,7 +37,12 @@ jet_color_map = [
 ]
 
 SPEC_DICT = {
-    "colored": {"colors": [None] * 4, "line": ["-"] * 3, "hatch": [""] * 3, "file": ""},
+    "colored": {
+        "colors": ["tab:blue", "tab:orange", "tab:green", "tab:red"],
+        "line": ["-"] * 3,
+        "hatch": [""] * 3,
+        "file": "",
+    },
     "black_white": {
         "colors": ["#808080", "#d3d3d3", "#A9A9A9", "#C0C0C0", "k"],
         "line": ["-", "--", ":"],

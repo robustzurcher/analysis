@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 
 from figures_application_scripts.transition_probabilities import *
-from figures_application_scripts.global_vals_funcs import *
+from global_vals_funcs import *
 from figures_application_scripts.maintenace_probabilities import *
 from figures_application_scripts.demonstration import *
 from figures_application_scripts.threshold_plot import *

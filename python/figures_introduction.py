@@ -45,7 +45,7 @@ def get_number_observations(bin_size, init_dict, num_obs_per_state):
         )
 
 
-def get_intorduction_decision_making():
+def get_introduction_decision_making():
 
     for color in COLOR_OPTS:
 
