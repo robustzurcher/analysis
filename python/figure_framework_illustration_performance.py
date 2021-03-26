@@ -14,22 +14,19 @@ from scipy import interpolate
 GRID = np.linspace(0, 1, 1000)
 
 
-# We need to make sure that the maximum for both functions is the same, but at different
-# positions.
-# incr = max(perf_opt_2(GRID)) - max(perf_rob_2(GRID))
-INCR_1 = 0.0
-INCR_2 = 0.0
-
-
 def dist_func_1(grid):
     vals = stats.norm.pdf(grid, 0.5, 0.2)
+    vals = vals - vals.min()
     return vals / vals.sum()
 
 
 def perf_rob_1(grid):
+
     y = [-1.0, 0.0, +0.6, -2.0]
     x = [+0.0, 0.3, +0.8, +1.0]
-    return interpolate.interp1d(x, y, kind="quadratic")(grid) + INCR_1
+    interpoled_result = interpolate.interp1d(x, y, kind="quadratic")(grid)
+    increment = max(perf_opt_1(grid)) - max(interpoled_result)
+    return interpoled_result + increment
 
 
 def perf_opt_1(grid):
@@ -41,7 +38,7 @@ def perf_opt_1(grid):
 
 
 def dist_func_2(grid):
-    vals = stats.lognorm.pdf(grid, 1.1, 0)
+    vals = stats.lognorm.pdf(grid, 1, 0)
     return vals / vals.sum()
 
 
@@ -54,7 +51,10 @@ def perf_opt_2(grid):
 def perf_rob_2(grid):
     y = [0.5, 1.0, 0.5]
     x = [0.0, 0.5, 1.0]
-    return interpolate.interp1d(x, y, kind="quadratic")(grid) + INCR_2
+    interpoled_result = interpolate.interp1d(x, y, kind="quadratic")(grid)
+    # We need both decision rules to have the same maximum for consistency.
+    increment = max(perf_opt_2(grid)) - max(interpoled_result)
+    return interpoled_result + increment
 
 
 def create_plot_1():
@@ -64,7 +64,7 @@ def create_plot_1():
         ax2 = ax.twinx()
         ax2.plot(
             GRID,
-            dist_func_1(GRID) * 1000 - 4,
+            dist_func_1(GRID) * 1000,
             label="sampling distribution",
             color=SPEC_DICT[color]["colors"][0],
         )
@@ -91,7 +91,7 @@ def create_plot_1():
         ax.set_ylabel("Performance")
 
         ax2.set_yticks([])
-        ax2.set_ylim(-5, 1)
+        ax2.set_ylim(0, 5)
         ax2.set_ylabel("Sampling Distribution")
 
         ax.legend(loc="upper left", ncol=1)
@@ -115,7 +115,7 @@ def create_plot_2():
         ax2 = ax.twinx()
         ax2.plot(
             GRID,
-            dist_func_2(GRID) * 1000 - 3,
+            dist_func_2(GRID) * 1000,
             label="sampling distribution",
             color=SPEC_DICT[color]["colors"][0],
         )
@@ -144,7 +144,7 @@ def create_plot_2():
         ax.set_ylim(-2, 3)
 
         ax2.set_yticks([])
-        ax2.set_ylim(-3, 1)
+        ax2.set_ylim(0, 4)
         ax2.set_ylabel("Sampling Distribution")
 
         ax.legend(loc="upper left", ncol=1)
@@ -178,9 +178,7 @@ def construct_regret():
     return df_regret
 
 
-def report_decisions():
-
-    df = construct_regret()
+def report_decisions(df):
 
     # Get decision based on maximin
     print("Maximin:", df.min(axis=1).idxmax())
@@ -192,46 +190,64 @@ def report_decisions():
     print("Bayes:  ", df.mean(axis=1).idxmax())
 
 
-def report_decision_inputs():
-
-    df = construct_regret()
+def expected_performance(df):
 
     width = 0.35  # the width of the bars
     x = np.arange(2)
 
-    fig, ax = plt.subplots()
-    ax.bar(x - width / 2, df.loc["optimal"], width, label="Optimal")
-    ax.bar(x + width / 2, df.loc["robust"], width, label="Robust")
+    for color in COLOR_OPTS:
+        fig, ax = plt.subplots()
+        ax.bar(
+            x - width / 2,
+            df.loc["optimal"],
+            width,
+            label="Optimal",
+            color=SPEC_DICT[color]["colors"][0],
+        )
+        ax.bar(
+            x + width / 2,
+            df.loc["robust"],
+            width,
+            label="Robust",
+            color=SPEC_DICT[color]["colors"][1],
+        )
 
-    ax.set_ylabel("Expected performance")
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(["$p_1$", "$p_2$"])
-    ax.legend()
-    fig.savefig(f"{DIR_FIGURES}/fig-illustration-expected-performance-sw.png")
-
-    fig, ax = plt.subplots()
-    ax.bar(x - width / 2, df.loc["optimal"], width, label="Optimal")
-    ax.bar(x + width / 2, df.loc["robust"], width, label="Robust")
-
-    ax.set_ylabel("Expected regret")
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(["$p_1$", "$p_2$"])
-    ax.legend()
-
-    fig.savefig(f"{DIR_FIGURES}/fig-illustration-expected-regret-sw.png")
+        ax.set_ylabel("Expected performance")
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["$p_1$", "$p_2$"])
+        ax.legend()
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-illustration-expected-performance{SPEC_DICT[color]['file']}"
+        )
 
 
-if __name__ == "__main__":
+def expected_regret(df):
+    width = 0.35  # the width of the bars
+    x = np.arange(2)
 
-    # We need both decision rules to have the same maximum for consistency.
-    INCR_1 = max(perf_opt_1(GRID)) - max(perf_rob_1(GRID))
-    INCR_2 = max(perf_opt_2(GRID)) - max(perf_rob_2(GRID))
+    for color in COLOR_OPTS:
 
-    df_results = pd.DataFrame(None, columns=[1, 2], index=["robust", "optimal"])
-    df_results.index.names = ["Strategy"]
+        fig, ax = plt.subplots()
+        ax.bar(
+            x - width / 2,
+            df.loc["optimal"],
+            width,
+            label="Optimal",
+            color=SPEC_DICT[color]["colors"][0],
+        )
+        ax.bar(
+            x + width / 2,
+            df.loc["robust"],
+            width,
+            label="Robust",
+            color=SPEC_DICT[color]["colors"][1],
+        )
 
-    df_results = create_plot_1()
-    df_results = create_plot_2()
+        ax.set_ylabel("Expected regret")
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["$p_1$", "$p_2$"])
+        ax.legend()
 
-    report_decision_inputs()
-    report_decisions()
+        fig.savefig(
+            f"{DIR_FIGURES}/fig-illustration-expected-regret{SPEC_DICT[color]['file']}"
+        )
