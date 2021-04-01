@@ -16,6 +16,4 @@ for notebook in sorted(glob.glob("*.ipynb")):
 
 for convert_notebook in sorted(glob.glob("*nbconvert.ipynb")):
 
-    cmd(f"os.remove {convert_notebook}")
-
-    sp.check_call(cmd, shell=True)
+    os.remove(convert_notebook)

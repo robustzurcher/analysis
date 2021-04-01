@@ -66,7 +66,7 @@ def create_ranking_graph(df):
             # df[col].plot(**kwargs)
             # Flip y-axis.
             ax.set_xlim([-0.2, 2.1])
-            ax.set_ylim([3.2, -0.2])
+            ax.set_ylim([3.5, -0.5])
 
             plt.yticks(
                 [0, 1, 2, 3],
@@ -84,7 +84,7 @@ def create_ranking_graph(df):
                 markerscale=0.3,
                 labelspacing=0.8,
                 handlelength=2,
-                bbox_to_anchor=(0.35, 1.5),
+                bbox_to_anchor=(0.4, 1.5),
                 loc="upper center",
                 ncol=2,
                 fontsize=14,
