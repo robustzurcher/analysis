@@ -190,7 +190,7 @@ def plot_performance_difference_matrix(val_strat):
     plt.imshow(z_2, cmap=cmap, vmax=10)
     plt.colorbar()
 
-    fig.savefig(f"{DIR_FIGURES}/fig-application-validation-contour-plot")
+    fig.savefig(f"{DIR_FIGURES}/fig-application-validation-contour-plot-sw")
 
 
 def generate_plot_matrix(val_strat):
