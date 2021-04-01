@@ -43,7 +43,7 @@ def get_maintenance_probabilities():
             choice_ml[:max_state, 0],
             color=SPEC_DICT[color]["colors"][0],
             ls=SPEC_DICT[color]["line"][0],
-            label="optimal",
+            label="as-if",
         )
         for i, choice in enumerate(choices):
             ax.plot(
@@ -68,11 +68,17 @@ def get_maintenance_probabilities():
 
 
 def _create_repl_prob_plot(file, keys):
-    ev_ml = DICT_POLICIES_4292[0.0][0]
+    ev_ml = np.dot(DICT_POLICIES_4292[0.0][1], DICT_POLICIES_4292[0.0][0])
     num_states = ev_ml.shape[0]
     costs = calc_obs_costs(num_states, lin_cost, PARAMS, COST_SCALE)
     choice_ml = choice_prob_gumbel(ev_ml, costs, DISC_FAC)
     choices = []
     for omega in keys[1:]:
-        choices += [choice_prob_gumbel(DICT_POLICIES_4292[omega][0], costs, DISC_FAC)]
+        choices += [
+            choice_prob_gumbel(
+                np.dot(DICT_POLICIES_4292[omega][1], DICT_POLICIES_4292[omega][0]),
+                costs,
+                DISC_FAC,
+            )
+        ]
     return choice_ml, choices

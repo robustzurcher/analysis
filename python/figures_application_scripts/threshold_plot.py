@@ -39,12 +39,12 @@ def get_replacement_thresholds():
         ax.plot(
             OMEGA_GRID,
             means_ml,
-            color=SPEC_DICT[color]["colors"][1],
+            color=SPEC_DICT[color]["colors"][0],
             ls=SPEC_DICT[color]["line"][0],
-            label="optimal",
+            label="as-if",
         )
         if color == "colored":
-            second_color = "#ff7f0e"
+            second_color = "tab:orange"
         else:
             second_color = SPEC_DICT[color]["colors"][0]
         for j, i in enumerate(omega_sections[:-1]):

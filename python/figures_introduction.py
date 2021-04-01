@@ -60,7 +60,7 @@ def get_introduction_decision_making():
         cl = SPEC_DICT[color]["colors"][0]
         ls = SPEC_DICT[color]["line"][0]
 
-        ax.plot(x_grid, f(x_grid), label="optimal", color=cl, ls=ls)
+        ax.plot(x_grid, f(x_grid), label="as-if", color=cl, ls=ls)
 
         x_values = [0.00, 0.33, 0.66, 1.00]
         y_values = [0.80, 0.70, 0.50, 0.20]

@@ -78,7 +78,7 @@ def create_plot_1():
         ax.plot(
             GRID,
             perf_opt_1(GRID),
-            label=r"optimal",
+            label=r"as-if",
             color=SPEC_DICT[color]["colors"][2],
         )
 
@@ -140,7 +140,7 @@ def create_plot_2():
         ax.plot(
             GRID,
             perf_opt_2(GRID),
-            label="optimal",
+            label="as-if",
             color=SPEC_DICT[color]["colors"][2],
         )
 
@@ -180,13 +180,13 @@ def create_plot_2():
 
 
 def construct_performance():
-    df = pd.DataFrame(None, columns=[1, 2], index=["robust", "optimal"])
+    df = pd.DataFrame(None, columns=[1, 2], index=["robust", "as-if"])
     df.index.names = ["Strategy"]
 
-    for label, perf_func in [("robust", perf_rob_1), ("optimal", perf_opt_1)]:
+    for label, perf_func in [("robust", perf_rob_1), ("as-if", perf_opt_1)]:
         df.loc[label, 1] = calculate_perf(dist_func_1, perf_func)
 
-    for label, perf_func in [("robust", perf_rob_2), ("optimal", perf_opt_2)]:
+    for label, perf_func in [("robust", perf_rob_2), ("as-if", perf_opt_2)]:
         df.loc[label, 2] = calculate_perf(dist_func_2, perf_func)
     return df
 
@@ -196,9 +196,7 @@ def construct_regret(df):
     df_regret = df.copy()
     df_regret.loc[slice(None), :] = None
 
-    for label, info in product(
-        ["robust", "optimal"], [[1, perf_opt_1], [2, perf_opt_2]]
-    ):
+    for label, info in product(["robust", "as-if"], [[1, perf_opt_1], [2, perf_opt_2]]):
         pos, func = info
         df_regret.loc[label, pos] = max(func(GRID)) - df.loc[label, pos]
 
@@ -217,7 +215,7 @@ def report_decisions(df, df_regret, measures):
     print("Bayes:  ", df.mean(axis=1).idxmax())
 
     df_rank = pd.DataFrame(
-        data=[[1, 1], [1, 1], [1, 1]], index=measures, columns=["optimal", "robust"]
+        data=[[1, 1], [1, 1], [1, 1]], index=measures, columns=["as-if", "robust"]
     )
 
     df_rank.loc["Subjective \n Bayes", df.mean(axis=1).idxmax()] = 0
@@ -235,16 +233,16 @@ def expected_performance(df):
         fig, ax = plt.subplots()
         ax.bar(
             x - width / 2,
-            df.loc["optimal"],
+            df.loc["as-if"],
             width,
-            label="Optimal",
+            label="as-if",
             color=SPEC_DICT[color]["colors"][0],
         )
         ax.bar(
             x + width / 2,
             df.loc["robust"],
             width,
-            label="Robust",
+            label="robust",
             color=SPEC_DICT[color]["colors"][1],
         )
 
@@ -266,16 +264,16 @@ def expected_regret(df):
         fig, ax = plt.subplots()
         ax.bar(
             x - width / 2,
-            df.loc["optimal"],
+            df.loc["as-if"],
             width,
-            label="Optimal",
+            label="as-if",
             color=SPEC_DICT[color]["colors"][0],
         )
         ax.bar(
             x + width / 2,
             df.loc["robust"],
             width,
-            label="Robust",
+            label="robust",
             color=SPEC_DICT[color]["colors"][1],
         )
 

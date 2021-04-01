@@ -28,7 +28,7 @@ def get_demonstration_df(init_dict):
 def get_demonstration(df, max_period):
     states = (df["opt_mileage"], df["rob_mileage"])
     periods = (df["months_ml"], df["months_rob"])
-    labels = ["optimal", r"robust ($\omega = 0.95$)"]
+    labels = ["as-if", r"robust ($\omega = 0.95$)"]
     for color in COLOR_OPTS:
         fig, ax = plt.subplots(1, 1)
         ax.set_xlabel(r"Months")
@@ -43,7 +43,7 @@ def get_demonstration(df, max_period):
                 label=labels[i],
             )
         ax.legend(loc="upper left")
-        ax.set_ylim([0, 70])
+        ax.set_ylim([0, 90])
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-demonstration{SPEC_DICT[color]['file']}"
@@ -52,8 +52,8 @@ def get_demonstration(df, max_period):
 
 def get_demonstration_data(init_dict):
 
-    ev_ml = DICT_POLICIES_4292[0.0][0]
-    ev_95 = DICT_POLICIES_4292[0.95][0]
+    ev_ml = np.dot(DICT_POLICIES_4292[0.0][1], DICT_POLICIES_4292[0.0][0])
+    ev_95 = np.dot(DICT_POLICIES_4292[0.95][1], DICT_POLICIES_4292[0.95][0])
     trans_mat = DICT_POLICIES_4292[0.0][1]
 
     num_states = ev_ml.shape[0]

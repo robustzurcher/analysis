@@ -47,6 +47,11 @@ def create_ranking_graph(df):
         ax.spines["bottom"].set_color("white")
         ax.spines["left"].set_color("white")
         for i, col in enumerate(df.columns):
+            if np.isclose(col, 0.0):
+                label = "as-if"
+            else:
+                label = r"robust ($\omega$ = " + f"{col})"
+
             ax.plot(
                 df[col].index,
                 df[col].values,
@@ -55,12 +60,13 @@ def create_ranking_graph(df):
                 linewidth=3,
                 markersize=20,
                 color=SPEC_DICT[color]["colors"][i],
-                label=df.columns[i],
+                label=label,
             )
 
             # df[col].plot(**kwargs)
             # Flip y-axis.
-            plt.axis([-0.2, 2.1, 3.4, -0.2])
+            ax.set_xlim([-0.2, 2.1])
+            ax.set_ylim([3.2, -0.2])
 
             plt.yticks(
                 [0, 1, 2, 3],
@@ -77,10 +83,10 @@ def create_ranking_graph(df):
             ax.legend(
                 markerscale=0.3,
                 labelspacing=0.8,
-                handlelength=3,
-                bbox_to_anchor=(0.45, 1.2),
+                handlelength=2,
+                bbox_to_anchor=(0.35, 1.5),
                 loc="upper center",
-                ncol=4,
+                ncol=2,
                 fontsize=14,
             )
         fig.savefig(

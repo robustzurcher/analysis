@@ -21,7 +21,9 @@ NUM_POINTS = int(NUM_PERIODS / GRIDSIZE) + 1
 
 
 def get_decision_rule_df():
-    v_exp_ml = np.full(NUM_POINTS, DICT_POLICIES_4292[0.0][0][0])
+    v_exp_ml = np.full(
+        NUM_POINTS, np.dot(DICT_POLICIES_4292[0.0][1], DICT_POLICIES_4292[0.0][0])[0]
+    )
 
     v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.0_mat_0.95.pkl", "rb"))[1]
 
@@ -35,7 +37,9 @@ def get_decision_rule_df():
 def get_performance_decision_rules():
     print("The underlying transition matrix is the worst case given omega=0.95")
 
-    v_exp_ml = np.full(NUM_POINTS, DICT_POLICIES_4292[0.0][0][0])
+    v_exp_ml = np.full(
+        NUM_POINTS, np.dot(DICT_POLICIES_4292[0.0][1], DICT_POLICIES_4292[0.0][0])[0]
+    )
 
     v_disc_ml = pkl.load(open(SIM_RESULTS + "result_ev_0.0_mat_0.95.pkl", "rb"))[1]
 
@@ -61,7 +65,7 @@ def get_performance_decision_rules():
         ax.plot(
             periods,
             v_disc_ml,
-            color=SPEC_DICT[color]["colors"][0],
+            color=SPEC_DICT[color]["colors"][1],
             ls=SPEC_DICT[color]["line"][1],
             label="actual",
         )
@@ -119,15 +123,15 @@ def get_difference_plot():
         ax.plot(
             OMEGA_GRID,
             filter_50,
-            color=SPEC_DICT[color]["colors"][0],
+            color=SPEC_DICT[color]["colors"][1],
             label=r"robust $(\omega = 0.50)$",
             ls=SPEC_DICT[color]["line"][1],
         )
         if color == "colored":
-            third_color = "#2ca02c"
+            third_color = "tab:green"
         else:
             third_color = SPEC_DICT[color]["colors"][4]
-        ax.axhline(color=third_color, ls=SPEC_DICT[color]["line"][2], label="optimal")
+        ax.axhline(color=third_color, ls=SPEC_DICT[color]["line"][2], label="as-if")
         ax.set_ylim([-300, 400])
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
@@ -151,7 +155,7 @@ def get_difference_plot():
 #             OMEGA_GRID,
 #             nominal_costs,
 #             color=SPEC_DICT[color]["colors"][0],
-#             label="optimal",
+#             label="as-if",
 #             ls=SPEC_DICT[color]["line"][0],
 #         )
 #
