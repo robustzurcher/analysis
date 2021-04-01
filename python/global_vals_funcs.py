@@ -8,8 +8,9 @@ import numpy as np
 
 
 OMEGA_GRID = np.arange(0, 1, 0.01).round(2)
-VAL_STRATS = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
+VAL_STRATS = [0.1, 0.2, 0.3, 0.4, 0.5]
 
+NUM_STATES = 60
 DISC_FAC = 0.9999
 COST_SCALE = 0.001
 PARAMS = np.array([50, 400])
