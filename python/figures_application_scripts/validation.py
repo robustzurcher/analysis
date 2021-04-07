@@ -190,6 +190,8 @@ def plot_performance_difference_matrix(val_strat):
     plt.imshow(z_2, cmap=cmap, vmax=10)
     plt.colorbar()
 
+    ax.yaxis.get_major_ticks()[0].label1.set_visible(False)
+
     fig.savefig(f"{DIR_FIGURES}/fig-application-validation-contour-plot-sw")
 
 
@@ -197,7 +199,7 @@ def generate_plot_matrix(val_strat):
 
     id_strat = np.where(np.isclose(val_strat, VAL_STRATS))[0]
     z = np.zeros((len(x), len(y)), dtype=float)
-    for id_prob, true_prob in enumerate(prob_vectors):
+    for id_prob, _ in enumerate(prob_vectors):
         result = pkl.load(open(f"{VAL_RESULTS}result_{id_prob}.pkl", "rb"))
         id_z_x = np.where(np.isclose(x, result[0][0]))[0][0]
         id_z_y = np.where(np.isclose(y, result[0][1]))[0][0]
