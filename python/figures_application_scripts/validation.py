@@ -65,18 +65,16 @@ def create_ranking_graph(df):
 
             # df[col].plot(**kwargs)
             # Flip y-axis.
-            ax.set_xlim([-0.2, 2.1])
+            ax.set_xlim([-0.2, 2.2])
             ax.set_ylim([3.5, -0.5])
 
             plt.yticks(
                 [0, 1, 2, 3],
                 labels=["Rank 1", "Rank 2", "Rank 3", "Rank 4"],
-                fontsize=14,
             )
             plt.xticks(
                 [0, 1, 2],
                 labels=df.index.to_list(),
-                fontsize=14,
             )
             plt.xlabel("")
             ax.tick_params(axis="both", color="white", pad=20)
@@ -84,10 +82,9 @@ def create_ranking_graph(df):
                 markerscale=0.3,
                 labelspacing=0.8,
                 handlelength=2,
-                bbox_to_anchor=(0.4, 1.5),
-                loc="upper center",
-                ncol=2,
-                fontsize=14,
+                bbox_to_anchor=(1, 0.7),
+                # loc="right",
+                ncol=1,
             )
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-"
@@ -180,8 +177,8 @@ def plot_performance_difference_matrix(val_strat):
     ax.set_xlim([0, 10])
     t1 = plt.Polygon(np.array([[0, 10], [10, 0]]), closed=False, fill=False)
     plt.gca().add_patch(t1)
-    ax.set_ylabel(r"10,000 miles", fontsize=12)
-    ax.set_xlabel(r"5,000 miles", fontsize=12)
+    ax.set_ylabel(r"10,000 miles")
+    ax.set_xlabel(r"5,000 miles")
     # ax.spy(z, origin="lower")
     plt.xticks(np.arange(0, 12, 2), np.arange(0, 1.2, 0.2).round(2), position=(0, 0))
     plt.yticks(np.arange(0, 12, 2), np.arange(0, 1.2, 0.2).round(2))
