@@ -79,9 +79,8 @@ def create_ranking_graph(df):
             plt.xlabel("")
             ax.tick_params(axis="both", color="white", pad=20)
             ax.legend(
-                markerscale=0.3,
-                labelspacing=0.8,
-                handlelength=2,
+                markerscale=0.2,
+                handlelength=1.5,
                 # bbox_to_anchor=[-0.1, 1.1],
                 loc="upper center",
                 ncol=4,
