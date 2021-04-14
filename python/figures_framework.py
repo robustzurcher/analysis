@@ -59,7 +59,7 @@ def perf_rob_2(grid):
 
 def create_plot_1():
     mpl.rcParams["axes.spines.right"] = True
-    density = dist_func_1(GRID) * GRIP_POINTS
+    density = dist_func_1(GRID) * GRIP_POINTS / 5
     for color in COLOR_OPTS:
         fig, ax = plt.subplots()
         ax2 = ax.twinx()
@@ -97,12 +97,12 @@ def create_plot_1():
         ax.set_xlim([0, 1])
         ax.set_xlabel(r"$\hat{p}$")
 
-        ax.set_yticks([])
+        # ax.set_yticks([])
         ax.set_ylim(-3, 2)
         ax.set_ylabel("Performance")
 
-        ax2.set_yticks([])
-        ax2.set_ylim(0, 5)
+        # ax2.set_yticks([])
+        ax2.set_ylim(0, 1)
         ax2.set_ylabel("Sampling Distribution")
 
         ax.legend(loc="upper left", ncol=1)
@@ -120,7 +120,7 @@ def calculate_perf(dist_func, perf_func):
 
 def create_plot_2():
     mpl.rcParams["axes.spines.right"] = True
-    density = dist_func_2(GRID) * GRIP_POINTS
+    density = dist_func_2(GRID) * GRIP_POINTS / 4
     for color in COLOR_OPTS:
 
         fig, ax = plt.subplots()
@@ -154,20 +154,20 @@ def create_plot_2():
             alpha=0.4,
         )
 
-        ax.yaxis.set_ticklabels([])
+        # ax.yaxis.set_ticklabels([])
         ax.legend()
 
         ax.set_xticks([0.0, GRID[perf_opt_2(GRID).argmax()], 1.0])
         ax.set_xticklabels([0.0, "$p_2$", 1.0])
         ax.set_xlim([0, 1])
 
-        ax.set_yticks([])
+        # ax.set_yticks([])
         ax.set_ylabel("Performance")
         ax.set_xlabel(r"$\hat{p}$")
         ax.set_ylim(-2, 3)
 
-        ax2.set_yticks([])
-        ax2.set_ylim(0, 4)
+        # ax2.set_yticks([])
+        ax2.set_ylim(0, 1)
         ax2.set_ylabel("Sampling Distribution")
 
         ax.legend(loc="upper left", ncol=1)
