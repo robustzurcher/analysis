@@ -142,7 +142,7 @@ def get_probability_shift_data(state):
             width,
             color=SPEC_DICT[color]["colors"][1],
             hatch=SPEC_DICT[color]["hatch"][1],
-            label="$N_k = 55$",
+            label="$N_x = 55$",
         )
         ax.bar(
             x + width,
@@ -150,7 +150,7 @@ def get_probability_shift_data(state):
             width,
             color=SPEC_DICT[color]["colors"][2],
             hatch=SPEC_DICT[color]["hatch"][2],
-            label="$N_k = 29$",
+            label="$N_x = 29$",
         )
 
         ax.set_ylabel(r"Transition probability")
