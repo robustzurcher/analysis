@@ -63,24 +63,77 @@ def create_plot_1():
     for color in COLOR_OPTS:
         fig, ax = plt.subplots()
         ax2 = ax.twinx()
+        ax.set_xticks([0.0, 1.0])
+        ax.set_xlim([-0.05, 1.05])
+        ax.set_xlabel(r"$\hat{p}$")
+
+        # ax.set_yticks([])
+        ax.set_ylim(-3, 3)
+        ax.set_ylabel("Performance")
+        ax.set_yticks(range(-2, 4))
+
+        # ax2.set_yticks([])
+        ax2.set_ylim(0, 1)
+        ax2.set_ylabel("Sampling Distribution")
+        ax2.set_yticks(np.arange(0.2, 1.2, 0.2))
+
+        if color == "colored":
+            fig.savefig(
+                f"{DIR_FIGURES}/fig-illustration-performance-1-"
+                f"blank{SPEC_DICT[color]['file']}"
+            )
+        ax.set_xticks([0.0, 0.5, 1.0])
+        ax.set_xticklabels([0.0, "$p_1$", 1.0])
+        if color == "colored":
+            fig.savefig(
+                f"{DIR_FIGURES}/fig-illustration-performance-1-"
+                f"p_1{SPEC_DICT[color]['file']}"
+            )
+
         ax2.plot(
             GRID,
             density,
             label="sampling distribution",
+            color=SPEC_DICT[color]["colors"][2],
+        )
+
+        ax2.legend(loc="upper right")
+        ax.set_xticklabels([0.0, "$p_1$", 1.0])
+
+        if color == "colored":
+            fig.savefig(
+                f"{DIR_FIGURES}/fig-illustration-performance-1-"
+                f"sampling{SPEC_DICT[color]['file']}"
+            )
+
+        ax.plot(
+            GRID,
+            perf_opt_1(GRID),
+            label=r"as-if",
             color=SPEC_DICT[color]["colors"][0],
         )
+        ax.legend(loc="upper left", ncol=1)
+        ax2.legend(loc="upper right")
+
+        if color == "colored":
+            fig.savefig(
+                f"{DIR_FIGURES}/fig-illustration-performance-1-as"
+                f"-if{SPEC_DICT[color]['file']}"
+            )
         ax.plot(
             GRID,
             perf_rob_1(GRID),
             label=r"robust",
             color=SPEC_DICT[color]["colors"][1],
         )
-        ax.plot(
-            GRID,
-            perf_opt_1(GRID),
-            label=r"as-if",
-            color=SPEC_DICT[color]["colors"][2],
-        )
+        ax.legend(loc="upper left", ncol=1)
+        ax2.legend(loc="upper right")
+
+        if color == "colored":
+            fig.savefig(
+                f"{DIR_FIGURES}/fig-illustration-performance-1-"
+                f"robust{SPEC_DICT[color]['file']}"
+            )
 
         intersect_idx = np.argwhere(
             np.diff(np.sign(perf_rob_1(GRID) - perf_opt_1(GRID)))
@@ -88,23 +141,9 @@ def create_plot_1():
         ax2.fill_between(
             GRID[intersect_idx[0][0] : intersect_idx[1][0]],
             density[intersect_idx[0][0] : intersect_idx[1][0]],
-            color=SPEC_DICT[color]["colors"][0],
+            color=SPEC_DICT[color]["colors"][2],
             alpha=0.4,
         )
-
-        ax.set_xticks([0.0, 0.5, 1.0])
-        ax.set_xticklabels([0.0, "$p_1$", 1.0])
-        ax.set_xlim([0, 1])
-        ax.set_xlabel(r"$\hat{p}$")
-
-        # ax.set_yticks([])
-        ax.set_ylim(-3, 2)
-        ax.set_ylabel("Performance")
-
-        # ax2.set_yticks([])
-        ax2.set_ylim(0, 1)
-        ax2.set_ylabel("Sampling Distribution")
-
         ax.legend(loc="upper left", ncol=1)
         ax2.legend(loc="upper right")
 
@@ -125,22 +164,24 @@ def create_plot_2():
 
         fig, ax = plt.subplots()
         ax2 = ax.twinx()
-        ax2.plot(
+        ax.plot(
             GRID,
-            density,
-            label="sampling distribution",
+            perf_opt_2(GRID),
+            label="as-if",
             color=SPEC_DICT[color]["colors"][0],
         )
+
         ax.plot(
             GRID,
             perf_rob_2(GRID),
             label="robust",
             color=SPEC_DICT[color]["colors"][1],
         )
-        ax.plot(
+
+        ax2.plot(
             GRID,
-            perf_opt_2(GRID),
-            label="as-if",
+            density,
+            label="sampling distribution",
             color=SPEC_DICT[color]["colors"][2],
         )
 
@@ -150,25 +191,26 @@ def create_plot_2():
         ax2.fill_between(
             GRID[intersect_idx[0][0] : intersect_idx[1][0]],
             density[intersect_idx[0][0] : intersect_idx[1][0]],
-            color=SPEC_DICT[color]["colors"][0],
+            color=SPEC_DICT[color]["colors"][2],
             alpha=0.4,
         )
 
-        # ax.yaxis.set_ticklabels([])
         ax.legend()
 
         ax.set_xticks([0.0, GRID[perf_opt_2(GRID).argmax()], 1.0])
         ax.set_xticklabels([0.0, "$p_2$", 1.0])
-        ax.set_xlim([0, 1])
+        ax.set_xlim([-0.05, 1.05])
 
         # ax.set_yticks([])
         ax.set_ylabel("Performance")
         ax.set_xlabel(r"$\hat{p}$")
-        ax.set_ylim(-2, 3)
+        ax.set_ylim(-3, 3)
+        ax.set_yticks(range(-2, 4))
 
         # ax2.set_yticks([])
         ax2.set_ylim(0, 1)
         ax2.set_ylabel("Sampling Distribution")
+        ax2.set_yticks(np.arange(0.2, 1.2, 0.2))
 
         ax.legend(loc="upper left", ncol=1)
         ax2.legend(loc="upper right")
