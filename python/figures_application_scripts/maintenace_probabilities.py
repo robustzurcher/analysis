@@ -56,9 +56,11 @@ def get_maintenance_probabilities():
 
         ax.set_ylabel(r"Maintenance probability")
         ax.set_xlabel(r"Mileage (in thousands)")
-        ax.set_ylim([0, 1])
+        ax.set_ylim([0, 1.02])
 
-        plt.xticks(states[::5])
+        end = states[::5][-1] + 25
+        ax.set_xticks(np.append(states[::5], end))
+        plt.xlim(right=end)
         ax.legend()
 
         fig.savefig(

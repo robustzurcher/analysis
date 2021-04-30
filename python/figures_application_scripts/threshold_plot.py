@@ -35,6 +35,7 @@ def get_replacement_thresholds():
         ax.set_ylabel(r"Mileage (in thousands)")
         ax.set_xlabel(r"$\omega$")
         ax.set_ylim([y_0, y_1])
+        plt.xlim(left=-0.06, right=1)
 
         ax.plot(
             OMEGA_GRID,

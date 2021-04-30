@@ -70,12 +70,14 @@ def create_plot_1():
         # ax.set_yticks([])
         ax.set_ylim(-3, 3)
         ax.set_ylabel("Performance")
-        ax.set_yticks(range(-2, 4))
+        ax.set_yticks(range(-3, 4))
+        ax.set_xticks([0.0, 1.0])
+        ax.set_xticklabels([0.0, 1.0])
 
         # ax2.set_yticks([])
         ax2.set_ylim(0, 1)
-        ax2.set_ylabel("Sampling Distribution")
-        ax2.set_yticks(np.arange(0.2, 1.2, 0.2))
+        ax2.set_ylabel("Sampling distribution")
+        ax2.set_yticks([])
 
         if color == "colored":
             fig.savefig(
@@ -205,12 +207,12 @@ def create_plot_2():
         ax.set_ylabel("Performance")
         ax.set_xlabel(r"$\hat{p}$")
         ax.set_ylim(-3, 3)
-        ax.set_yticks(range(-2, 4))
+        ax.set_yticks(range(-3, 4))
 
         # ax2.set_yticks([])
         ax2.set_ylim(0, 1)
-        ax2.set_ylabel("Sampling Distribution")
-        ax2.set_yticks(np.arange(0.2, 1.2, 0.2))
+        ax2.set_ylabel("Sampling distribution")
+        ax2.set_yticks([])
 
         ax.legend(loc="upper left", ncol=1)
         ax2.legend(loc="upper right")
@@ -289,6 +291,8 @@ def expected_performance(df):
         )
 
         ax.set_ylabel("Expected performance")
+        ax.set_ylim([0, 2])
+        ax.set_yticks(np.arange(0, 2.5, 0.5))
         ax.set_xticks([0, 1])
         ax.set_xticklabels(["$p_1$", "$p_2$"])
         ax.legend()
@@ -320,6 +324,8 @@ def expected_regret(df):
         )
 
         ax.set_ylabel("Expected regret")
+        ax.set_ylim([0, 2])
+        ax.set_yticks(np.arange(0, 2.5, 0.5))
         ax.set_xticks([0, 1])
         ax.set_xticklabels(["$p_1$", "$p_2$"])
         ax.legend()

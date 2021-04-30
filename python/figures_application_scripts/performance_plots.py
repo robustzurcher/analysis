@@ -46,13 +46,8 @@ def get_performance_decision_rules():
     periods = np.arange(0, NUM_PERIODS + GRIDSIZE, GRIDSIZE)
     for color in COLOR_OPTS:
         fig, ax = plt.subplots(1, 1)
-        ax.set_ylim([1.1 * v_disc_ml[-1], 0])
-        ax.set_ylabel(r"Performance")
-        ax.set_xlabel(r"Months")
-
-        formatter = plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)))
-        ax.get_xaxis().set_major_formatter(formatter)
-        ax.get_yaxis().set_major_formatter(formatter)
+        ax.set_ylabel(r"Performance (in thousands)")
+        ax.set_xlabel(r"Months (in thousands)")
 
         # 'Discounted utility of otpimal strategy'
         ax.plot(
@@ -69,7 +64,12 @@ def get_performance_decision_rules():
             ls=SPEC_DICT[color]["line"][1],
             label="actual",
         )
-        ax.set_ylim([-60000, 0])
+        ax.set_ylim([-60_000, 0])
+        ax.set_yticks(np.arange(-60_000, 10_000, 10_000))
+        ax.set_yticklabels(np.arange(-60, 10, 10))
+        ax.set_xticks(np.arange(0, 120_000, 20_000))
+        ax.set_xticklabels(np.arange(0, 120, 20))
+        plt.xlim(right=100_000)
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/"
@@ -112,12 +112,13 @@ def get_difference_plot():
     for color in COLOR_OPTS:
         fig, ax = plt.subplots(1, 1)
 
-        ax.plot(
-            OMEGA_GRID,
-            filter_95,
+        ax.axhline(
+            0,
+            0.05,
+            1,
             color=SPEC_DICT[color]["colors"][0],
-            label=r"robust $(\omega = 0.95)$",
-            ls=SPEC_DICT[color]["line"][0],
+            ls=SPEC_DICT[color]["line"][2],
+            label="as-if",
         )
 
         ax.plot(
@@ -127,12 +128,17 @@ def get_difference_plot():
             label=r"robust $(\omega = 0.50)$",
             ls=SPEC_DICT[color]["line"][1],
         )
-        if color == "colored":
-            third_color = "tab:green"
-        else:
-            third_color = SPEC_DICT[color]["colors"][4]
-        ax.axhline(color=third_color, ls=SPEC_DICT[color]["line"][2], label="as-if")
+
+        ax.plot(
+            OMEGA_GRID,
+            filter_95,
+            color=SPEC_DICT[color]["colors"][2],
+            label=r"robust $(\omega = 0.95)$",
+            ls=SPEC_DICT[color]["line"][2],
+        )
+
         ax.set_ylim([-300, 400])
+        plt.xlim(left=-0.06, right=1)
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
         ax.set_xlabel(r"$\omega$")

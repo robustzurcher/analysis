@@ -34,6 +34,7 @@ def get_probabilities(state):
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
         ax.set_ylim([0.00, 0.80])
+        ax.set_yticks(np.arange(0, 1, 0.2))
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-probabilities{SPEC_DICT[color]['file']}"
         )
@@ -60,6 +61,7 @@ def get_probabilities_bar(state):
 
         ax.set_ylabel(r"Transition probability")
         ax.set_ylim([0.00, 0.80])
+        ax.set_yticks(np.arange(0, 1, 0.2))
 
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
@@ -114,6 +116,7 @@ def get_probability_shift(state):
         ax.set_ylabel(r"Transition probability")
         ax.set_xlabel(r"Mileage increase (in thousands)")
         ax.set_ylim([0.0, 0.8])
+        ax.set_yticks(np.arange(0, 1, 0.2))
         plt.xticks(x)
         ax.legend()
 
@@ -157,6 +160,7 @@ def get_probability_shift_data(state):
         ax.set_xlabel(r"Mileage increase (in thousands)")
         plt.xticks(x)
         ax.set_ylim([0.0, 0.8])
+        ax.set_yticks(np.arange(0, 1, 0.2))
 
         ax.legend()
 

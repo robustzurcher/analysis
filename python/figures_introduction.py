@@ -39,6 +39,10 @@ def get_number_observations(bin_size, init_dict, num_obs_per_state):
 
         cl = SPEC_DICT[color]["colors"][0]
         ax.bar(mileage, hist_data, width, align="edge", color=cl)
+        ax.set_xticks(range(0, 450, 50))
+        ax.set_xticklabels(range(0, 450, 50))
+        ax.set_ylim([0, 250])
+        plt.xlim(right=400)
 
         plt.savefig(
             f"{DIR_FIGURES}/fig-introduction-observations-mileage{SPEC_DICT[color]['file']}"

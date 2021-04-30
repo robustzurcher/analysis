@@ -36,14 +36,17 @@ def get_demonstration(df, max_period):
 
         for i, state in enumerate(states):
             ax.plot(
-                periods[i][:max_period],
-                state[:max_period],
+                periods[i],
+                state,
                 color=SPEC_DICT[color]["colors"][i],
                 ls=SPEC_DICT[color]["line"][i],
                 label=labels[i],
             )
         ax.legend(loc="upper left")
         ax.set_ylim([0, 90])
+        plt.xlim(left=-3, right=max_period)
+
+        plt.xticks(range(0, max_period + 10, 10))
 
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-demonstration{SPEC_DICT[color]['file']}"
