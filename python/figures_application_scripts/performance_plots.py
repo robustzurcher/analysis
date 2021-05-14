@@ -88,10 +88,10 @@ def get_difference_df():
     robust_costs_50 = _performance_plot(0.5)
     robust_costs_95 = _performance_plot(0.95)
 
-    diff_costs_95 = robust_costs_95 - nominal_costs
-    diff_costs_50 = robust_costs_50 - nominal_costs
+    diff_costs_95 = nominal_costs - robust_costs_95
+    diff_costs_50 = nominal_costs - robust_costs_50
 
-    print("The dataframe contains the difference for robust - nominal strategy.")
+    print("The dataframe contains the difference for as-if - robust strategy.")
 
     return pd.DataFrame(
         {"omega": OMEGA_GRID, "robust_95": diff_costs_95, "robust_050": diff_costs_50}
@@ -104,8 +104,8 @@ def get_difference_plot():
     robust_costs_50 = _performance_plot(0.5)
     robust_costs_95 = _performance_plot(0.95)
 
-    diff_costs_95 = robust_costs_95 - nominal_costs
-    diff_costs_50 = robust_costs_50 - nominal_costs
+    diff_costs_95 = nominal_costs - robust_costs_95
+    diff_costs_50 = nominal_costs - robust_costs_50
     filter_95 = savgol_filter(diff_costs_95, 29, 3)
     filter_50 = savgol_filter(diff_costs_50, 29, 3)
 
@@ -137,7 +137,7 @@ def get_difference_plot():
             ls=SPEC_DICT[color]["line"][2],
         )
 
-        ax.set_ylim([-300, 400])
+        ax.set_ylim([-400, 400])
         plt.xlim(left=-0.06, right=1)
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
