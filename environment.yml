@@ -3,7 +3,7 @@ name: ruspy_analysis
 channels:
   - defaults
   - conda-forge
-  - janosg
+  - opensourceeconomics
 
 dependencies:
   - python
