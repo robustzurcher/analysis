@@ -43,7 +43,7 @@ def create_ranking_graph(df):
     linestyle = ["--", "-.", "-", ":"]
 
     for color in COLOR_OPTS:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 4))
         ax.spines["bottom"].set_color("white")
         ax.spines["left"].set_color("white")
         for i, col in enumerate(df.columns):
@@ -99,8 +99,10 @@ def print_generate_rankings(df_in, strategies, measures):
     subjective_bayes_order = (
         df.mean(axis=0).sort_values(ascending=False).index.to_numpy()
     )
+    print(df.mean(axis=0).sort_values(ascending=False))
 
     min_max_order = df.min().sort_values(ascending=False).index.to_numpy()
+    print(df.min().sort_values(ascending=False))
 
     max_min_regret = (
         (df.subtract(best_result, axis=0))
@@ -108,6 +110,7 @@ def print_generate_rankings(df_in, strategies, measures):
         .sort_values(ascending=False)
         .index.to_numpy()
     )
+    print((df.subtract(best_result, axis=0)).min().sort_values(ascending=False))
 
     print("The order of subjective belief is", subjective_bayes_order)
 

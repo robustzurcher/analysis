@@ -141,7 +141,7 @@ def get_difference_plot():
         plt.xlim(left=-0.06, right=1)
         # ax.set_ylim([diff_costs_95[0], diff_costs_95[-1]])
         ax.set_ylabel(r"$\Delta$ Performance")
-        ax.set_xlabel(r"$\omega$")
+        ax.set_xlabel(r"$\tilde{\omega}$")
         ax.legend()
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-difference{SPEC_DICT[color]['file']}"
