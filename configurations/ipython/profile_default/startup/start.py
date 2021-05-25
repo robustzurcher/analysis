@@ -21,6 +21,8 @@ from figures_application_scripts.performance_plots import *
 from figures_application_scripts.validation import *
 from figures_framework import *
 from figures_introduction import *
+from figures_framework_new import *
+
 
 extract_zips()
 
