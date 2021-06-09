@@ -8,7 +8,8 @@ import numpy as np
 
 
 OMEGA_GRID = np.arange(0, 1, 0.01).round(2)
-VAL_STRATS = [0.1, 0.2, 0.3, 0.4, 0.5]
+VAL_STRATS = np.arange(0, 1.1, 0.1).round(2)
+VAL_STRATS[-1] -= 0.01
 
 NUM_STATES = 60
 DISC_FAC = 0.9999
@@ -16,7 +17,7 @@ COST_SCALE = 0.001
 PARAMS = np.array([50, 400])
 NUM_BUSES = 200
 BIN_SIZE = 5  # in thousand
-NUM_PERIODS = 100000
+NUM_PERIODS = 100_000
 FIXP_DICT_4292 = "../pre_processed_data/fixp_results_4292.pkl"
 FIXP_DICT_2223 = "../pre_processed_data/fixp_results_2223.pkl"
 SIM_RESULTS = "../pre_processed_data/sim_results/"
