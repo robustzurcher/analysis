@@ -19,9 +19,8 @@ from figures_application_scripts.demonstration import *
 from figures_application_scripts.threshold_plot import *
 from figures_application_scripts.performance_plots import *
 from figures_application_scripts.validation import *
-from figures_framework import *
 from figures_introduction import *
-from figures_framework_new import *
+from urn_illustrations import *
 
 
 extract_zips()
