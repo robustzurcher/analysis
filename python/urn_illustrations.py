@@ -51,7 +51,7 @@ def risk_function(n, rule, p=None, lambda_=None):
     return np.array(rslt)
 
 
-def create_plot_expected_payoff_func():
+def create_plot_expected_payoff_func(p, lambda_robust):
     """Plot expected payoff function.
 
     Focusing on a single point in the state space, we combine the information on
@@ -60,8 +60,6 @@ def create_plot_expected_payoff_func():
     """
     matplotlib.rcParams["axes.spines.right"] = True
     for color in COLOR_OPTS:
-
-        p = 0.50
         n = 50
         rv = binom(n, p)
         r = np.arange(binom.ppf(0.01, n, p), binom.ppf(0.99, n, p))
@@ -77,8 +75,8 @@ def create_plot_expected_payoff_func():
         )
         ax2.plot(
             r,
-            get_payoff(take_action(r, n, "robust", lambda_=0.9), p),
-            label=r"robust ($\lambda=0.9$)",
+            get_payoff(take_action(r, n, "robust", lambda_=lambda_robust), p),
+            label=rf"robust ($\lambda={lambda_robust}$)",
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.bar(
@@ -149,17 +147,21 @@ def create_plot_risk_functions():
         fig.savefig(fname)
 
 
-def create_exp_payoff_plot_two_points():
+def create_exp_payoff_plot_two_points(p_1, p_2, lambda_robust):
     """Compare expected performance and expected regret at two values of p."""
     for color in COLOR_OPTS:
 
         n = 50
         df = pd.DataFrame(columns=["as-if", "robust"], index=["p1", "p2"])
-        df.loc["p2", "as-if"] = risk_function(n, "as-if", p=0.1)[0]
-        df.loc["p2", "robust"] = risk_function(n, "robust", p=0.1, lambda_=0.9)[0]
+        df.loc["p2", "as-if"] = risk_function(n, "as-if", p=p_2)[0]
+        df.loc["p2", "robust"] = risk_function(
+            n, "robust", p=p_2, lambda_=lambda_robust
+        )[0]
 
-        df.loc["p1", "as-if"] = risk_function(n, "as-if", p=0.4)[0]
-        df.loc["p1", "robust"] = risk_function(n, "robust", p=0.4, lambda_=0.9)[0]
+        df.loc["p1", "as-if"] = risk_function(n, "as-if", p=p_1)[0]
+        df.loc["p1", "robust"] = risk_function(
+            n, "robust", p=p_1, lambda_=lambda_robust
+        )[0]
 
         x = np.arange(2)
         width = 0.35
@@ -175,13 +177,13 @@ def create_exp_payoff_plot_two_points():
             x + width / 2,
             df.loc[slice(None), "robust"],
             width,
-            label=r"robust ($\lambda=0.9$)",
+            label=rf"robust ($\lambda={lambda_robust}$)",
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.set_ylim([0.99, 0.999])
         ax.set_ylabel("Expected payoff")
         ax.set_xticks([0, 1])
-        ax.set_xticklabels(["$p=0.1$", "$p = 0.4$"])
+        ax.set_xticklabels([f"$p={p_1}$", f"$p = {p_2}$"])
         ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.3))
         plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
         t = ax.yaxis.get_offset_text()
