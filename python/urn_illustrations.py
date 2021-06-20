@@ -319,7 +319,7 @@ def create_optimal_lambda_plot():
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
         ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.4))
-        ax.set_ylabel("Expected payoff")
+        ax.set_ylabel("Performance measure")
         plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
 
         fname = f"{DIR_FIGURES}/fig-example-urn-optimal{SPEC_DICT[color]['file']}"
