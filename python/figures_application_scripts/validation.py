@@ -25,9 +25,6 @@ from scipy.signal import savgol_filter
 samples = pkl.load(open(f"{DATA_DIR}/samples.pkl", "rb"))
 prob_grid = pkl.load(open(f"{DATA_DIR}/grid.pkl", "rb"))
 obs_costs = calc_obs_costs(NUM_STATES, lin_cost, PARAMS, COST_SCALE)
-one_dim_grid = np.arange(0, 1.1, 0.1)
-one_dim_grid[0] += 0.005
-one_dim_grid[-1] -= 0.005
 
 # Settings for dataframe
 prob_colums = ["p_0", "p_1", "p_2"]
@@ -155,22 +152,32 @@ def create_ranking_graph(df):
         )
 
 
-def plot_performance_difference_matrix(df, val_strat):
-    z = generate_plot_matrix(df, val_strat)
+def plot_performance_difference_matrix(df, val_strat, one_dim_interpol_grid):
+    z = generate_plot_matrix(df, val_strat, one_dim_interpol_grid)
+    max_scale = len(one_dim_interpol_grid)
     z_2 = np.where(z == 0, 1e20, z)
     fig, ax = plt.subplots()
-    ax.set_ylim([0, 10])
-    ax.set_xlim([0, 10])
-    t1 = plt.Polygon(np.array([[0, 10], [10, 0]]), closed=False, fill=False)
+    ax.set_ylim([-1, max_scale])
+    ax.set_xlim([-10, max_scale])
+    t1 = plt.Polygon(
+        np.array([[0, max_scale], [max_scale, 0]]), closed=False, fill=False
+    )
     plt.gca().add_patch(t1)
     ax.set_ylabel(r"10,000 miles")
     ax.set_xlabel(r"5,000 miles")
     # ax.spy(z, origin="lower")
-    plt.xticks(np.arange(0, 12, 2), np.arange(0, 1.2, 0.2).round(2), position=(0, 0))
-    plt.yticks(np.arange(0, 12, 2), np.arange(0, 1.2, 0.2).round(2))
+    ticks_space = max_scale / 5
+    plt.xticks(
+        np.arange(0, max_scale + ticks_space, ticks_space),
+        np.arange(0, 1.2, 0.2).round(2),
+    )
+    plt.yticks(
+        np.arange(0, max_scale + ticks_space, ticks_space),
+        np.arange(0, 1.2, 0.2).round(2),
+    )
     cmap = CM.get_cmap("Greys_r", 10)
 
-    plt.imshow(z_2, cmap=cmap, vmax=10)
+    plt.imshow(z_2, cmap=cmap, vmax=10, vmin=-10)
     plt.colorbar()
 
     ax.yaxis.get_major_ticks()[0].label1.set_visible(False)
@@ -178,16 +185,25 @@ def plot_performance_difference_matrix(df, val_strat):
     fig.savefig(f"{DIR_FIGURES}/fig-application-validation-contour-plot-sw")
 
 
-def generate_plot_matrix(df_in, val_strat):
+def generate_plot_matrix(df_in, val_strat, one_dim_interpol_grid):
 
-    df = df_in.loc[:, [0.0, val_strat]].mean(level=0)
-    z = np.zeros((len(one_dim_grid), len(one_dim_grid)), dtype=float)
-    for id_prob, gridpoint in enumerate(prob_grid):
+    eval_omega = [0.0, val_strat]
+    df = df_in.loc[:, eval_omega].mean(level=0)
+    interpol_grid = create_prob_grid(one_dim_interpol_grid, 3)
+    interpol_res = {}
+    for omega in eval_omega:
+        interpol_res[omega] = interp.griddata(
+            prob_grid[:, :2], df.loc[:, omega], interpol_grid[:, :2], method="linear"
+        )
+    z = np.zeros((len(one_dim_interpol_grid), len(one_dim_interpol_grid)), dtype=float)
+    for id_prob, gridpoint in enumerate(interpol_grid):
 
-        id_z_x = np.where(np.isclose(one_dim_grid, gridpoint[0]))[0][0]
-        id_z_y = np.where(np.isclose(one_dim_grid, gridpoint[1]))[0][0]
+        id_z_x = np.where(np.isclose(one_dim_interpol_grid, gridpoint[0]))[0][0]
+        id_z_y = np.where(np.isclose(one_dim_interpol_grid, gridpoint[1]))[0][0]
 
-        z[id_z_y, id_z_x] = df.loc[id_prob, 0.0] - df.loc[id_prob, val_strat]
+        z[id_z_y, id_z_x] = (
+            interpol_res[0.0][id_prob] - interpol_res[val_strat][id_prob]
+        )
     return z
 
 
