@@ -8,50 +8,50 @@ from global_vals_funcs import SPEC_DICT
 from scipy.stats import binom
 
 
-def get_payoff(action, p):
-    "Compute payoff based on p and action p'"
-    return 1 - (action - p) ** 2
+def get_payoff(action, theta):
+    "Compute payoff based on theta and action theta'"
+    return 1 - (action - theta) ** 2
 
 
 def take_action(r, n, rule, lambda_=None):
-    "action refers here to announce a p estimate"
+    "action refers here to announce a theta estimate"
     if lambda_ is None:
         lambda_ = np.sqrt(n) / (1 + np.sqrt(n))
 
     if rule == "as-if":
-        p_prime = r / n
+        theta_prime = r / n
     elif rule == "robust":
-        p_prime = lambda_ * r / n + (1 - lambda_) * 0.5
+        theta_prime = lambda_ * r / n + (1 - lambda_) * 0.5
     elif rule == "fixed":
-        p_prime = np.tile(0.5, len(r))
+        theta_prime = np.tile(0.5, len(r))
     else:
         raise NotImplementedError
 
-    return p_prime
+    return theta_prime
 
 
-def risk_function(n, rule, p=None, lambda_=None):
-    if p is None:
-        p_grid = np.linspace(0, 1, 100)
+def risk_function(n, rule, theta=None, lambda_=None):
+    if theta is None:
+        theta_grid = np.linspace(0, 1, 100)
 
     else:
-        p_grid = np.array([p])
+        theta_grid = np.array([theta])
 
     if lambda_ is None:
         lambda_ = np.sqrt(n) / (1 + np.sqrt(n))
 
     # rslt = np.tile(np.nan, len(p_grid))
     rslt = []
-    for p in p_grid:
+    for theta in theta_grid:
         r = np.array(range(n + 1))
-        rv = binom(n, p)
+        rv = binom(n, theta)
         rslt.append(
-            np.sum(get_payoff(take_action(r, n, rule, lambda_=lambda_), p) * rv.pmf(r))
+            np.sum(get_payoff(take_action(r, n, rule, lambda_=lambda_), theta) * rv.pmf(r))
         )
     return np.array(rslt)
 
 
-def create_plot_expected_payoff_func(p, lambda_robust):
+def create_plot_expected_payoff_func(theta, lambda_robust):
     """Plot expected payoff function.
 
     Focusing on a single point in the state space, we combine the information on
@@ -61,21 +61,21 @@ def create_plot_expected_payoff_func(p, lambda_robust):
     matplotlib.rcParams["axes.spines.right"] = True
     for color in COLOR_OPTS:
         n = 50
-        rv = binom(n, p)
-        r = np.arange(binom.ppf(0.01, n, p), binom.ppf(0.99, n, p))
+        rv = binom(n, theta)
+        r = np.arange(binom.ppf(0.01, n, theta), binom.ppf(0.99, n, theta))
 
         fig, ax = plt.subplots(1, 1)
         ax2 = ax.twinx()
         series = pd.Series(rv.pmf(r), index=r)
         ax2.plot(
             r,
-            get_payoff(take_action(r, n, "as-if"), p),
+            get_payoff(take_action(r, n, "as-if"), theta),
             label=r"as-if ($\lambda=1$)",
             color=SPEC_DICT[color]["colors"][0],
         )
         ax2.plot(
             r,
-            get_payoff(take_action(r, n, "robust", lambda_=lambda_robust), p),
+            get_payoff(take_action(r, n, "robust", lambda_=lambda_robust), theta),
             label=rf"robust ($\lambda={lambda_robust}$)",
             color=SPEC_DICT[color]["colors"][1],
         )
@@ -91,10 +91,10 @@ def create_plot_expected_payoff_func(p, lambda_robust):
         ax2.set_ylim([0.97, 1])
         ax.set_yticks([0, 0.04, 0.08, 0.12])
         ax2.set_yticks([0.97, 0.98, 0.99, 1])
-        ax.set_xlabel("$r$")
+        ax.set_xlabel("$r$", labelpad=8)
 
-        ax.legend(loc="lower left", bbox_to_anchor=(0, -0.3))
-        ax2.legend(ncol=2, loc="lower right", bbox_to_anchor=(1, -0.3))
+        ax.legend(loc="lower left", bbox_to_anchor=(0, -0.32))
+        ax2.legend(ncol=2, loc="lower right", bbox_to_anchor=(1, -0.32))
 
         matplotlib.rc("axes", edgecolor="k")
 
@@ -106,7 +106,7 @@ def create_plot_expected_payoff_func(p, lambda_robust):
         )
 
         fig.savefig(fname)
-        matplotlib.rcParams["axes.spines.right"] = False
+    matplotlib.rcParams["axes.spines.right"] = False
 
 
 def create_plot_risk_functions():
@@ -133,12 +133,12 @@ def create_plot_risk_functions():
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.set_ylabel("Expected payoff")
-        ax.set_xlabel("$p$")
-        ax.set_ylim(0.9945, 0.9999)
+        ax.set_xlabel(r"$\theta$")
+        ax.set_ylim(0.995, 0.9999)
         plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
         t = ax.yaxis.get_offset_text()
         t.set_x(-0.06)
-        ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.4))
+        ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.3))
 
         fname = (
             f"{DIR_FIGURES}/fig-example-urn-payoff-functions{SPEC_DICT[color]['file']}"
@@ -147,20 +147,20 @@ def create_plot_risk_functions():
         fig.savefig(fname)
 
 
-def create_exp_payoff_plot_two_points(p_1, p_2, lambda_robust):
-    """Compare expected performance and expected regret at two values of p."""
+def create_exp_payoff_plot_two_points(theta_1, theta_2, lambda_robust):
+    """Compare expected performance and expected regret at two values of theta."""
     for color in COLOR_OPTS:
 
         n = 50
-        df = pd.DataFrame(columns=["as-if", "robust"], index=["p1", "p2"])
-        df.loc["p2", "as-if"] = risk_function(n, "as-if", p=p_2)[0]
-        df.loc["p2", "robust"] = risk_function(
-            n, "robust", p=p_2, lambda_=lambda_robust
+        df = pd.DataFrame(columns=["as-if", "robust"], index=["theta1", "theta2"])
+        df.loc["theta2", "as-if"] = risk_function(n, "as-if", theta=theta_2)[0]
+        df.loc["theta2", "robust"] = risk_function(
+            n, "robust", theta=theta_2, lambda_=lambda_robust
         )[0]
 
-        df.loc["p1", "as-if"] = risk_function(n, "as-if", p=p_1)[0]
-        df.loc["p1", "robust"] = risk_function(
-            n, "robust", p=p_1, lambda_=lambda_robust
+        df.loc["theta1", "as-if"] = risk_function(n, "as-if", theta=theta_1)[0]
+        df.loc["theta1", "robust"] = risk_function(
+            n, "robust", theta=theta_1, lambda_=lambda_robust
         )[0]
 
         x = np.arange(2)
@@ -183,7 +183,7 @@ def create_exp_payoff_plot_two_points(p_1, p_2, lambda_robust):
         ax.set_ylim([0.99, 0.999])
         ax.set_ylabel("Expected payoff")
         ax.set_xticks([0, 1])
-        ax.set_xticklabels([f"$p={p_1}$", f"$p = {p_2}$"])
+        ax.set_xticklabels([rf"$\theta = {theta_1}$", rf"$\theta = {theta_2}$"])
         ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.3))
         plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
         t = ax.yaxis.get_offset_text()
@@ -269,7 +269,7 @@ def create_optimal_lambda_plot():
         num_points = 20
 
         xmin, xmax = 0.6, 1
-        ymin, ymax = 0.945, 1.0
+        ymin, ymax = 0.95, 1
 
         # Compute yvalues.
         xvals = np.linspace(xmin, xmax, num_points)
@@ -316,7 +316,7 @@ def create_optimal_lambda_plot():
 
         # Axis limits
         ax.set_xlabel(r"$\lambda$")
-        ax.set_xlim(xmin, xmax)
+        ax.set_xlim(xmin-0.025, xmax)
         ax.set_ylim(ymin, ymax)
         ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.4))
         ax.set_ylabel("Performance measure")
