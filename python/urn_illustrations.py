@@ -133,8 +133,8 @@ def create_plot_risk_functions():
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.set_ylabel("Expected payoff")
-        ax.set_xlabel(r"$\theta$")
-        ax.set_ylim(0.995, 0.9999)
+        ax.set_xlabel(r"$\theta$", labelpad=4)
+        ax.set_ylim(0.994, 0.9999)
         plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
         t = ax.yaxis.get_offset_text()
         t.set_x(-0.06)
