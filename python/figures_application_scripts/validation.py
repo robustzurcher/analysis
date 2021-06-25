@@ -155,7 +155,9 @@ def create_ranking_graph(df):
 def plot_performance_difference_matrix(df, val_strat, one_dim_interpol_grid):
     z = generate_plot_matrix(df, val_strat, one_dim_interpol_grid)
     max_scale = len(one_dim_interpol_grid)
-    z_2 = np.where(z == 0, 1e20, z)
+    z_2 = np.where(z > 0, 1, z)
+    z_2 = np.where(z_2 < 0, -1, z_2)
+    z_2 = np.where(z_2 == 0, 2, z_2)
     fig, ax = plt.subplots()
     ax.set_ylim([-1, max_scale])
     ax.set_xlim([-10, max_scale])
@@ -175,10 +177,11 @@ def plot_performance_difference_matrix(df, val_strat, one_dim_interpol_grid):
         np.arange(0, max_scale + ticks_space, ticks_space),
         np.arange(0, 1.2, 0.2).round(2),
     )
-    cmap = CM.get_cmap("Greys_r", 10)
+    cmap = CM.get_cmap("Greys_r", 3)
+    # print(vars(cmap))
 
-    plt.imshow(z_2, cmap=cmap, vmax=10, vmin=-10)
-    plt.colorbar()
+    plt.imshow(z_2, cmap=cmap, vmax=2.1, vmin=-1.1)
+    # plt.colorbar()
 
     ax.yaxis.get_major_ticks()[0].label1.set_visible(False)
 
