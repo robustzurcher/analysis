@@ -159,8 +159,8 @@ def plot_performance_difference_matrix(df, val_strat, one_dim_interpol_grid):
     z_2 = np.where(z_2 < 0, -1, z_2)
     z_2 = np.where(z_2 == 0, 2, z_2)
     fig, ax = plt.subplots()
-    ax.set_ylim([-1, max_scale])
-    ax.set_xlim([-10, max_scale])
+    ax.set_ylim([-0.01, max_scale])
+    ax.set_xlim([-0.01, max_scale])
     t1 = plt.Polygon(
         np.array([[0, max_scale], [max_scale, 0]]), closed=False, fill=False
     )
@@ -259,12 +259,13 @@ def get_optimal_omega_maximin(df):
         ax.set_ylabel(r"Normalized performance")
         ax.set_xlabel(r"$\omega$")
         # ax.legend()
-        ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1], minor=True)
-        ax.set_xticklabels([0, 0.2, 0.4, 0.6, 0.8, 1.0], minor=True)
-        ax.set_xticks([omega_max_min], minor=False)
-        ax.set_xticklabels([r"$\omega^*$"], minor=False)
-        ax.tick_params(axis='x', which='major', pad=11)
-        ax.set_ylim([0, 1])
+        ax.set_xticks(np.arange(0, 1.2, 0.2).round(1), minor=False)
+        ax.set_xticklabels(np.arange(0, 1.2, 0.2).round(1), minor=False)
+        ax.set_xticks([omega_max_min], minor=True)
+        ax.set_xticklabels([r"$\omega^*$"], minor=True)
+        ax.tick_params(axis="x", which="major", pad=5)
+        ax.tick_params(axis="x", which="minor", pad=-1)
+        ax.set_ylim([0, 1.01])
         ax.set_xlim(right=1)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-optimal-omega"
