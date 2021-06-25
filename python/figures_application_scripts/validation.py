@@ -264,7 +264,7 @@ def get_optimal_omega_maximin(df):
         ax.set_xticks([omega_max_min], minor=True)
         ax.set_xticklabels([r"$\omega^*$"], minor=True)
         ax.tick_params(axis="x", which="major", pad=5)
-        ax.tick_params(axis="x", which="minor", pad=-1)
+        ax.tick_params(axis="x", which="minor", pad=0.5)
         ax.set_ylim([0, 1.01])
         ax.set_xlim(right=1)
         fig.savefig(
