@@ -253,11 +253,13 @@ def get_optimal_omega_maximin(df):
             color="k",
         )
 
-        ax.set_ylabel(r"Relative performance")
+        ax.set_ylabel(r"Normalized performance")
         ax.set_xlabel(r"$\omega$")
-        ax.legend()
-        ax.set_xticks([0, omega_max_min, 0.5, 1])
-        ax.set_xticklabels([0, r"$\omega^*$", 0.5, 1])
+        # ax.legend()
+        ax.set_xticks([0, 0.2, omega_max_min, 0.4, 0.6, 0.8, 1])
+        ax.set_xticklabels([0, 0.2, r"$\omega^*$", 0.4, 0.6, 0.8, 1.0])
+        ax.set_ylim([0, 1])
+        ax.set_xlim(right=1)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-optimal-omega"
             f"{SPEC_DICT[color]['file']}"
