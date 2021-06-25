@@ -259,8 +259,11 @@ def get_optimal_omega_maximin(df):
         ax.set_ylabel(r"Normalized performance")
         ax.set_xlabel(r"$\omega$")
         # ax.legend()
-        ax.set_xticks([0, 0.2, omega_max_min, 0.4, 0.6, 0.8, 1])
-        ax.set_xticklabels([0, 0.2, r"$\omega^*$", 0.4, 0.6, 0.8, 1.0])
+        ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1], minor=True)
+        ax.set_xticklabels([0, 0.2, 0.4, 0.6, 0.8, 1.0], minor=True)
+        ax.set_xticks([omega_max_min], minor=False)
+        ax.set_xticklabels([r"$\omega^*$"], minor=False)
+        ax.tick_params(axis='x', which='major', pad=11)
         ax.set_ylim([0, 1])
         ax.set_xlim(right=1)
         fig.savefig(
