@@ -311,7 +311,7 @@ def create_optimal_lambda_plot():
         # Set xticks and labels including optimal lambdas.
         ax.set_xticks([0.6, 0.7, 0.8, lambda_maximin, lambda_bayes, 1])
         ax.set_xticklabels(
-            [0.6, 0.7, 0.8, r"$\lambda^*_{Maximin}$", r"$\lambda^*_{Bayes}$", 1.0]
+            [0.6, 0.7, 0.8, r"$\lambda^*_{\mathrm{Maximin}}$", r"$\lambda^*_{\mathrm{Bayes}}$", 1.0]
         )
 
         # Axis limits
