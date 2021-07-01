@@ -155,10 +155,12 @@ def create_ranking_graph(df):
 def plot_performance_difference_matrix(df, val_strat, one_dim_interpol_grid):
     z = generate_plot_matrix(df, val_strat, one_dim_interpol_grid)
     max_scale = len(one_dim_interpol_grid)
-    z_2 = np.where(z == 0, 1e20, z)
+    z_2 = np.where(z > 0, 1, z)
+    z_2 = np.where(z_2 < 0, -1, z_2)
+    z_2 = np.where(z_2 == 0, 2, z_2)
     fig, ax = plt.subplots()
-    ax.set_ylim([-1, max_scale])
-    ax.set_xlim([-10, max_scale])
+    ax.set_ylim([-0.01, max_scale])
+    ax.set_xlim([-0.01, max_scale])
     t1 = plt.Polygon(
         np.array([[0, max_scale], [max_scale, 0]]), closed=False, fill=False
     )
@@ -175,10 +177,11 @@ def plot_performance_difference_matrix(df, val_strat, one_dim_interpol_grid):
         np.arange(0, max_scale + ticks_space, ticks_space),
         np.arange(0, 1.2, 0.2).round(2),
     )
-    cmap = CM.get_cmap("Greys_r", 10)
+    cmap = CM.get_cmap("Greys_r", 3)
+    # print(vars(cmap))
 
-    plt.imshow(z_2, cmap=cmap, vmax=10, vmin=-10)
-    plt.colorbar()
+    plt.imshow(z_2, cmap=cmap, vmax=2.1, vmin=-1.1)
+    # plt.colorbar()
 
     ax.yaxis.get_major_ticks()[0].label1.set_visible(False)
 
@@ -253,11 +256,17 @@ def get_optimal_omega_maximin(df):
             color="k",
         )
 
-        ax.set_ylabel(r"Relative performance")
+        ax.set_ylabel(r"Normalized performance")
         ax.set_xlabel(r"$\omega$")
-        ax.legend()
-        ax.set_xticks([0, omega_max_min, 0.5, 1])
-        ax.set_xticklabels([0, r"$\omega^*$", 0.5, 1])
+        # ax.legend()
+        ax.set_xticks(np.arange(0, 1.2, 0.2).round(1), minor=False)
+        ax.set_xticklabels(np.arange(0, 1.2, 0.2).round(1), minor=False)
+        ax.set_xticks([omega_max_min], minor=True)
+        ax.set_xticklabels([r"$\omega^*$"], minor=True)
+        ax.tick_params(axis="x", which="major", pad=5)
+        ax.tick_params(axis="x", which="minor", pad=0.5)
+        ax.set_ylim([0, 1.01])
+        ax.set_xlim(right=1)
         fig.savefig(
             f"{DIR_FIGURES}/fig-application-validation-optimal-omega"
             f"{SPEC_DICT[color]['file']}"
