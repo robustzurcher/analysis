@@ -46,9 +46,47 @@ def risk_function(n, rule, theta=None, lambda_=None):
         r = np.array(range(n + 1))
         rv = binom(n, theta)
         rslt.append(
-            np.sum(get_payoff(take_action(r, n, rule, lambda_=lambda_), theta) * rv.pmf(r))
+            np.sum(
+                get_payoff(take_action(r, n, rule, lambda_=lambda_), theta) * rv.pmf(r)
+            )
         )
     return np.array(rslt)
+
+
+def create_payoff_func(theta):
+    """Plot expected payoff function.
+
+    Focusing on a single point in the state space, we combine the information on
+    the sampling distribution for our action with the payoff from each action to
+    determine the **expected payoff**.
+    """
+    matplotlib.rcParams["axes.spines.right"] = True
+    for color in COLOR_OPTS:
+        # n = 50
+        r = np.arange(0, 1, 0.01)
+
+        fig, ax = plt.subplots(1, 1)
+        ax.plot(
+            r,
+            get_payoff(r, theta),
+            color=SPEC_DICT[color]["colors"][0],
+        )
+        ax.set_ylim([0.7, 1.01])
+        # ax.set_yticks([0.97, 0.98, 0.99, 1])
+
+        # ax.legend(loc="lower left", bbox_to_anchor=(0, -0.32))
+        # ax2.legend(ncol=2, loc="lower right", bbox_to_anchor=(1, -0.32))
+
+        # matplotlib.rc("axes", edgecolor="k")
+
+        ax.set_ylabel("Payoff")
+        # ax.set_xlabel(r"$\hat{\theta}$")
+        # ax.set_ylabel("Probability mass")
+
+        fname = f"{DIR_FIGURES}/fig-example-urn-payoff{SPEC_DICT[color]['file']}"
+
+        fig.savefig(fname)
+    matplotlib.rcParams["axes.spines.right"] = False
 
 
 def create_plot_expected_payoff_func(theta, lambda_robust):
@@ -70,13 +108,13 @@ def create_plot_expected_payoff_func(theta, lambda_robust):
         ax2.plot(
             r,
             get_payoff(take_action(r, n, "as-if"), theta),
-            label=r"as-if ($\lambda=1$)",
+            label=r"ADF",
             color=SPEC_DICT[color]["colors"][0],
         )
         ax2.plot(
             r,
             get_payoff(take_action(r, n, "robust", lambda_=lambda_robust), theta),
-            label=rf"robust ($\lambda={lambda_robust}$)",
+            label="RDF",
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.bar(
@@ -93,8 +131,8 @@ def create_plot_expected_payoff_func(theta, lambda_robust):
         ax2.set_yticks([0.97, 0.98, 0.99, 1])
         ax.set_xlabel("$r$", labelpad=8)
 
-        ax.legend(loc="lower left", bbox_to_anchor=(0, -0.32))
-        ax2.legend(ncol=2, loc="lower right", bbox_to_anchor=(1, -0.32))
+        ax.legend(loc="lower left", bbox_to_anchor=(0.1, -0.32))
+        ax2.legend(ncol=2, loc="lower right", bbox_to_anchor=(0.8, -0.32))
 
         matplotlib.rc("axes", edgecolor="k")
 
@@ -123,13 +161,13 @@ def create_plot_risk_functions():
         ax.plot(
             np.linspace(0, 1, 100),
             risk_function(n, "as-if"),
-            label=r"as-if ($\lambda=1$)",
+            label=r"ADF",
             color=SPEC_DICT[color]["colors"][0],
         )
         ax.plot(
             np.linspace(0, 1, 100),
             risk_function(n, "robust", lambda_=0.9),
-            label=r"robust ($\lambda=0.9$)",
+            label=r"RDF",
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.set_ylabel("Expected payoff")
@@ -170,14 +208,14 @@ def create_exp_payoff_plot_two_points(theta_1, theta_2, lambda_robust):
             x - width / 2,
             df.loc[slice(None), "as-if"],
             width,
-            label=r"as-if ($\lambda=1$)",
+            label=r"ADF",
             color=SPEC_DICT[color]["colors"][0],
         )
         ax.bar(
             x + width / 2,
             df.loc[slice(None), "robust"],
             width,
-            label=rf"robust ($\lambda={lambda_robust}$)",
+            label=r"RDF",
             color=SPEC_DICT[color]["colors"][1],
         )
         ax.set_ylim([0.99, 0.999])
@@ -211,7 +249,7 @@ def create_rank_plot_urn():
             "Minimax \n regret",
             "Subjective \n Bayes",
         ],
-        columns=[r"as-if ($\lambda=1$)", r"robust ($\lambda=0.9$)"],
+        columns=[r"ADF", r"RDF"],
     )
 
     linestyle = ["--", "-."]
@@ -311,12 +349,19 @@ def create_optimal_lambda_plot():
         # Set xticks and labels including optimal lambdas.
         ax.set_xticks([0.6, 0.7, 0.8, lambda_maximin, lambda_bayes, 1])
         ax.set_xticklabels(
-            [0.6, 0.7, 0.8, r"$\lambda^*_{\mathrm{Maximin}}$", r"$\lambda^*_{\mathrm{Bayes}}$", 1.0]
+            [
+                0.6,
+                0.7,
+                0.8,
+                r"$\lambda^*_{\mathrm{Maximin}}$",
+                r"$\lambda^*_{\mathrm{Bayes}}$",
+                1.0,
+            ]
         )
 
         # Axis limits
         ax.set_xlabel(r"$\lambda$")
-        ax.set_xlim(xmin-0.025, xmax)
+        ax.set_xlim(xmin - 0.025, xmax)
         ax.set_ylim(ymin, ymax)
         ax.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.4))
         ax.set_ylabel("Performance measure")
@@ -325,3 +370,5 @@ def create_optimal_lambda_plot():
         fname = f"{DIR_FIGURES}/fig-example-urn-optimal{SPEC_DICT[color]['file']}"
 
         fig.savefig(fname)
+    print(f"Optimal lambda bayes: {lambda_bayes}")
+    print(f"Optimal lambda maximin: {lambda_maximin}")
