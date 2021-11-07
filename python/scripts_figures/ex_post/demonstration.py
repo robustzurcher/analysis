@@ -2,15 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from config import DIR_FIGURES
-from figures.global_vals_funcs import BIN_SIZE
-from figures.global_vals_funcs import COLOR_OPTS
-from figures.global_vals_funcs import COST_SCALE
-from figures.global_vals_funcs import DICT_POLICIES_4292
-from figures.global_vals_funcs import PARAMS
-from figures.global_vals_funcs import SPEC_DICT
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.simulation.simulation import simulate
+from scripts_figures.global_vals_funcs import BIN_SIZE
+from scripts_figures.global_vals_funcs import COLOR_OPTS
+from scripts_figures.global_vals_funcs import COST_SCALE
+from scripts_figures.global_vals_funcs import DICT_POLICIES_4292
+from scripts_figures.global_vals_funcs import PARAMS
+from scripts_figures.global_vals_funcs import SPEC_DICT
 
 
 def get_demonstration_df(init_dict):

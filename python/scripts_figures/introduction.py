@@ -1,9 +1,9 @@
 import numpy as np
 from config import DIR_FIGURES
-from figures.global_vals_funcs import COLOR_OPTS
-from figures.global_vals_funcs import SPEC_DICT
 from matplotlib import pyplot as plt
 from scipy.interpolate import interp1d
+from scripts_figures.global_vals_funcs import COLOR_OPTS
+from scripts_figures.global_vals_funcs import SPEC_DICT
 
 
 def get_introduction_decision_making():

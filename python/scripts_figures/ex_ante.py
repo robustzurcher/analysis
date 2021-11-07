@@ -6,20 +6,20 @@ import pandas as pd
 import scipy.interpolate as interp
 from config import DATA_DIR
 from config import DIR_FIGURES
-from figures.global_vals_funcs import COLOR_OPTS
-from figures.global_vals_funcs import COST_SCALE
-from figures.global_vals_funcs import DISC_FAC
-from figures.global_vals_funcs import NUM_STATES
-from figures.global_vals_funcs import PARAMS
-from figures.global_vals_funcs import SPEC_DICT
-from figures.global_vals_funcs import VAL_RESULTS
-from figures.global_vals_funcs import VAL_STRATS
 from matplotlib import cm as CM
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.fix_point_alg import calc_fixp
 from scipy.signal import savgol_filter
+from scripts_figures.global_vals_funcs import COLOR_OPTS
+from scripts_figures.global_vals_funcs import COST_SCALE
+from scripts_figures.global_vals_funcs import DISC_FAC
+from scripts_figures.global_vals_funcs import NUM_STATES
+from scripts_figures.global_vals_funcs import PARAMS
+from scripts_figures.global_vals_funcs import SPEC_DICT
+from scripts_figures.global_vals_funcs import VAL_RESULTS
+from scripts_figures.global_vals_funcs import VAL_STRATS
 
 
 samples = pkl.load(open(f"{DATA_DIR}/samples.pkl", "rb"))

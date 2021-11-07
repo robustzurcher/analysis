@@ -2,16 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from config import DIR_FIGURES
-from figures.global_vals_funcs import BIN_SIZE
-from figures.global_vals_funcs import COLOR_OPTS
-from figures.global_vals_funcs import COST_SCALE
-from figures.global_vals_funcs import DICT_POLICIES_4292
-from figures.global_vals_funcs import DISC_FAC
-from figures.global_vals_funcs import PARAMS
-from figures.global_vals_funcs import SPEC_DICT
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
+from scripts_figures.global_vals_funcs import BIN_SIZE
+from scripts_figures.global_vals_funcs import COLOR_OPTS
+from scripts_figures.global_vals_funcs import COST_SCALE
+from scripts_figures.global_vals_funcs import DICT_POLICIES_4292
+from scripts_figures.global_vals_funcs import DISC_FAC
+from scripts_figures.global_vals_funcs import PARAMS
+from scripts_figures.global_vals_funcs import SPEC_DICT
 
 
 keys = [0.0, 0.5, 0.95]
