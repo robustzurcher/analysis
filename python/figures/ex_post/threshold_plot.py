@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from config import DIR_FIGURES
-from global_vals_funcs import BIN_SIZE
-from global_vals_funcs import COLOR_OPTS
-from global_vals_funcs import OMEGA_GRID
-from global_vals_funcs import SIM_RESULTS
-from global_vals_funcs import SPEC_DICT
+from figures.global_vals_funcs import BIN_SIZE
+from figures.global_vals_funcs import COLOR_OPTS
+from figures.global_vals_funcs import OMEGA_GRID
+from figures.global_vals_funcs import SIM_RESULTS
+from figures.global_vals_funcs import SPEC_DICT
 
 num_keys = 100
 

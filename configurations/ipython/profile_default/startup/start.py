@@ -12,16 +12,18 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-from figures_application_scripts.transition_probabilities import *
-from global_vals_funcs import *
-from figures_application_scripts.maintenace_probabilities import *
-from figures_application_scripts.demonstration import *
-from figures_application_scripts.threshold_plot import *
-from figures_application_scripts.performance_plots import *
-from figures_application_scripts.validation import *
+from figures.ex_post.transition_probabilities import *
+from figures.global_vals_funcs import extract_zips
+from figures.global_vals_funcs import *
+from figures.ex_post.maintenace_probabilities import *
+from figures.ex_post.demonstration import *
+from figures.ex_post.threshold_plot import *
+from figures.ex_post.performance_plots import *
+from figures.ex_post.observations import *
+from figures.ex_ante import *
 
-from figures_introduction import *
-from urn_illustrations import *
+from figures.introduction import *
+from figures.urn_illustrations import *
 
 
 extract_zips()

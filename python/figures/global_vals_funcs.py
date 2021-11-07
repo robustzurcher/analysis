@@ -57,12 +57,12 @@ SPEC_DICT = {
 def extract_zips():
     if os.path.exists(SIM_RESULTS):
         shutil.rmtree(SIM_RESULTS)
-    os.makedirs("../pre_processed_data/sim_results")
-    ZipFile("../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
+    os.makedirs("../../pre_processed_data/sim_results")
+    ZipFile("../../pre_processed_data/simulation_results.zip").extractall(SIM_RESULTS)
 
     if os.path.exists(VAL_RESULTS):
         shutil.rmtree(VAL_RESULTS)
-    ZipFile("../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
+    ZipFile("../../pre_processed_data/validation_results.zip").extractall(VAL_RESULTS)
 
 
 def get_file(fname):
@@ -72,8 +72,8 @@ def get_file(fname):
     fname_pkl = Path(fname).with_suffix(".pkl")
 
     if not os.path.exists(fname_pkl):
-        ZipFile("../pre_processed_data/solution_results.zip").extractall(
-            "../pre_processed_data/"
+        ZipFile("../../pre_processed_data/solution_results.zip").extractall(
+            "../../pre_processed_data/"
         )
 
     return pkl.load(open(fname_pkl, "rb"))

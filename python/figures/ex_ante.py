@@ -6,14 +6,14 @@ import pandas as pd
 import scipy.interpolate as interp
 from config import DATA_DIR
 from config import DIR_FIGURES
-from global_vals_funcs import COLOR_OPTS
-from global_vals_funcs import COST_SCALE
-from global_vals_funcs import DISC_FAC
-from global_vals_funcs import NUM_STATES
-from global_vals_funcs import PARAMS
-from global_vals_funcs import SPEC_DICT
-from global_vals_funcs import VAL_RESULTS
-from global_vals_funcs import VAL_STRATS
+from figures.global_vals_funcs import COLOR_OPTS
+from figures.global_vals_funcs import COST_SCALE
+from figures.global_vals_funcs import DISC_FAC
+from figures.global_vals_funcs import NUM_STATES
+from figures.global_vals_funcs import PARAMS
+from figures.global_vals_funcs import SPEC_DICT
+from figures.global_vals_funcs import VAL_RESULTS
+from figures.global_vals_funcs import VAL_STRATS
 from matplotlib import cm as CM
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import calc_obs_costs
@@ -259,10 +259,12 @@ def get_optimal_omega_maximin(df):
         ax.set_ylabel(r"Normalized performance")
         ax.set_xlabel(r"$\omega$")
         # ax.legend()
-        ax.set_xticks(np.arange(0, 1.2, 0.2).round(1), minor=False)
-        ax.set_xticklabels(np.arange(0, 1.2, 0.2).round(1), minor=False)
-        ax.set_xticks([omega_max_min], minor=True)
-        ax.set_xticklabels([r"$\omega^*$"], minor=True)
+        x = np.arange(0, 1.2, 0.2).round(1)
+        x_labels = [str(num) for num in list(x)]
+        x_labels[2] = r"$\omega^*$"
+        x[x == 0.4] = omega_max_min
+        ax.set_xticks(x)
+        ax.set_xticklabels(x_labels)
         ax.tick_params(axis="x", which="major", pad=5)
         ax.tick_params(axis="x", which="minor", pad=0.5)
         ax.set_ylim([0, 1.01])

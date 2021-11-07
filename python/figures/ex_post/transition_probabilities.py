@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from config import DIR_FIGURES
-from global_vals_funcs import BIN_SIZE
-from global_vals_funcs import COLOR_OPTS
-from global_vals_funcs import DICT_POLICIES_2223
-from global_vals_funcs import DICT_POLICIES_4292
-from global_vals_funcs import SPEC_DICT
+from figures.global_vals_funcs import BIN_SIZE
+from figures.global_vals_funcs import COLOR_OPTS
+from figures.global_vals_funcs import DICT_POLICIES_2223
+from figures.global_vals_funcs import DICT_POLICIES_4292
+from figures.global_vals_funcs import SPEC_DICT
 
 
 p_size = 3

@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from config import DIR_FIGURES
-from global_vals_funcs import COLOR_OPTS
-from global_vals_funcs import SPEC_DICT
+from figures.global_vals_funcs import COLOR_OPTS
+from figures.global_vals_funcs import SPEC_DICT
 from scipy.stats import binom
 
 
